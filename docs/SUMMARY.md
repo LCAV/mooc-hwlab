@@ -1,20 +1,25 @@
 # Table of contents
 
-* [INTRODUCTION](README.md)
-* [BILL OF MATERIALS](bom.md)
-* [1. OVERVIEW AND INSTALLATION](installation/README.md)
-  * [1.1 Hardware](installation/hardware.md)
-  * [1.2 Software](installation/software/README.md)
-    * [1.2.1 STM32CubeIDE](installation/software/sw4stm32.md)
-    * [1.2.2 Useful tips](installation/software/eclipse_tips.md)
-  * [1.3 Our first project](installation/instructions.md)
-* [2. AUDIO PASSTHROUGH](passthrough/README.md)
-  * [2.1 Audio I/O](passthrough/audio-io/README.md)
-    * [2.1.1 Digital Microphone](passthrough/audio-io/microphone.md)
-    * [2.1.2 Stereo DAC](passthrough/audio-io/dac.md)
-  * [2.2 Setting up the peripherals](passthrough/updating_stm32_peripherals.md)
-  * [2.3 Connecting the peripherals](passthrough/wiring.md)
-  * [2.4 Coding the passthrough](passthrough/coding.md)
+* [DSP4.3 - Real-Time DSP](README.md)
+
+## Initial Setup
+
+* [Material and tools](initial-setup/installation/README.md)
+  * [Hardware](initial-setup/installation/hardware.md)
+  * [Software](initial-setup/installation/software/README.md)
+    * [STM32CubeIDE](initial-setup/installation/software/sw4stm32.md)
+    * [Useful tips](initial-setup/installation/software/eclipse_tips.md)
+* [Our first test project](initial-setup/instructions.md)
+
+## Audio Peripherals
+
+* [Real-time audio I/O](audio-peripherals/audio-io.md)
+* [The digital microphone](audio-peripherals/microphone.md)
+* [The stereo DAC](audio-peripherals/dac.md)
+* [The audio passthrough](audio-peripherals/passthrough/README.md)
+  * [Setting up the I/O](audio-peripherals/passthrough/updating_stm32_peripherals.md)
+  * [Connecting the peripherals](audio-peripherals/passthrough/wiring.md)
+  * [Coding the passthrough](audio-peripherals/passthrough/coding.md)
 * [3. ALIEN VOICE EFFECT](alien-voice/README.md)
   * [3.1 How it works](alien-voice/effect_description.md)
   * [3.2 Real-time DSP tips](alien-voice/dsp_tips.md)

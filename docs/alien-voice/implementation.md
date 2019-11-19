@@ -271,11 +271,11 @@ Are you sure you are ready to see the solution? ;\)
 {% tab title="Task 4" %}
 As proposed in the hint, if you go to the tab _Clock Configuration_ of CubeMX, you will see the following graph:
 
-![](../.gitbook/assets/screenshot-2019-10-10-at-16.57.46%20%281%29.png)
+![](../.gitbook/assets/screenshot-2019-10-10-at-16.57.46-1.png)
 
 Note the last block on the right column _APB1 Timer clocks \(MHz\):_ 48. It means that your timer are "run" with a base tick frequency of 48MHz. in order to reduce this to $$1[\mu s]$$or in other word $$1[MHz]$$, you will have to divide it by 48. This number is thus your prescaller. This lead to the following timer configuration:
 
-![](../.gitbook/assets/screenshot-2019-10-10-at-16.58.09%20%281%29.png)
+![](../.gitbook/assets/screenshot-2019-10-10-at-16.58.09-1.png)
 
 Note the _Counter Period_, it is the value at where the interrupt is triggered, here the maximum value.
 {% endtab %}

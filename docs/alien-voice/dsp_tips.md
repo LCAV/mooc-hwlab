@@ -80,13 +80,13 @@ plt.show()
 
 Below is the plot visualizing the samples from the lookup table for a modulation frequency of 400 Hz and a sampling frequency of 32 kHz.
 
-![](../.gitbook/assets/sine_table%20%282%29.png)
+![](../.gitbook/assets/sine_table-2.png)
 
 ## State variables <a id="state_var"></a>
 
 One advantage of our simple alien voice effect is that it does not require us to store past input or output values. In other words, the current output $$y[n]$$ only depends on the current input $$x[n]$$.
 
-However, as we explained in the [passthrough chapter](../passthrough/coding.md#constants), we receive \(and process\) the incoming audio in chunks \(called "buffers"\), which consist of multiple "frames". Moreover, each frame consists of _one_ sample per channel. We will refer to the number of frames in each buffer as the "buffer length" and the total number of samples \(as one frame could have multiple samples\) as the "buffer size".
+However, as we explained in the [passthrough chapter](../audio-peripherals/passthrough/coding.md#constants), we receive \(and process\) the incoming audio in chunks \(called "buffers"\), which consist of multiple "frames". Moreover, each frame consists of _one_ sample per channel. We will refer to the number of frames in each buffer as the "buffer length" and the total number of samples \(as one frame could have multiple samples\) as the "buffer size".
 
 Imagine that we have 128 frames per buffer and two channels: so the "buffer length" is half the size of the "buffer size". For the first buffer we receive, i.e. the first 128 samples, the voice effect computation is straightforward:
 
@@ -96,7 +96,7 @@ $$
 
 where $$\textrm{LOOKUP_SIZE}$$ is the number of entries in our lookup table. However, the second and subsequent buffers require us to know the current time index. We **cannot** simply multiply the input signal with $$\sin(\omega_{mod} \cdot [n \textrm{ \% LOOKUP_SIZE}]), n \in [0, 127]$$ at each buffer as this would result in multiplying our input signal with a _discontinuous_ estimate of our sinusoid. In the figure below, we can observe how our input signal could be multiplied with a discontinuous estimate of a sinusoid if information is not passed between buffers. Such an operation would lead to _glitches_ in the output audio, which have a very noticeable "clicking" sound.
 
-![](../.gitbook/assets/discontinuous_sine%20%281%29.png)
+![](../.gitbook/assets/discontinuous_sine-1.png)
 
 _Figure: Discontinuous sinusoid estimate \(blue, right-side up triangles\) across consecutive buffers. For the new buffer, the discontinuous estimate simply starts at the beginning of the lookup table rather than continuing along the lookup table \(green, upside-down triangles\)._
 
@@ -179,13 +179,13 @@ $$
 
 From such an expression, we can create the standard [pole-zero plot](https://en.wikipedia.org/wiki/Pole–zero_plot) as seen below. With such a plot, we can extract a lot of useful information, such as stability and causality.
 
-![](../.gitbook/assets/zplot_high_pass-1%20%281%29.png)
+![](../.gitbook/assets/zplot_high_pass-1-1.png)
 
 _Figure: Pole-zero plot of our simple high pass filter. Thanks to_ [this software](https://www.dsprelated.com/showcode/244.php) _for the visualization function._
 
 For certain system, we can also compute the Fourier Transform, which may be more intuitive to understand. For our simple high pass filter, the frequency response is shown below.
 
-![](../.gitbook/assets/freq_resp_high_pass%20%281%29.png)
+![](../.gitbook/assets/freq_resp_high_pass-1.png)
 
 _Figure: Frequency response of our simple high pass filter._
 
@@ -193,7 +193,7 @@ In addition to its simplicity, another good property of this filter is that it h
 
 It is actually more common to plot the frequency response with the x-axis \(frequency\) in log scale, as shown below.
 
-![](../.gitbook/assets/freq_resp_high_pass_log%20%281%29.png)
+![](../.gitbook/assets/freq_resp_high_pass_log-1.png)
 
 _Figure: Frequency response of our simple high pass filter \(log scale\)._
 
@@ -238,11 +238,11 @@ When the code is running, you can double click on any line number to add a break
 
 We suggest you to ad a breakpoint at line 430:
 
-![](../.gitbook/assets/screenshot-2019-10-10-at-16.29.32%20%281%29.png)
+![](../.gitbook/assets/screenshot-2019-10-10-at-16.29.32-1.png)
 
 If the micro-controller is connected and a debug session is ongoing, you will see a change in the software and the following list:
 
-![](../.gitbook/assets/screenshot-2019-10-10-at-16.32.28%20%281%29.png)
+![](../.gitbook/assets/screenshot-2019-10-10-at-16.32.28-1.png)
 
 It is the hierarchy of the function executed by the micro-controller, indeed main\(\) is the root. Please note that the button _Skip All Breakpoints_ should not be activated for the micro-controller to stop at the given line.
 
