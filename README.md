@@ -20,7 +20,7 @@ the various voice effects without downloading this repository locally by checkin
 will need a Gmail account to run the edit/run the cells in the cloud; otherwise, you can download the notebook and run
 it locally.
 
-Table of contents:
+Table of contents: 
 
 1. [Overview and installation of ST Microelectronics material](https://lcav.gitbook.io/dsp-labs/installation)
 2. [Audio passthrough](https://lcav.gitbook.io/dsp-labs/passthrough)
