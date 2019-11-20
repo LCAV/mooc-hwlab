@@ -24,11 +24,29 @@ $$
 \sin x = x - \dfrac{x^3}{3!} + \dfrac{x^5}{5!} - \dfrac{x^7}{7!} + \mathcal{O}(x^9)
 $$
 
-clearly requires a significant number of multiplications.
+clearly requires a significant number of multiplications. A computationally cheaper alternative is based on the use of a [lookup table](https://en.wikipedia.org/wiki/Lookup_table). In a lookup table, we precompute the sinusoidal values that we need and use the time index $$n$$simply  to retrieve the correct value. 
 
-A computationally cheaper alternative is besed on the use of a [lookup table](https://en.wikipedia.org/wiki/Lookup_table). In a lookup table, we precompute the sinusoidal values that we need and use the time index to retrieve the correct value. For our application, we can define the spacing between consecutive values by our sampling frequency.
+In sinusoidal modulation we need to know the values of the sequence $$\cos(\omega_c n)$$ for all values of $$n$$. However, if $$\omega_c$$is a rational multiple of $$2\pi$$, that is, if $$\omega_c = 2\pi(M/N)$$for $$M,N \in \mathbb{N}$$, then the sequence of sinusoidal values repeats exactly every $$N$$samples. 
 
-Lookup tables are extremely useful in DSP and can even be used to replace/approximate computationally expensive filters. However, they come with the cost of having to store them in memory so this tradeoff should always be carefully considered!
+For instance, assume the input sampling frequency is $$F_s = 32$$KHz and that our modulation frequency is $$f_c = 400$$Hz. In this case $$\omega_c = 2\pi /80$$and therefore we simply need to pre-compute 80 values for the cosine and store them in an array `C[]`. The equation
+
+$$
+y[n] = x[n] \, \cos(\omega_c n),
+$$
+
+becomes the line of code
+
+```c
+y[n] = x[n] * C[n % 80]
+```
+
+Of course, we are trading computational time for memory here so, if $$N$$in the denominator is impractically large, the table lookup method may become prohibitive, especially on architectures such as the Nucleo which do not have a lot of onboard memory.
+
+Another difficulty is when $$\omega_c$$is _not_ a rational multiple of $$2\pi$$. In this case, we may want to slightly adjust the modulation frequency to a value for which the rational multiple expression becomes valid.
+
+~~For our application, we can define the spacing between consecutive values by our sampling frequency.~~
+
+~~Lookup tables are extremely useful in DSP and can even be used to replace/approximate computationally expensive filters. However, they come with the cost of having to store them in memory so this tradeoff should always be carefully considered!~~
 
 Below is a Python script, which you can also find [in the repository](https://github.com/LCAV/dsp-labs/blob/master/scripts/alien_voice/compute_sinusoid_lookup.py), to compute a sinusoid lookup table given a particular sampling frequency and modulation frequency. The lookup table is then printed in the console for copy-and-pasting to a C program. The lookup table samples are also plotted.
 
