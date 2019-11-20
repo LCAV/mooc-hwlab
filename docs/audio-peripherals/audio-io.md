@@ -1,6 +1,6 @@
 # Real-time audio I/O
 
-Any real-time audio application running on the microcontroller will need to acquire data from a source \(for instance, a microphone\) and deliver data to an outuput sink \(for instance, an analog-to-digital converter connected to a loudspeaker\) that we can listen to. The source and the sink are peripheral components external to the microcontroller board and therefore we need to understand two fundamental things:
+The microphone and the DAC are peripheral components external to the microcontroller board and therefore we need to understand two fundamental things:
 
 * the protocol used by external peripherals to electrically transfer data to and from the microcontroller board; for audio, this is usually the I2S protocol
 * the mechanism by which the data transfer is handled; in our case this will be a so-called DMA transfer.
@@ -31,7 +31,7 @@ More information about the I2S bus specification can be read [here](https://www.
 
 We first discuss the I2S protocol with respect to the [microphone](microphone.md) and then for the [DAC](dac.md). We recommend reading in this order as the microphone section is easier to grasp and will introduce some common terminology used later on.
 
-For the STM board that we are using, we will configure two I2S buses: one for the input and the other for the output. This configuration process will be covered [here](passthrough/updating_stm32_peripherals.md).
+For the STM board that we are using, we will configure two I2S buses: one for the input and the other for the output. This configuration process will be covered [here](passthrough/io_setup.md).
 
 ## DMA transfers
 

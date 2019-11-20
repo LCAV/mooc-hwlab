@@ -2,7 +2,7 @@
 
 A "passthrough" can be viewed as the audio processing equivalent of a "hello world" program. In this chapter, we will build a passthrough with the hardware and software components previously introduced. 
 
-Using the CubeMX software, we will first [update the configuration of the microcontroller](updating_stm32_peripherals.md). We will then guide you through the [wiring ](wiring.md)and, finally, we will [program our passthrough](coding.md) using the SW4STM32 software.
+Using the CubeMX software, we will first [update the configuration of the microcontroller](io_setup.md). We will then guide you through the [wiring ](wiring.md)and, finally, we will [program our passthrough](coding.md) using the SW4STM32 software.
 
 Highlighted boxes, as shown below, specify a task for which _**you**_ need to find out the appropriate solution and implementation.
 

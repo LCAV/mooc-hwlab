@@ -1,6 +1,6 @@
-# Our first test project
+# A simple test project
 
-In this section we will guide you step by step through the process of coding a simple application for the microcontroller, connecting the board, and running the application on the microcontroller. While this first application does not use the peripherals and simply makes an LED blink, it will be a basic project template that we can reuse many times later.
+In this section we will guide you step by step through the process of coding a simple application for the microcontroller, connecting the board, and running the application on the microcontroller. This first application does not use any peripherals and simply makes an LED blink, it will be a basic project template that we can reuse many times later.
 
 ## Open the IDE and select a workspace <a id="init_code"></a>
 
@@ -166,6 +166,4 @@ In order to properly stop the program, it is also necessary to disconnect from t
 Finally, you can switch back to the _normal_ perspective by pressing the button to the left of the _bug_ icon in the top-right corner \(see below\).
 
 ![](../.gitbook/assets/26_switch_perspective_1-2.png)
-
-**That's it for this introductory chapter! In the next chapter, we will dive into audio DSP by putting together a** [_**passthrough**_](../audio-peripherals/passthrough/)**, the "hello world" equivalent of audio.**
 

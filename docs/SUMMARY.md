@@ -1,23 +1,23 @@
 # Table of contents
 
 * [DSP4.3 - Real-Time DSP](README.md)
+* [Bill of materials](bill-of-materials.md)
 
-## Initial Setup
+## The Microcontroller <a id="microcontroller"></a>
 
-* [Material and tools](initial-setup/installation/README.md)
-  * [Hardware](initial-setup/installation/hardware.md)
-  * [Software](initial-setup/installation/software/README.md)
-    * [STM32CubeIDE](initial-setup/installation/software/sw4stm32.md)
-    * [Useful tips](initial-setup/installation/software/eclipse_tips.md)
-* [Our first test project](initial-setup/instructions.md)
+* [The ST Nucleo](microcontroller/nucleo.md)
+* [STM32 Cube IDE](microcontroller/ide/README.md)
+  * [Useful tips](microcontroller/ide/tips.md)
+* [A simple test project](microcontroller/test_project.md)
 
-## Audio Peripherals
+## The Audio Peripherals <a id="audio-peripherals"></a>
 
+* [The Adafruit Boards](audio-peripherals/peripherals.md)
 * [Real-time audio I/O](audio-peripherals/audio-io.md)
 * [The digital microphone](audio-peripherals/microphone.md)
 * [The stereo DAC](audio-peripherals/dac.md)
 * [The audio passthrough](audio-peripherals/passthrough/README.md)
-  * [Setting up the I/O](audio-peripherals/passthrough/updating_stm32_peripherals.md)
+  * [Setting up the I/O](audio-peripherals/passthrough/io_setup.md)
   * [Connecting the peripherals](audio-peripherals/passthrough/wiring.md)
   * [Coding the passthrough](audio-peripherals/passthrough/coding.md)
 * [3. ALIEN VOICE EFFECT](alien-voice/README.md)
