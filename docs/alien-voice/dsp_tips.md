@@ -1,18 +1,32 @@
-# 3.2 Real-time DSP tips
+# Real-World DSP
 
-In this section, we will motivate several real-time DSP tips and tricks that arise when considering a practical implementation, using our simple alien voice effect as an example.
+Coding a "real-world" DSP application on dedicated hardware is a bit of a shock when we are used to the neat world of theoretical derivations. In this section we will review some of the most common issues that we have to keep in mind.
 
-## Lookup table <a id="lookup"></a>
+## float vs. int <a id="float"></a>
 
-As can be seen in [Chapter 3.1](effect_description.md), our effect is really simple: we only need to multiply the input samples with a sinusoid. However, directly computing the sine/cosine of a given value cannot be done by most computers and microcontrollers. Instead, they use a formula such as the Taylor series to approximate the value of a sine/cosine to a high degree of precision.
+Operations with `float` variables can take significantly more time than the same operations with `int` variables. For our application, we noticed that an implementation with `float` variables can take up to 35% more processing time! Therefore, we recommend avoiding `float` variable whenever possible!
 
-However, a quick glance at the Taylor series expansion of $$\sin(x)$$ reveals that this can be an expensive operation, involving several multiplications:
+Floats can be mapped to integers by renormalization; for instance, if we use a 16-bit integer, a floating point sinusoidal value between -1 and +1 can be mapped to 65535 discrete levels.
+
+Remember that when you multiply two 16-bit integer, the result will need to be computed over a 32-bit integer to avoid overflow. The result can be rescaled to 16 bits later, but try to keep rescaling to the end of a chain of integer arithmetic operations. 
+
+With an intelligent use of operation priority \(for example multiply before dividing in order to perform integer arithmetic without losing precision\), integer arithmetic will not unduly impact the precision of our algorithms.
+
+More about these kinds of tradeoff can be read [here](https://www.embedded.com/design/debug-and-optimization/4440365/Floating-point-data-in-embedded-software) and [here](https://en.wikibooks.org/wiki/Embedded_Systems/Floating_Point_Unit).
+
+When using integer values though it is not possible, for example, to code a lookup table that goes from $$0$$ to $$1$$ with $$0.1$$ increments or to use filter coefficients with values within $$0$$ and $$1$$. Therefore, to maximize our precision and to minimize the computation cost, we will try to use the full range of our integer variables. For example $$65'535$$ in the case of `unsigned int 16`. This scaling factor will need to be incorporated whenever using the, e.g. lookup table or filter coefficients. 
+
+## Sinusoidal lookup tables <a id="lookup"></a>
+
+The alien voice effect simply requires us to multiply the input by a sinusoid. In a microcontroller, however, computing trigonometric values for arbitrary values of the angle is an expensive operation since it always involves some form of Taylor series approximation. Even using a few terms, as in
 
 $$
 \sin x = x - \dfrac{x^3}{3!} + \dfrac{x^5}{5!} - \dfrac{x^7}{7!} + \mathcal{O}(x^9)
 $$
 
-A computationally cheap alternative is to use a [lookup table](https://en.wikipedia.org/wiki/Lookup_table) \(LUT\). This consists of pre-computing the sinusoid for many evenly distributed values. For our application, we can define the spacing between consecutive values by our sampling frequency.
+clearly requires a significant number of multiplications.
+
+A computationally cheaper alternative is besed on the use of a [lookup table](https://en.wikipedia.org/wiki/Lookup_table). In a lookup table, we precompute the sinusoidal values that we need and use the time index to retrieve the correct value. For our application, we can define the spacing between consecutive values by our sampling frequency.
 
 Lookup tables are extremely useful in DSP and can even be used to replace/approximate computationally expensive filters. However, they come with the cost of having to store them in memory so this tradeoff should always be carefully considered!
 
@@ -84,11 +98,18 @@ Below is the plot visualizing the samples from the lookup table for a modulation
 
 ## State variables <a id="state_var"></a>
 
-One advantage of our simple alien voice effect is that it does not require us to store past input or output values. In other words, the current output $$y[n]$$ only depends on the current input $$x[n]$$.
+The alien voice effect is _memoryless_, so it does not require us to store past input or output values; the current output $$y[n]$$ only depends on the current input $$x[n]$$and that's it.
 
-However, as we explained in the [passthrough chapter](../audio-peripherals/passthrough/coding.md#constants), we receive \(and process\) the incoming audio in chunks \(called "buffers"\), which consist of multiple "frames". Moreover, each frame consists of _one_ sample per channel. We will refer to the number of frames in each buffer as the "buffer length" and the total number of samples \(as one frame could have multiple samples\) as the "buffer size".
+What we need to keep track of, however, is the "time" variable $$n.$$
 
-Imagine that we have 128 frames per buffer and two channels: so the "buffer length" is half the size of the "buffer size". For the first buffer we receive, i.e. the first 128 samples, the voice effect computation is straightforward:
+Remember that, as we explained in the [implementation of the passthrough](../audio-peripherals/passthrough/coding.md#constants), we receive \(and process\) the incoming audio in _buffers_ that consist of multiple _frames_; each frame contains one sample _per channel_. The dimesions are:
+
+* buffer size = number of frames per buffer
+* buffer length = number of 
+
+The buffer size is therefore We will refer to the number of frames in each buffer as the "buffer length" and the total number of samples \(as one frame could have multiple samples\) as the "buffer size".
+
+Imagine that we have 128 frames per buffer and two channels, so the "buffer length" is half the size of the "buffer size". For the first buffer we receive, i.e. the first 128 samples, the voice effect computation is straightforward:
 
 $$
 y[n] = x[n] \cdot \sin(\omega_{mod} \cdot [n \textrm{ \% LOOKUP_SIZE}]), \quad n \in [0, 127],
@@ -131,19 +152,13 @@ while(True):    # can go "forever" without worrying about the value of our state
 
 These values that we keep track of in between buffers, such as a pointer to the lookup table, are commonly referred to as _state variables_. For our applications in C, we recommend using [static variables](https://stackoverflow.com/questions/572547/what-does-static-mean-in-c) for state variables inside the `process` function, as static variables keep their values between consecutive invocations inside a function.
 
-## Float vs. Int <a id="float"></a>
-
-Operations with `float` variables can take significantly more time than the same operations with `int` variables. For our application, we noticed that an implementation with `float` variables can take up to $$35$$% more processing time! Therefore, we recommend avoiding `float` variable whenever possible!
-
-When using integer values though it is not possible, for example, to code a lookup table that goes from $$0$$ to $$1$$ with $$0.1$$ increments or to use filter coefficients with values within $$0$$ and $$1$$. Therefore, to maximize our precision and to minimize the computation cost, we will try to use the full range of our integer variables. For example $$65'535$$ in the case of `unsigned int 16`. This scaling factor will need to be incorporated whenever using the, e.g. lookup table or filter coefficients. With an intelligent use of operation priority \(for example multiply before dividing in order to perform integer arithmetic without losing precision\), it will not impact our precision and processing time.
-
-More about this tradeoff can be read [here](https://www.embedded.com/design/debug-and-optimization/4440365/Floating-point-data-in-embedded-software) and [here](https://en.wikibooks.org/wiki/Embedded_Systems/Floating_Point_Unit).
+##  <a id="float"></a>
 
 ## Removing DC noise <a id="removing_dc"></a>
 
 Up until now, we assumed that the signal from the microphone is centered around zero, i.e. that no signal corresponds to an amplitude of zero. However, this is not always the case! During audio capture, the internal circuitry in the microphone may add an offset, and sometimes different microphones \(of the same manufacturer\) will have different offsets. We typically call this shift in the waveform a [DC offset/noise/bias](https://en.wikipedia.org/wiki/DC_bias).
 
-For our alien voice effect, a DC offset would result in a constant sinusoid \(at our modulation frequency\) present in the output signal. This is easy to see by adding the DC offset to the signal we saw [before](effect_description.md#effect_eq):
+For our alien voice effect, a DC offset would result in a constant sinusoid \(at our modulation frequency\) present in the output signal. This is easy to see by adding the DC offset to the signal we saw [before]():
 
 $$
 (x[n] + n_{DC}) \cdot \sin(\omega_{mod} \cdot n) = y[n] + n_{DC} \cdot \sin(\omega_{mod} \cdot n),

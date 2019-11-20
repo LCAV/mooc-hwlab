@@ -1,8 +1,16 @@
-# 3. ALIEN VOICE EFFECT
+# Alien Voice
 
-In this exercise, we will create a simple voice effect, namely taking the microphone's input signal and producing an "alien" version of it. During the implementation, we will come across a few limitations that arise when trying to realize digital signal processing \(DSP\) in real-time.
+In this section we will implement the "alien voice" effect on the microcontroller. In the process, we will start to encounter some of the limitations that arise when trying to design a real-time DSP system.
 
-In [Section 3.1](effect_description.md), we will explain the effect that we will be implementing. In [Section 3.2](dsp_tips.md), we will discuss some important points that need to be considered when implementing real-time DSP. In [Section 3.3](python.md), we propose a Python framework for simulating a real-time environment with your laptop's sound card the [`sounddevice`](http://python-sounddevice.readthedocs.io/) library. Finally, we will guide you through the implementation on the STM32 board in [Section 3.4](implementation.md).
+As shown in the [Jupyter notebook](../voice-transformers/introduction-vt.md), the alien voice effect is achieved simply by performing sinusoidal modulation to shift the voice spectrum up in frequency. Given a modulation frequency $$f_{c}$$ \(in Hz\) and an input sample $$x[n]$$ we can compute each output sample $$y[n]$$ instantaneously as:
+
+$$
+y[n] = x[n] \, \cos\left(2\pi \frac{f_{c}}{F_s} n \right) = x[n] \, \cos(\omega_c n),
+$$
+
+where $$F_s$$ is the input sampling frequency \(in Hz\). The modulation frequency must be kept small in order to preserve intelligibility; still, the resulting signal will be affected by _aliasing_ and other artifacts that we cannot really control.
+
+As mentioned in the Jupyter notebook, this voice transformer is great for real-time applications as it requires only a single multiplication per sample. This means that, compared to the passthrough projetct, we will not have to write too much new code. But the devil, as they say, is in the details!
 
 As in the previous chapter, text contained in highlighted boxes, as shown below, will require _**you**_ to determine the appropriate solution and implementation.
 

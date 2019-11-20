@@ -16,13 +16,16 @@
 * [Real-time audio I/O](audio-peripherals/audio-io.md)
 * [The digital microphone](audio-peripherals/microphone.md)
 * [The stereo DAC](audio-peripherals/dac.md)
-* [The audio passthrough](audio-peripherals/passthrough/README.md)
+* [The audio passthrough project](audio-peripherals/passthrough/README.md)
   * [Setting up the I/O](audio-peripherals/passthrough/io_setup.md)
   * [Connecting the peripherals](audio-peripherals/passthrough/wiring.md)
   * [Coding the passthrough](audio-peripherals/passthrough/coding.md)
-* [3. ALIEN VOICE EFFECT](alien-voice/README.md)
-  * [3.1 How it works](alien-voice/effect_description.md)
-  * [3.2 Real-time DSP tips](alien-voice/dsp_tips.md)
+
+## Voice Transformers
+
+* [Introduction](voice-transformers/introduction-vt.md)
+* [Alien Voice](alien-voice/README.md)
+  * [Real-World DSP](alien-voice/dsp_tips.md)
   * [3.3 Real-time with Python](alien-voice/python.md)
   * [3.4 C implementation](alien-voice/implementation.md)
 * [4. DIGITAL FILTER DESIGN](filter-design/README.md)

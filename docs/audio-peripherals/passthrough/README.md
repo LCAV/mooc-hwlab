@@ -1,6 +1,6 @@
-# The audio passthrough
+# The audio passthrough project
 
-A "passthrough" can be viewed as the audio processing equivalent of a "hello world" program. In this chapter, we will build a passthrough with the hardware and software components previously introduced. 
+A "passthrough" can be viewed as the audio processing equivalent of a "hello world" program. In this section we will program the Nucleo to simply pass the audio samples from the microphone to the DAC.
 
 Using the CubeMX software, we will first [update the configuration of the microcontroller](io_setup.md). We will then guide you through the [wiring ](wiring.md)and, finally, we will [program our passthrough](coding.md) using the SW4STM32 software.
 
