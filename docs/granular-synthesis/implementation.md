@@ -38,28 +38,6 @@ The parameters that need to be set by the user are:
 2. Percentage of grain that overlaps with adjacent grains.
 3. The pitch shift factor. In this exercise, we will limit ourselves to values below 1.0 for downward pitch shifts.
 
-From the first two parameters and the sampling frequency, we need to determine:
-
-1. The grain length in samples.
-2. The stride length in samples.
-
-Inside `utils.py`, the function `ms2smp` \(below\) converts a duration in milliseconds to a duration in samples, given a particular sampling frequency.
-
-```python
-def ms2smp(ms, fs):
-    """
-    Parameters
-    ----------
-    ms: float
-        Time in milliseconds
-    fs: float
-        Sampling rate in Hz.
-    """
-
-    # return corresponding length in samples
-    return int(float(fs) * float(ms) / 1000.0)
-```
-
 ### Lookup tables
 
 From our user \(and derived\) parameters, we can compute _three_ lookup tables to avoid repeated computations:
@@ -77,42 +55,65 @@ From our user \(and derived\) parameters, we can compute _three_ lookup tables t
 
 In `utils.py`, we have already given you the function to compute the tapered window, as shown below.
 
-```python
-def win_taper(grain_len_samp, grain_over, data_type=np.int16):
+```c
+// Type definition to store the tapering window table
+typedef struct win_taper {
+	uint16_t win[GRAIN_LEN_SAMPLE];
+	uint16_t stride;
+} win_taper_t;
 
-    edge_over = int(grain_len_samp * grain_over / 2)
-    r = np.arange(0, edge_over) / float(edge_over)
-    win = np.concatenate((r, 
-        np.ones(grain_len_samp-2*edge_over), 
-        r[::-1]))
-    max_val = np.iinfo(data_type).max
+win_taper_t g_win;
 
-    return (win*max_val).astype(data_type)
+// Table initialisation
+void win_taper_init(win_taper_t * l_win, uint16_t N, volatile float a) {
+
+	uint16_t R = (uint16_t) N * a / 2;
+	uint16_t delta = MAX_INT / R;
+
+	l_win->win[0] = 0;
+	for (uint16_t i = 1; i < GRAIN_LEN_SAMPLE; i++) {
+		if (i < R) {
+			l_win->win[i] = l_win->win[i - 1] + delta;
+		} else if ((i >= R) & (i < GRAIN_LEN_SAMPLE - R)) {
+			l_win->win[i] = MAX_INT;
+		} else {
+			l_win->win[i] = l_win->win[i - 1] - delta;
+		}
+	}
+	l_win->stride = N - R - 1;
+}
 ```
 
 Notice how we set the data type for the lookup table. This is something we would like to do in our Python code to emulate as much as possible how we will be implementing this algorithm in C.
 
 {% hint style="info" %}
-TASK 1: In `utils.py`, complete the function \(below\) to compute the lookup tables for the interpolation times and amplitudes.
+TASK 1: In the following code, complete the function to compute the lookup tables for the interpolation times and amplitudes.
 
 _Hint: you need to complete the function at the beginning of the_ `for` _loop._
 {% endhint %}
 
-```python
-def build_linear_interp_table(n_samples, down_fact, data_type=np.int16):
+```c
+// Lookup table to store the linear interpolation table
+typedef struct interp_lookup_s {
+	uint16_t sample[GRAIN_LEN_SAMPLE];
+	uint16_t amplitude[GRAIN_LEN_SAMPLE];
+} interp_lookup_t;
 
-    samp_vals = []
-    amp_vals = []
-    for n in range(n_samples):
-        # compute t, N, and a
-        samp_vals.append(N)
-        amp_vals.append(a)
+interp_lookup_t g_interp_val;
 
-    MAX_VAL = np.iinfo(data_type).max
-    amp_vals =  np.array(amp_vals)
-    amp_vals = (amp_vals*MAX_VAL).astype(data_type)
+// Table initialisation
+void build_linear_interp_table(interp_lookup_t * interp_val, uint16_t n_samples, float a) {
+	float t;
+	uint16_t td;
 
-    return samp_vals, amp_vals
+	for (int n = 0; n < n_samples; n++) {
+		t = // TODO ...
+		td = // TODO ...
+		interp_val->sample[n] = // TODO ...
+		interp_val->amplitude[n] = // TODO ...
+	}
+}
+
 ```
 
 ## State variables <a id="state_var"></a>
@@ -171,7 +172,7 @@ For a clean implementation, it is hopefully clear from the description above tha
 
 Now you should have enough information to implement the real-time version of downwards pitch shifting with granular synthesis.
 
-Below, we provide the _**incomplete**_ `init` and `process` functions, which you can find in [this script](https://github.com/LCAV/dsp-labs/blob/master/scripts/granular_synthesis/granular_synthesis_incomplete.py). In this same file, you will also find the code to run granular synthesis on a fixed audio file.
+Below, we provide the _**incomplete**_  `process` function, which you can find in [this script](https://github.com/LCAV/dsp-labs/blob/master/scripts/granular_synthesis/granular_synthesis_incomplete.py). In this same file, you will also find the code to run granular synthesis on a fixed audio file.
 
 {% hint style="info" %}
 TASK 3: Complete the code below. The comments that have `TODO` mark where you will need to add code.
@@ -179,60 +180,92 @@ TASK 3: Complete the code below. The comments that have `TODO` mark where you wi
 _Note: as this script relies on `utils.py` and `speech.wav` being in the correct relative location, it is useful to clone/download_ [_the repository_](https://github.com/LCAV/dsp-labs) _so that it is indeed so._
 {% endhint %}
 
-```python
-def init():
+```c
+// Variable definition
+// Arrays for storing computations
+uint16_t grain[GRAIN_LEN_SAMPLE];
+uint16_t input_concat[GRAIN_LEN_SAMPLE];
 
-    # lookup table for tapering window
-    global WIN
-    WIN = win_taper(GRAIN_LEN_SAMP, grain_over, data_type)
+// samples to store between frames
+uint16_t x_overlap[OVERLAP_LEN];
+uint16_t y_overlap[OVERLAP_LEN];
 
-    # lookup table for linear interpolation
-    global SAMP_VALS
-    global AMP_VALS
-    SAMP_VALS, AMP_VALS = build_linear_interp_table(GRAIN_LEN_SAMP, shift_factor, data_type)
+// Granular synthesis initialization
+win_taper_init(&g_win, GRAIN_LEN_SAMPLE, GRAIN_OVERLAP_RATIO);
+build_linear_interp_table(&g_interp_val, GRAIN_LEN_SAMPLE, SHIFT_FACTOR);
+	
+// The process function
+void inline process(int16_t *bufferInStereo, int16_t *bufferOutStereo,
+		uint16_t size) {
 
-    # TODO: create arrays to pass between buffers (state variables)
-    global ...
+#define GAIN 8
 
-    # TODO: create arrays for intermediate values
-    global ...
+	int32_t static x_1 = 0;
+	int32_t x[FRAME_PER_BUFFER];
+	int32_t x_filtered[FRAME_PER_BUFFER];
+	int32_t y[FRAME_PER_BUFFER];
 
+	// Take signal from left side
+	for (uint16_t i = 0; i < size; i += 2) {
+		x[i / 2] = bufferInStereo[i];
+	}
 
-def process(input_buffer, output_buffer, buffer_len):
+	// High pass filtering initialization
+	x_filtered[0] = x[0] - x_1;
+	// Gain initialization
+	x_filtered[0] *= GAIN;
 
-    # TODO: need to specify those global variables changing in this function (state variables and intermediate values)
-    global ...
+	for (uint16_t i = 1; i < FRAME_PER_BUFFER; i++) {
+		// High pass filtering
+		x_filtered[i] = x[i] - x[i - 1];
+		// Gain
+		x_filtered[i] *= GAIN;
+	}
 
-    # TODO: append samples from previous buffer
-    for n in range(GRAIN_LEN_SAMP):
-        ...
+	// Append samples from previous buffer
+	for (int n = 0; n < GRAIN_LEN_SAMPLE; n++) {
+		if (n < OVERLAP_LEN) {
+			// TODO...
+		} else {
+			// TODO...
+		}
+	}
 
-    # TODO: resample grain
-    for n in range(GRAIN_LEN_SAMP):
-        ...
+	// Resample
+	for (int n = 0; n < GRAIN_LEN_SAMPLE; n++) {
+		// TODO...
+	}
 
-    # TODO: apply window
-    for n in range(GRAIN_LEN_SAMP):
-        ...
+	// Apply window
+	for (int n = 0; n < GRAIN_LEN_SAMPLE; n++) {
+		// TODO...
+	}
 
-    # TODO: write to output and update state variables
-    for n in range(GRAIN_LEN_SAMP):
-        # overlapping part
-        if n < OVERLAP_LEN:
-            ...
-        # non-overlapping part
-        elif n < STRIDE:
-            ...
-        # update state variables
-        else:
-            ...
+	// Write to output
+	for (int n = 0; n < GRAIN_LEN_SAMPLE; n++) {
+		// deal with overlapping part
+		if (n < OVERLAP_LEN) {
+			// TODO...
+		} else if (n < g_win.stride) {
+			// TODO...
+		} else {
+			// update state variables
+			// TODO...
+		}
+	}
+
+	// Backup last sample for next buffer
+	x_1 = x[FRAME_PER_BUFFER - 1];
+
+	// Interleaved left and right
+	for (uint16_t i = 0; i < size; i += 2) {
+		bufferOutStereo[i] = (int16_t) y[i / 2];
+		// Put signal on both side
+		bufferOutStereo[i + 1] = (int16_t) y[i / 2];
+	}
+}
+
 ```
-
-{% hint style="info" %}
-TASK 4: Implement the granular synthesis pitch shifting in real-time using your laptop's soundcard and the [`sounddevice`](https://python-sounddevice.readthedocs.io/en/0.3.11/) module.
-
-_Hint: copy-and-paste your_ `init` _and_ `process` _functions \(once they are working\) into_ [_this script_](https://github.com/LCAV/dsp-labs/blob/master/scripts/granular_synthesis/granular_synthesis_sounddevice_incomplete.py)_._
-{% endhint %}
 
 **Congrats on implementing granular synthesis pitch shifting! This is not a straightforward task, even in Python. But now that you have this code, the C implementation on the STM board should be much easier.**
 
@@ -248,22 +281,27 @@ Are you sure you are ready to see the solution? ;\)
 {% tab title="Task 1" %}
 According to the previously given equation the following three variables can be computed.
 
-```python
-def build_linear_interp_table(n_samples, down_fact,
-    data_type=np.int16):
-    samp_vals = []
-    amp_vals = []
-    for n in range(n_samples):
-        t = n*down_fact
-        N = int(t)
-        a = 1.0 - (t-N)
-        samp_vals.append(N)
-        amp_vals.append(a)
+```c
+// Lookup table to store the linear interpolation table
+typedef struct interp_lookup_s {
+	uint16_t sample[GRAIN_LEN_SAMPLE];
+	uint16_t amplitude[GRAIN_LEN_SAMPLE];
+} interp_lookup_t;
 
-    MAX_VAL = np.iinfo(data_type).max
-    amp_vals =  np.array(amp_vals)
-    amp_vals = (amp_vals*MAX_VAL).astype(data_type)
-    return samp_vals, amp_valsFr
+interp_lookup_t g_interp_val;
+
+// Table initialisation
+void build_linear_interp_table(interp_lookup_t * interp_val, uint16_t n_samples, float a) {
+	float t;
+	uint16_t td;
+
+	for (int n = 0; n < n_samples; n++) {
+		t = n * a;
+		td = t;
+		interp_val->sample[n] = td;
+		interp_val->amplitude[n] = (uint16_t) ((1 - (t - td)) * MAX_INT);
+	}
+}
 ```
 {% endtab %}
 
@@ -290,233 +328,99 @@ The numerical application of that gives an overlap length of 97 samples at 32kHz
 {% endtab %}
 
 {% tab title="Task 3" %}
-First thing to be done is to declare the variables x\_overlap, y\_overlap, grain and input\_concat. The first two are our state variables and the other are for intermediate calculations.
-
 You then need to populate the process function according to our indications in the comments and the equation in this chapter.
 
 The code is given below.
 
-```python
-# state variables and constants
-def init():
+```c
+// Variable definition
+// Arrays for storing computations
+uint16_t grain[GRAIN_LEN_SAMPLE];
+uint16_t input_concat[GRAIN_LEN_SAMPLE];
 
-    # lookup table for tapering window
-    global WIN
-    WIN = win_taper(GRAIN_LEN_SAMP, grain_over, data_type)
+// samples to store between frames
+uint16_t x_overlap[OVERLAP_LEN];
+uint16_t y_overlap[OVERLAP_LEN];
 
-    # lookup table for linear interpolation
-    global SAMP_VALS
-    global AMP_VALS
-    SAMP_VALS, AMP_VALS = build_linear_interp_table(GRAIN_LEN_SAMP, shift_factor, data_type)
+// Granular synthesis initialization
+win_taper_init(&g_win, GRAIN_LEN_SAMPLE, GRAIN_OVERLAP_RATIO);
+build_linear_interp_table(&g_interp_val, GRAIN_LEN_SAMPLE, SHIFT_FACTOR);
+	
+// The process function
+void inline process(int16_t *bufferInStereo, int16_t *bufferOutStereo,
+		uint16_t size) {
 
-    # create arrays to pass between buffers (state variables)
-    global x_overlap
-    global y_overlap
-    x_overlap = np.zeros(OVERLAP_LEN, dtype=data_type)
-    y_overlap = np.zeros(OVERLAP_LEN, dtype=data_type)
+#define GAIN 8
 
-    # create arrays for intermediate values
-    global grain
-    global input_concat
-    input_concat = np.zeros(GRAIN_LEN_SAMP, dtype=data_type)
-    grain = np.zeros(GRAIN_LEN_SAMP, dtype=data_type)
+	int32_t static x_1 = 0;
+	int32_t x[FRAME_PER_BUFFER];
+	int32_t x_filtered[FRAME_PER_BUFFER];
+	int32_t y[FRAME_PER_BUFFER];
 
+	// Take signal from left side
+	for (uint16_t i = 0; i < size; i += 2) {
+		x[i / 2] = bufferInStereo[i];
+	}
 
-# the process function!
-def process(input_buffer, output_buffer, buffer_len):
+	// High pass filtering initialization
+	x_filtered[0] = x[0] - x_1;
+	// Gain initialization
+	x_filtered[0] *= GAIN;
 
-    # need to specify those global variables changing in this function (state variables and intermediate values)
-    global x_overlap
-    global y_overlap
-    global input_concat
-    global grain
+	for (uint16_t i = 1; i < FRAME_PER_BUFFER; i++) {
+		// High pass filtering
+		x_filtered[i] = x[i] - x[i - 1];
+		// Gain
+		x_filtered[i] *= GAIN;
+	}
 
-    # append samples from previous buffer
-    for n in range(GRAIN_LEN_SAMP):
-        if n < OVERLAP_LEN:
-            input_concat[n] = x_overlap[n]
-        else:
-            input_concat[n] = input_buffer[n-OVERLAP_LEN]
+	// Append samples from previous buffer
+	for (int n = 0; n < GRAIN_LEN_SAMPLE; n++) {
+		if (n < OVERLAP_LEN) {
+			input_concat[n] = x_overlap[n];
+		} else {
+			input_concat[n] = x_filtered[n - OVERLAP_LEN];
+		}
+	}
 
-    # resample
-    for n in range(GRAIN_LEN_SAMP):
-        grain[n] = (AMP_VALS[n]/MAX_VAL*input_concat[SAMP_VALS[n]] + \
-            (1-AMP_VALS[n]/MAX_VAL)*input_concat[SAMP_VALS[n]+1]) 
+	// Resample
+	for (int n = 0; n < GRAIN_LEN_SAMPLE; n++) {
+		grain[n] = (g_interp_val.amplitude[n] / MAX_INT
+				* input_concat[g_interp_val.sample[n]]
+				+ (1 - g_interp_val.amplitude[n] / MAX_INT)
+						* input_concat[g_interp_val.sample[n] + 1]);
+	}
 
-    # apply window
-    for n in range(GRAIN_LEN_SAMP):
-        grain[n] = (WIN[n]/MAX_VAL)*grain[n]
+	// Apply window
+	for (int n = 0; n < GRAIN_LEN_SAMPLE; n++) {
+		grain[n] = (g_win.win[n] * (int16_t) grain[n]) / MAX_INT;
+	}
 
-    # write to output
-    for n in range(GRAIN_LEN_SAMP):
-        # overlapping part
-        if n < OVERLAP_LEN:
-            output_buffer[n] = grain[n] + y_overlap[n]
-        # non-overlapping part
-        elif n < STRIDE:
-            output_buffer[n] = grain[n]
-        # update state variables
-        else:
-            x_overlap[n-STRIDE] = input_buffer[n-OVERLAP_LEN] 
-            y_overlap[n-STRIDE] = grain[n]
-```
-{% endtab %}
+	// Write to output
+	for (int n = 0; n < GRAIN_LEN_SAMPLE; n++) {
+		// deal with overlapping part
+		if (n < OVERLAP_LEN) {
+			y[n] = grain[n] + y_overlap[n];
+		} else if (n < g_win.stride) {
+			y[n] = grain[n];
+		} else {
+			// update state variables
+			x_overlap[n - g_win.stride] = x_filtered[n - OVERLAP_LEN];
+			y_overlap[n - g_win.stride] = grain[n];
+		}
+	}
 
-{% tab title="Task 4" %}
-Taking the results from the previous task and integrating them in the sounddevice template gives the following code:
+	// Backup last sample for next buffer
+	x_1 = x[FRAME_PER_BUFFER - 1];
 
-```python
-import numpy as np
-from utils import ms2smp, compute_stride, win_taper, build_linear_interp_table
-import sounddevice as sd
+	// Interleaved left and right
+	for (uint16_t i = 0; i < size; i += 2) {
+		bufferOutStereo[i] = (int16_t) y[i / 2];
+		// Put signal on both side
+		bufferOutStereo[i + 1] = (int16_t) y[i / 2];
+	}
+}
 
-"""
-Real-time pitch shifting with granular synthesis for shift factors <=1.0
-"""
-
-""" User selected parameters """
-grain_len = 30
-grain_over = 0.2
-shift_factor = 0.7 
-data_type = np.int16
-samp_freq = 16000
-
-# derived parameters
-MAX_VAL = np.iinfo(data_type).max
-GRAIN_LEN_SAMP = ms2smp(grain_len, samp_freq)
-STRIDE = compute_stride(GRAIN_LEN_SAMP, grain_over)
-OVERLAP_LEN = GRAIN_LEN_SAMP-STRIDE
-
-# allocate input and output buffers
-input_buffer = np.zeros(STRIDE, dtype=data_type)
-output_buffer = np.zeros(STRIDE, dtype=data_type)
-
-
-# state variables and constants
-def init():
-
-    # lookup table for tapering window
-    global WIN
-    WIN = win_taper(GRAIN_LEN_SAMP, grain_over, data_type)
-
-    # lookup table for linear interpolation
-    global SAMP_VALS
-    global AMP_VALS
-    SAMP_VALS, AMP_VALS = build_linear_interp_table(GRAIN_LEN_SAMP, shift_factor, data_type)
-
-    # create arrays to pass between buffers (state variables)
-    global x_overlap
-    global y_overlap
-    x_overlap = np.zeros(OVERLAP_LEN, dtype=data_type)
-    y_overlap = np.zeros(OVERLAP_LEN, dtype=data_type)
-
-    # create arrays for intermediate values
-    global grain
-    global input_concat
-    input_concat = np.zeros(GRAIN_LEN_SAMP, dtype=data_type)
-    grain = np.zeros(GRAIN_LEN_SAMP, dtype=data_type)
-
-
-# the process function!
-def process(input_buffer, output_buffer, buffer_len):
-
-    # need to specify those global variables changing in this function (state variables and intermediate values)
-    global x_overlap
-    global y_overlap
-    global input_concat
-    global grain
-
-    # append samples from previous buffer
-    for n in range(GRAIN_LEN_SAMP):
-        if n < OVERLAP_LEN:
-            input_concat[n] = x_overlap[n]
-        else:
-            input_concat[n] = input_buffer[n-OVERLAP_LEN]
-
-    # resample
-    for n in range(GRAIN_LEN_SAMP):
-        grain[n] = (AMP_VALS[n]/MAX_VAL*input_concat[SAMP_VALS[n]] + \
-            (1-AMP_VALS[n]/MAX_VAL)*input_concat[SAMP_VALS[n]+1]) 
-
-    # apply window
-    for n in range(GRAIN_LEN_SAMP):
-        grain[n] = (WIN[n]/MAX_VAL)*grain[n]
-
-    # write to output
-    for n in range(GRAIN_LEN_SAMP):
-        # overlapping part
-        if n < OVERLAP_LEN:
-            output_buffer[n] = grain[n] + y_overlap[n]
-        # non-overlapping part
-        elif n < STRIDE:
-            output_buffer[n] = grain[n]
-        # update state variables
-        else:
-            x_overlap[n-STRIDE] = input_buffer[n-OVERLAP_LEN] 
-            y_overlap[n-STRIDE] = grain[n]
-
-
-"""
-# Nothing to touch after this!
-# """
-try:
-    sd.default.samplerate = samp_freq
-    sd.default.blocksize = STRIDE
-    sd.default.dtype = data_type
-
-    def callback(indata, outdata, frames, time, status):
-        if status:
-            print(status)
-        process(indata[:,0], outdata[:,0], frames)
-
-    init()
-    with sd.Stream(channels=1, callback=callback):
-        print('#' * 80)
-        print('press Return to quit')
-        print('#' * 80)
-        input()
-except KeyboardInterrupt:
-    parser.exit('\nInterrupted by user')
-```
-
-```python
-import numpy as np
-
-
-def ms2smp(ms, Fs):
-    return int(float(Fs) * float(ms) / 1000.0)
-
-
-def compute_stride(grain_len_samp, grain_over):
-    return grain_len_samp - int(grain_len_samp * grain_over / 2) - 1
-
-
-def build_linear_interp_table(n_samples, down_fact,
-    data_type=np.int16):
-    samp_vals = []
-    amp_vals = []
-    for n in range(n_samples):
-        t = n*down_fact
-        N = int(t)
-        a = 1.0 - (t-N)
-        samp_vals.append(N)
-        amp_vals.append(a)
-
-    MAX_VAL = np.iinfo(data_type).max
-    amp_vals =  np.array(amp_vals)
-    amp_vals = (amp_vals*MAX_VAL).astype(data_type)
-    return samp_vals, amp_vals
-
-
-def win_taper(grain_len_samp, grain_over,
-    data_type=np.int16):
-    edge_over = int(grain_len_samp * grain_over / 2)
-    r = np.arange(0, edge_over) / float(edge_over)
-    win = np.concatenate((r,
-        np.ones(grain_len_samp-2*edge_over),
-        r[::-1]))
-    max_val = np.iinfo(data_type).max
-    return (win*max_val).astype(data_type)
 ```
 {% endtab %}
 {% endtabs %}
