@@ -26,7 +26,7 @@ As a quick recap, remember that if you need to store past vaues of a signal, the
 
 with this, the expression $$x[n-k], k <M,$$can be accessed as `x[(ix + M - k) % M]`.
 
-In a microcontroller, where each CPU cycle counts, modulo operations are expensive but they can be avoided and replaced by binary masks if we choose $$M$$to be a power of two. In those cases, `ix % M` is equivalent to `ix & (M-1)` and the bitwise AND is a much faster operation. Since $$M$$is the minimum number of past values that we need to access, we can always increase its value until we reach a power of two. 
+In a microcontroller, where each CPU cycle counts, modulo operations are expensive but they can be avoided and replaced by binary masks if we choose $$M$$to be a power of two. In those cases, `ix % M` is equivalent to `ix & (M-1)` and the bitwise AND is a much faster operation. Since $$M$$is the _minimum_ number of past values that we need access to, we can always increase $$M$$until its reaches a power of two, especially when $$M$$is small.
 
 Here is a simple example:
 
@@ -74,26 +74,33 @@ Another difficulty is when $$\omega_c$$is _not_ a rational multiple of $$2\pi$$.
 
 ## State variables <a id="state_var"></a>
 
-The alien voice effect is _memoryless_, so it does not require us to store past input or output values; the current output $$y[n]$$ only depends on the current input $$x[n]$$and that's it.
+All discrete-time signal processing data and algorithm make use of a free "time" variable $$n$$. As we know, in theory $$n \in \mathbb{Z}$$ so its value ranges from minus infinity to plus infinity. In an actual DSP application we are much more likely to:
 
-What we need to keep track of, however, is the "time" variable $$n.$$
+* start the processing with all buffers empty and with $$n=0$$\(initial conditions\)
+* store $$n$$in an unsigned integer variable and increment it at each iteration.
 
-## TO DO
+The second point in particular means that, in real time applications that may run for an arbitrary amount of time,  $$n$$will increase until it reaches the maximum positive value that can be expressed by the variable and then roll over to zero. Since we certainly do not want this rollover to happen at random times and since the roll over is unavoidable, we need to establish a strategy to carry it out explicitly.
 
-Remember that, as we explained in the [implementation of the passthrough](../audio-peripherals/passthrough/coding.md#constants), we receive \(and process\) the incoming audio in _buffers_ that consist of multiple _frames_; each frame contains one sample _per channel_. The dimesions are:
+In practice, all real-time applications only use circular buffer, either explicitly \(to access past input and output values or to access lookup tables\) or implicitly \(to compute the output of functions that are inherently periodic\). As a consequence, we never need the exact value of $$n$$but only the position of a set of indices into circular buffers.
 
-* buffer size = number of frames per buffer
-* buffer length = number of 
+In our code, therefore, we will explicitly roll over these indexes independently and, to make sure all variables are stepped synchronously, we will define them as [static variables](https://stackoverflow.com/questions/572547/what-does-static-mean-in-c) inside our `process` function, since static variables keep their values between consecutive function calls. Such variables are often referred to _state variables_ in C programming.
 
-The buffer size is therefore We will refer to the number of frames in each buffer as the "buffer length" and the total number of samples \(as one frame could have multiple samples\) as the "buffer size".
 
-Imagine that we have 128 frames per buffer and two channels, so the "buffer length" is half the size of the "buffer size". For the first buffer we receive, i.e. the first 128 samples, the voice effect computation is straightforward:
+
+~~Remember that, as we explained in the~~ [~~implementation of the passthrough~~](../audio-peripherals/passthrough/coding.md#constants)~~, we receive \(and process\) the incoming audio in _buffers_ that consist of multiple _frames_; each frame contains one sample _per channel_. The dimesions are:~~
+
+* ~~buffer size = number of frames per buffer~~
+* ~~buffer length = number of~~ 
+
+~~The buffer size is therefore We will refer to the number of frames in each buffer as the "buffer length" and the total number of samples \(as one frame could have multiple samples\) as the "buffer size".~~
+
+~~Imagine that we have 128 frames per buffer and two channels, so the "buffer length" is half the size of the "buffer size". For the first buffer we receive, i.e. the first 128 samples, the voice effect computation is straightforward:~~
 
 $$
 y[n] = x[n] \cdot \sin(\omega_{mod} \cdot [n \textrm{ \% LOOKUP_SIZE}]), \quad n \in [0, 127],
 $$
 
-where $$\textrm{LOOKUP_SIZE}$$ is the number of entries in our lookup table. However, the second and subsequent buffers require us to know the current time index. We **cannot** simply multiply the input signal with $$\sin(\omega_{mod} \cdot [n \textrm{ \% LOOKUP_SIZE}]), n \in [0, 127]$$ at each buffer as this would result in multiplying our input signal with a _discontinuous_ estimate of our sinusoid. In the figure below, we can observe how our input signal could be multiplied with a discontinuous estimate of a sinusoid if information is not passed between buffers. Such an operation would lead to _glitches_ in the output audio, which have a very noticeable "clicking" sound.
+~~where~~ $$\textrm{LOOKUP_SIZE}$$ ~~is the number of entries in our lookup table. However, the second and subsequent buffers require us to know the current time index. We **cannot** simply multiply the input signal with~~ $$\sin(\omega_{mod} \cdot [n \textrm{ \% LOOKUP_SIZE}]), n \in [0, 127]$$ ~~at each buffer as this would result in multiplying our input signal with a _discontinuous_ estimate of our sinusoid. In the figure below, we can observe how our input signal could be multiplied with a discontinuous estimate of a sinusoid if information is not passed between buffers. Such an operation would lead to _glitches_ in the output audio, which have a very noticeable "clicking" sound.~~
 
 ![](../.gitbook/assets/discontinuous_sine-1.png)
 
