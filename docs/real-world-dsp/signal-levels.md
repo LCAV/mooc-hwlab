@@ -2,19 +2,13 @@
 
 ## Gain <a id="gain"></a>
 
-One thing that you might have noticed from the passthrough example is that the output signal is not very loud. To correct this, we will add a small gain to the `process`function by just multiplying the signal with a constant. In order to take advantage of the architecture of the microcontroller's internal multiplier, it is recommended to use factors that are a multiple of 2 as it is faster to compute. In fact a multiplication by 2 is simply a shift to the left in the "binary world"; similar to how a multiplication by 10 in the "decimal world" is simply adding a 0 at the end.
+One thing that you might have noticed from the passthrough example is that the output signal is not very loud. To correct this, we can add a gain factor to the `process`function that multiplies each signal sample by a constant. In order to take advantage of the architecture of the microcontroller's internal multiplier, it is recommended to use factors that are a power of 2 since in this case a multiplication corresponds to a simple binary shift of the integer values to the left.
 
-## Removing DC noise <a id="removing_dc"></a>
+## Removing the DC offset <a id="removing_dc"></a>
 
-Up until now, we assumed that the signal from the microphone is centered around zero, i.e. that no signal corresponds to an amplitude of zero. However, this is not always the case! During audio capture, the internal circuitry in the microphone may add an offset, and sometimes different microphones \(of the same manufacturer\) will have different offsets. We typically call this shift in the waveform a [DC offset/noise/bias](https://en.wikipedia.org/wiki/DC_bias).
+In general, in DSP applications we assume that input signals are zero mean. This is no different in the case of our microphone, so that, if there is no sound, we expect a sequence of zeros. If you actually look at the input samples, however, you will almost certainly find out that this is not so. In fact, the internal circuitry in the microphone almost always adds a voltage offset, and sometimes different microphones \(of the same manufacturer\) will have different offsets. We typically call this shift in the waveform a [DC offset/noise/bias](https://en.wikipedia.org/wiki/DC_bias).
 
-For our alien voice effect, a DC offset would result in a constant sinusoid \(at our modulation frequency\) present in the output signal. This is easy to see by adding the DC offset to the signal we saw [before]():
-
-$$
-(x[n] + n_{DC}) \cdot \sin(\omega_{mod} \cdot n) = y[n] + n_{DC} \cdot \sin(\omega_{mod} \cdot n),
-$$
-
-where $$y[n]$$ are the samples of our desired alien voice effect and $$n_{DC}$$ is the level of the DC noise.
+DC offsets are highly undesirable since they limit the dynamic range of our system; in other words, we are "wasting" binary digits on a constant that serves no purpose.
 
 {% hint style="info" %}
 TASK 1: From your passthrough implementation, determine the value of the offset. Is it significant compared to the range of the microphone?
@@ -22,58 +16,49 @@ TASK 1: From your passthrough implementation, determine the value of the offset.
 _Hint: put a breakpoint in the process function; then with the debug tool, check the content of the input buffer._
 {% endhint %}
 
-To remove the DC noise, we could simply subtract the average offset of the microphone from every sample. This is a fast solution however, it assumes that the offset is always the same. This may be the case for a single microphone, but imagine calibrating hundreds, thousands, or even millions of microphones! This solution would certainly not scale well.
-
-To avoid calibration we will implement a simple high pass filter. This filter will remove any DC component of the signal, i.e. bin number 0 of the Discrete Fourier Transform \(DFT\). We propose to use a cheap high pass filter of the following form:
+We have talked about DC offset removal in [Lecture 2.2.3](https://www.coursera.org/learn/dsp2/lecture/JcNy2/2-2-3-intuitive-iir-designs) in the [second DSP course](https://www.coursera.org/learn/dsp2/). Recall that a DC component corresponds to a nonzero frequency value at $$\omega=0$$so the idea is to use a filter with a zero in $$\omega = 0.$$A very simple example is the so-called FIR "DC notch" whose CCDE is simply
 
 $$
 y[n] = x[n] - x[n-1].
 $$
 
-This type of filter is typically called a [comb filter](https://en.wikipedia.org/wiki/Comb_filter). Equations like above are often referred to as _difference equations_ in DSP. In order to understand the "quality" of a filter, it is often useful to analyze the frequency response of a difference equation by taking its _Z-transform_:
+Unfortunately this filter has the very poor frequency response shown here and, while good as a first approximation, it is not really recommended if audio quality is important to you.
 
-$$
-Y(z) = X(z) + X(z) \cdot z^{-1},
-$$
+![Frequency response of the FIR DC notch](../.gitbook/assets/dcnotch.jpg)
 
-from which we can obtain the _transfer function_:
+A better filter is obtained by using a an IIR DC notch which, while marginally more expensive computationally, provides a much flatter frequency response over the audio frequency band. We will talk more about the DC notch and filter implementation [later](filters.md).
 
-$$
-H(z) = \frac{Y(z)}{X(z)} = 1 - z^{-1}.
-$$
+![Frequency response of the IIR DC notch](../.gitbook/assets/image.png)
 
-From such an expression, we can create the standard [pole-zero plot](https://en.wikipedia.org/wiki/Pole–zero_plot) as seen below. With such a plot, we can extract a lot of useful information, such as stability and causality.
+## Tasks solutions
 
-![](../.gitbook/assets/zplot_high_pass-1-1.png)
+{% tabs %}
+{% tab title="Anti-spoiler tab" %}
+Are you sure you are ready to see the solution? ;\)
+{% endtab %}
 
-_Figure: Pole-zero plot of our simple high pass filter. Thanks to_ [this software](https://www.dsprelated.com/showcode/244.php) _for the visualization function._
+{% tab title="Task 1" %}
 
-For certain system, we can also compute the Fourier Transform, which may be more intuitive to understand. For our simple high pass filter, the frequency response is shown below.
 
-![](../.gitbook/assets/freq_resp_high_pass-1.png)
+When the code is running, you can double click on any line number to add a breakpoint.
 
-_Figure: Frequency response of our simple high pass filter._
+We suggest you to ad a breakpoint at line 430:
 
-In addition to its simplicity, another good property of this filter is that it has [linear phase](https://en.wikipedia.org/wiki/Linear_phase), which means that each frequency will be delayed by the same amount of time.
+![](../.gitbook/assets/screenshot-2019-10-10-at-16.29.32-1.png)
 
-It is actually more common to plot the frequency response with the x-axis \(frequency\) in log scale, as shown below.
+If the micro-controller is connected and a debug session is ongoing, you will see a change in the software and the following list:
 
-![](../.gitbook/assets/freq_resp_high_pass_log-1.png)
+![](../.gitbook/assets/screenshot-2019-10-10-at-16.32.28-1.png)
 
-_Figure: Frequency response of our simple high pass filter \(log scale\)._
+It is the hierarchy of the function executed by the micro-controller, indeed main\(\) is the root. Please note that the button _Skip All Breakpoints_ should not be activated for the micro-controller to stop at the given line.
 
-With this perspective, we get a better idea of the [filter slope/roll-off](https://en.wikipedia.org/wiki/Roll-off). In this case we have a roll-off of 18 dB/decade, where a decade is 10x increase in frequency. In audio, it is sometime preferred to specify the roll-off in dB/octave, where an octave is 2x increase in frequency. Our simple high pass filter has a roll-off of 5.4 db/octave. See [here](http://www.audiomasterclass.com/newsletter/should-the-slope-of-your-filter-be-6-12-18-or-24-db-per-octave) for a discussion on audio roll-off values.
+![](../.gitbook/assets/screenshot-2019-10-10-at-16.29.58.png)
 
-From the frequency response in the figures above, we can observe how applying this high pass filter will significantly _attenuate_ the DC offset. However, due to the simplicity of our chosen filter we will also attenuate frequencies in our range of interest; the human voice is roughly within the range of 300 Hz to 3400 Hz, see [here](https://en.wikipedia.org/wiki/Voice_frequency). A much _sharper_ filter is certainly more desirable but for the purpose \(and simplicity\) of our exercise this filter will suffice.
+It is then possible to right-click in the editor and press _Add Watch Expression_ you can now enter the name of the variable you want to explore and it will show up in the _Expression_ viewer panel. Unfold the array and you should see something close to this:
 
-Now that we are subtracting the previous sample from the current sample, we will need to introduce another state variable for when we are at the beginning of the buffer. The resulting code is shown below:
+![](../.gitbook/assets/screenshot-2019-10-10-at-16.27.39.png)
 
-```c
-// x_1 is the state variable containing the previous sample
-for (uint16_t i = 0; i < FRAME_PER_BUFFER; i++) {
-    y[i] = x[i] - x_1;
-}
-```
-
-## Benchmarking implementation <a id="benchmarking"></a>
+Notice that even if the values are fluctuating, the average is around -1540. This is the offset that we where looking for. It is introduced by the microphone and can be variable from one sample to an other.
+{% endtab %}
+{% endtabs %}
 

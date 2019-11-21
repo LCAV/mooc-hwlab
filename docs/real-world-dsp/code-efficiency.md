@@ -1,32 +1,36 @@
 # Code efficiency
 
-Coding a "real-world" DSP application on dedicated hardware is a bit of a shock when we are used to the neat world of theoretical derivations. In this section we will review some of the most common issues that we have to keep in mind.
+Coding a "real-world" DSP application on dedicated hardware is a bit of a shock when we are used to the idealized world of theoretical derivations. In this section we will review some of the most common issues that we have to keep in mind.
 
 ## float vs. int <a id="float"></a>
 
 Operations with `float` variables can take significantly more time than the same operations with `int` variables. For our application, we noticed that an implementation with `float` variables can take up to 35% more processing time! Therefore, we recommend avoiding `float` variables whenever possible!
 
-Floats can be mapped to integers via renormalization; for instance, if we use a 16-bit integer, a floating point value between -1 and +1 can be mapped to 65535 discrete levels.
+Real numbers can be mapped to integers via renormalization when we can estimate the maximum range; for instance, a floating point value between -1 and +1 can be mapped to a 16-bit integer via a scaling factor of $$2^{15} = 32768$$yielding 65535 discrete levels.
 
-Remember that when you multiply two 16-bit integers the result will need to be computed over a 32-bit integer to avoid overflow. The result can be rescaled to 16 bits later, but try to keep rescaling to the end of a chain of integer arithmetic operations. 
+Remember that when you multiply two $$B$$-bit integers the result will need to be computed over a $$2B$$-bit integer to avoid overflow. The result can be rescaled to $$B$$bits later, but try to keep rescaling to the end of a chain of integer arithmetic operations all of which are carried out with double precision. 
 
 With an intelligent use of operation priority \(for example multiplying before dividing in order to perform integer arithmetic without losing precision\), integer arithmetic will not unduly impact the performance of our algorithms.
 
-More about these kinds of tradeoff can be read [here](https://www.embedded.com/design/debug-and-optimization/4440365/Floating-point-data-in-embedded-software) and [here](https://en.wikibooks.org/wiki/Embedded_Systems/Floating_Point_Unit).
+More about these kinds of trade-off can be read [here](https://www.embedded.com/design/debug-and-optimization/4440365/Floating-point-data-in-embedded-software) and [here](https://en.wikibooks.org/wiki/Embedded_Systems/Floating_Point_Unit).
+
+## Circular buffers
+
+
 
 ## Sinusoidal lookup tables <a id="lookup"></a>
 
-The alien voice effect simply requires us to multiply the input by a sinusoid. In a microcontroller, however, computing trigonometric values for arbitrary values of the angle is an expensive operation since it always involves some form of Taylor series approximation. Even using a few terms, as in
+Most signal processing algorithms require the use of sinusoidal functions. In a microcontroller, however, computing trigonometric values for arbitrary values of the angle is an expensive operation since it always involves some form of Taylor series approximation. Even using a few terms, as in
 
 $$
-\sin x = x - \dfrac{x^3}{3!} + \dfrac{x^5}{5!} - \dfrac{x^7}{7!} + \mathcal{O}(x^9)
+\cos x = x - \dfrac{x^2}{2!} + \dfrac{x^4}{4!} - \dfrac{x^6}{6!} + \mathcal{O}(x^8)
 $$
 
 clearly requires a significant number of multiplications. A computationally cheaper alternative is based on the use of a [lookup table](https://en.wikipedia.org/wiki/Lookup_table). In a lookup table, we precompute the sinusoidal values that we need and use the time index $$n$$simply  to retrieve the correct value. 
 
 In sinusoidal modulation we need to know the values of the sequence $$\cos(\omega_c n)$$ for all values of $$n$$. However, if $$\omega_c$$is a rational multiple of $$2\pi$$, that is, if $$\omega_c = 2\pi(M/N)$$for $$M,N \in \mathbb{N}$$, then the sequence of sinusoidal values repeats exactly every $$N$$samples. 
 
-For instance, assume the input sampling frequency is $$F_s = 32$$KHz and that our modulation frequency is $$f_c = 400$$Hz. In this case $$\omega_c = 2\pi /80$$and therefore we simply need to pre-compute 80 values for the cosine and store them in an array `C[0], ..., C[79]`. The equation
+For instance, assume the input sampling frequency is $$F_s = 32$$KHz and that our modulation frequency is $$f_c = 400$$Hz. In this case $$\omega_c = 2\pi /80$$and therefore we simply need to precompute 80 values for the cosine and store them in an array `C[0], ..., C[79]`. The equation
 
 $$
 y[n] = x[n] \, \cos(\omega_c n),
@@ -47,6 +51,8 @@ Another difficulty is when $$\omega_c$$is _not_ a rational multiple of $$2\pi$$.
 The alien voice effect is _memoryless_, so it does not require us to store past input or output values; the current output $$y[n]$$ only depends on the current input $$x[n]$$and that's it.
 
 What we need to keep track of, however, is the "time" variable $$n.$$
+
+## TO DO
 
 Remember that, as we explained in the [implementation of the passthrough](../audio-peripherals/passthrough/coding.md#constants), we receive \(and process\) the incoming audio in _buffers_ that consist of multiple _frames_; each frame contains one sample _per channel_. The dimesions are:
 

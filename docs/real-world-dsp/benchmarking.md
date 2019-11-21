@@ -1,6 +1,10 @@
 # Benchmarking
 
-## Benchmarking implementation <a id="benchmarking"></a>
+When discussing the code architecture of a generic real-time audio device, we already remarked that if our processing callback is too slow with respect to the frequency of the DMA transfers, we will run into a condition called buffer underflow \(or overflow, if you look at it from the point of view of the input DMA\). 
+
+It's therefore very important to make sure that our processing is fast enough and find out if 
+
+## Benchmarking the  implementation <a id="benchmarking"></a>
 
 It is nice to say that we do real-time processing, but is it really the case?
 
