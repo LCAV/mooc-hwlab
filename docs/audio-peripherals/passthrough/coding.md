@@ -221,7 +221,7 @@ void inline process(int16_t *bufferInStereo, int16_t *bufferOutStereo, uint16_t 
 }
 ```
 
-**Congrats on completeting the passthrough! This project will serve as an extremely useful starting point for the following \(more interesting\) applications. The first one we will build is an** [_**alien voice effect**_](../../alien-voice/)**.**
+**Congrats on completeting the passthrough! This project will serve as an extremely useful starting point for the following \(more interesting\) applications. The first one we will build is an** [_**alien voice effect**_](../../voice-transformers/alien-voice/)**.**
 
 ## Solutions
 

@@ -4,17 +4,17 @@ Coding a "real-world" DSP application on dedicated hardware is a bit of a shock 
 
 ## float vs. int <a id="float"></a>
 
-Operations with `float` variables can take significantly more time than the same operations with `int` variables. For our application, we noticed that an implementation with `float` variables can take up to 35% more processing time! Therefore, we recommend avoiding `float` variable whenever possible!
+Operations with `float` variables can take significantly more time than the same operations with `int` variables. For our application, we noticed that an implementation with `float` variables can take up to 35% more processing time! Therefore, we recommend avoiding `float` variables whenever possible!
 
-Floats can be mapped to integers by renormalization; for instance, if we use a 16-bit integer, a floating point sinusoidal value between -1 and +1 can be mapped to 65535 discrete levels.
+Floats can be mapped to integers via renormalization; for instance, if we use a 16-bit integer, a floating point value between -1 and +1 can be mapped to 65535 discrete levels.
 
-Remember that when you multiply two 16-bit integer, the result will need to be computed over a 32-bit integer to avoid overflow. The result can be rescaled to 16 bits later, but try to keep rescaling to the end of a chain of integer arithmetic operations. 
+Remember that when you multiply two 16-bit integers the result will need to be computed over a 32-bit integer to avoid overflow. The result can be rescaled to 16 bits later, but try to keep rescaling to the end of a chain of integer arithmetic operations. 
 
-With an intelligent use of operation priority \(for example multiply before dividing in order to perform integer arithmetic without losing precision\), integer arithmetic will not unduly impact the precision of our algorithms.
+With an intelligent use of operation priority \(for example multiplying before dividing in order to perform integer arithmetic without losing precision\), integer arithmetic will not unduly impact the performance of our algorithms.
 
 More about these kinds of tradeoff can be read [here](https://www.embedded.com/design/debug-and-optimization/4440365/Floating-point-data-in-embedded-software) and [here](https://en.wikibooks.org/wiki/Embedded_Systems/Floating_Point_Unit).
 
-When using integer values though it is not possible, for example, to code a lookup table that goes from $$0$$ to $$1$$ with $$0.1$$ increments or to use filter coefficients with values within $$0$$ and $$1$$. Therefore, to maximize our precision and to minimize the computation cost, we will try to use the full range of our integer variables. For example $$65'535$$ in the case of `unsigned int 16`. This scaling factor will need to be incorporated whenever using the, e.g. lookup table or filter coefficients. 
+~~When using integer values though it is not possible, for example, to code a lookup table that goes from~~ $$0$$ ~~to~~ $$1$$ ~~with~~ $$0.1$$ ~~increments or to use filter coefficients with values within~~ $$0$$ ~~and~~ $$1$$~~. Therefore, to maximize our precision and to minimize the computation cost, we will try to use the full range of our integer variables. For example~~ $$65'535$$ ~~in the case of `unsigned int 16`. This scaling factor will need to be incorporated whenever using the, e.g. lookup table or filter coefficients.~~ 
 
 ## Sinusoidal lookup tables <a id="lookup"></a>
 
@@ -28,13 +28,13 @@ clearly requires a significant number of multiplications. A computationally chea
 
 In sinusoidal modulation we need to know the values of the sequence $$\cos(\omega_c n)$$ for all values of $$n$$. However, if $$\omega_c$$is a rational multiple of $$2\pi$$, that is, if $$\omega_c = 2\pi(M/N)$$for $$M,N \in \mathbb{N}$$, then the sequence of sinusoidal values repeats exactly every $$N$$samples. 
 
-For instance, assume the input sampling frequency is $$F_s = 32$$KHz and that our modulation frequency is $$f_c = 400$$Hz. In this case $$\omega_c = 2\pi /80$$and therefore we simply need to pre-compute 80 values for the cosine and store them in an array `C[]`. The equation
+For instance, assume the input sampling frequency is $$F_s = 32$$KHz and that our modulation frequency is $$f_c = 400$$Hz. In this case $$\omega_c = 2\pi /80$$and therefore we simply need to pre-compute 80 values for the cosine and store them in an array `C[0], ..., C[79]`. The equation
 
 $$
 y[n] = x[n] \, \cos(\omega_c n),
 $$
 
-becomes the line of code
+becomes simply
 
 ```c
 y[n] = x[n] * C[n % 80]

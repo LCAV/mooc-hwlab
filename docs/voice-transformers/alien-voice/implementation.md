@@ -8,13 +8,13 @@ Open the CubeMX file by double clicking the .ioc file of the copied project it i
 
 For this exercise, we will only need to add the configuration of a _timer_ \(to benchmark our implementation\) as the rest of the system is already up and running. In order to activate a timer, you need to set a "Clock Source". Open _TIM2_ in the Timers menu and activate it's clock:
 
-![](../.gitbook/assets/screenshot-2019-10-07-at-15.42.23.png)
+![](../../.gitbook/assets/screenshot-2019-10-07-at-15.42.23.png)
 
 _Figure: Set the "Clock Source" to "Internal Clock" in order to enable "TIM2"._
 
 Next, we need to configure the timer.
 
-![](../.gitbook/assets/screenshot-2019-10-07-at-15.43.06.png)
+![](../../.gitbook/assets/screenshot-2019-10-07-at-15.43.06.png)
 
 {% hint style="info" %}
 TASK 4: We ask you to set the "Prescaler" value \(in the figure above\) in order to achieve a $$1\,[\mu s]$$ period for "TIM2", i.e. we want our timer to have a $$1\,[\mu s]$$ resolution.
@@ -44,7 +44,7 @@ We want to assess if the processing time is longer or shorter than what our chos
 {% hint style="info" %}
 TASK 5: In the passthrough example, we set the buffer length \(the macro called `FRAME_PER_BUFFER`\) to just 32. Increase it to 512 and use this value and `FS` to calculate the maximum processing time allowed in microseconds. Replace the variable `USING_FRAME_PER_BUFFER_AND_FS` in the code snippet below with this expression for the maximum processing time.
 
-_Note: keep in mind the points made about using_ `float` _or_ `int` _variables \(see_ [_here_](dsp_tips.md#float)_\)._
+_Note: keep in mind the points made about using_ `float` _or_ `int` _variables \(see_ [_here_](../../real-world-dsp/dsp_tips.md#float)_\)._
 {% endhint %}
 
 ```c
@@ -102,7 +102,7 @@ SET_MIC_LEFT
 {% hint style="info" %}
 TASK 6: Using the `current_time_us` and `MAX_PROCESS_TIME_ALLOWED_us`, compute the value of `processing_load` as a percentage in the code snippet above, i.e. replace `USING_CURRENT_TIME_US_AND_MAX_PROCESS_TIME_ALLOWED_US` with the appropriate expression.
 
-_Note: keep in mind the points made about using_ `float` _or_ `int` _variables \(see_ [_here_](dsp_tips.md#float)_\)._
+_Note: keep in mind the points made about using_ `float` _or_ `int` _variables \(see_ [_here_](../../real-world-dsp/dsp_tips.md#float)_\)._
 {% endhint %}
 
 You will notice that we used a `printf` function in order to output text on the debug console. To enable this function you need to make the following changes to your project:
@@ -113,7 +113,7 @@ You will notice that we used a `printf` function in order to output text on the 
   -specs=nosys.specs -specs=nano.specs -specs=rdimon.specs -lc -lrdimon
   ```
 
-![](../.gitbook/assets/screenshot-2019-10-07-at-15.46.31.png)
+![](../../.gitbook/assets/screenshot-2019-10-07-at-15.46.31.png)
 
 * Add the following function prototype above the `main` function \(e.g. between the `USER CODE BEGIN PFP` and `USER CODE END PFP` comments\):
 
@@ -137,7 +137,7 @@ After this setup, the `printf` output will be shown in the debug console of Ecli
 
 ## Alien voice effect <a id="effect"></a>
 
-We will now add our robot voice effect! As mentioned [previously](dsp_tips.md#removing-dc-noise), we will also implement a simple high pass filter and add a gain to make the output more audible. Below is the final `process` function we propose you to use. Insert it between the `USER CODE BEGIN 4` and `USER CODE END 4` comments.
+We will now add our robot voice effect! As mentioned [previously](../../real-world-dsp/dsp_tips.md#removing-dc-noise), we will also implement a simple high pass filter and add a gain to make the output more audible. Below is the final `process` function we propose you to use. Insert it between the `USER CODE BEGIN 4` and `USER CODE END 4` comments.
 
 ```c
 /* USER CODE BEGIN 4 */
@@ -259,7 +259,7 @@ for (uint16_t i = 1; i < FRAME_PER_BUFFER; i++) {
 
 Finally, you can try changing the modulation frequency and creating your lookup tables by running [this Python script](https://github.com/LCAV/dsp-labs/blob/master/scripts/alien_voice/compute_sinusoid_lookup.py) for modified values of `f_sine`.
 
-**Congrats on implementing your \(perhaps\) first voice effect! In the** [**next chapter**](../filter-design/)**, we will implement a more sophisticated high-pass filter than the one used here. To this end, we will come across fundamental theory and practical skills in digital filter design.**
+**Congrats on implementing your \(perhaps\) first voice effect! In the** [**next chapter**](../../filter-design/)**, we will implement a more sophisticated high-pass filter than the one used here. To this end, we will come across fundamental theory and practical skills in digital filter design.**
 
 ## Tasks solutions
 
@@ -271,11 +271,11 @@ Are you sure you are ready to see the solution? ;\)
 {% tab title="Task 4" %}
 As proposed in the hint, if you go to the tab _Clock Configuration_ of CubeMX, you will see the following graph:
 
-![](../.gitbook/assets/screenshot-2019-10-10-at-16.57.46-1.png)
+![](../../.gitbook/assets/screenshot-2019-10-10-at-16.57.46-1.png)
 
 Note the last block on the right column _APB1 Timer clocks \(MHz\):_ 48. It means that your timer are "run" with a base tick frequency of 48MHz. in order to reduce this to $$1[\mu s]$$or in other word $$1[MHz]$$, you will have to divide it by 48. This number is thus your prescaller. This lead to the following timer configuration:
 
-![](../.gitbook/assets/screenshot-2019-10-10-at-16.58.09-1.png)
+![](../../.gitbook/assets/screenshot-2019-10-10-at-16.58.09-1.png)
 
 Note the _Counter Period_, it is the value at where the interrupt is triggered, here the maximum value.
 {% endtab %}

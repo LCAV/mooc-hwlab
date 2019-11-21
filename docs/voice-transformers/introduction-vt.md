@@ -1,6 +1,6 @@
 # Introduction
 
-We will now start the interesting part of this module, the one where we start implementing actual audio DSP algorithm on the microcontroller. 
+We will now start the interesting part of this module, the one where we start implementing actual audio DSP algorithms on the microcontroller. 
 
 As we said in the beginning, the theme of our examples will be the design of increasingly more sophisticated voice transformers, that you can use in real time to modify the sound of your own voice. 
 
