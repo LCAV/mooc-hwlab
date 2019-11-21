@@ -38,7 +38,7 @@ def DFT_pshift(x, f, G, overlap=0):
 
 Unlike the granular synthesis chapter, the above function `DFT_pshift` is more suitable for a real-time implementation as the input `x[n:n+G]` and output `y[n:n+G]` buffers have the same length. Recall that this was not the case for the granular synthesis implementation in the IPython notebook \(cell 70 under Section 3\).
 
-However, in order to make the task of porting to C much easier, we would like to implement the above effect without using array operations and using some of the [tips and tricks](../real-world-dsp/dsp_tips.md) we saw in the alien voice chapter, namely:
+However, in order to make the task of porting to C much easier, we would like to implement the above effect without using array operations and using some of the [tips and tricks]() we saw in the alien voice chapter, namely:
 
 * Lookup tables.
 * State variables.

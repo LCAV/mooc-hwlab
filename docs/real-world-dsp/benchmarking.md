@@ -56,7 +56,7 @@ We want to assess if the processing time is longer or shorter than what our chos
 {% hint style="info" %}
 TASK 2: In the passthrough example, we set the buffer length \(the macro called `FRAME_PER_BUFFER`\) to 32. Increase it to 512 and use this value and `FS` to calculate the maximum processing time allowed in microseconds. Replace the variable `USING_FRAME_PER_BUFFER_AND_FS` in the code snippet below with this expression for the maximum processing time.
 
-_Note: keep in mind the points made about using_ `float` _or_ `int` _variables \(see_ [_here_](dsp_tips.md#float)_\)._
+_Note: keep in mind the points made about using_ `float` _or_ `int` _variables \(see_ [_here_]()_\)._
 {% endhint %}
 
 ```c
@@ -114,7 +114,7 @@ SET_MIC_LEFT
 {% hint style="info" %}
 TASK 3: Using the `current_time_us` and `MAX_PROCESS_TIME_ALLOWED_us`, compute the value of `processing_load` as a percentage in the code snippet above, i.e. replace `USING_CURRENT_TIME_US_AND_MAX_PROCESS_TIME_ALLOWED_US` with the appropriate expression.
 
-_Note: keep in mind the points made about using_ `float` _or_ `int` _variables \(see_ [_here_](dsp_tips.md#float)_\)._
+_Note: keep in mind the points made about using_ `float` _or_ `int` _variables \(see_ [_here_]()_\)._
 {% endhint %}
 
 You will notice that we used a `printf` function in order to output text on the debug console. To enable this function you need to make the following changes to your project:

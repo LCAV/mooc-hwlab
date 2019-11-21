@@ -28,14 +28,12 @@
 * [Filters](real-world-dsp/filters.md)
 * [Benchmarking](real-world-dsp/benchmarking.md)
 * [Low Level Debugging](real-world-dsp/low-level-debugging.md)
-* [Real-World DSP](real-world-dsp/dsp_tips.md)
 
 ## Voice Transformers
 
 * [Introduction](voice-transformers/introduction-vt.md)
 * [Alien Voice](voice-transformers/alien-voice/README.md)
-  * [3.3 Real-time with Python](voice-transformers/alien-voice/python.md)
-  * [3.4 C implementation](voice-transformers/alien-voice/implementation.md)
+  * [Basic implementation](voice-transformers/alien-voice/alien_implementation.md)
 * [4. DIGITAL FILTER DESIGN](filter-design/README.md)
   * [4.1 Design approaches](filter-design/approaches.md)
   * [4.2 Real-time implementation](filter-design/implementation.md)
@@ -48,4 +46,5 @@
 * [7. DFT PITCH SHIFTING](dft/README.md)
   * [7.1 How it works](dft/theory.md)
   * [7.2 Python implementation](dft/implementation.md)
+* [3.3 Real-time with Python](python.md)
 
