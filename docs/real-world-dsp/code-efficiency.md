@@ -16,7 +16,33 @@ More about these kinds of trade-off can be read [here](https://www.embedded.com/
 
 ## Circular buffers
 
+In [Lecture 2.2.5a](https://www.coursera.org/learn/dsp2/lecture/6oXrx/2-2-5-a-implementation-of-digital-filters) in the [second DSP course](https://www.coursera.org/learn/dsp2/) we discussed some implementation issues related to discrete-time filters and, in particular, we talked about circular buffers. 
 
+As a quick recap, remember that if you need to store past vaues of a signal, the best solution is to use a circular buffer; assume that you need to access at most $$M$$past values of the signal $$x[n]$$:
+
+* set up an array `x_buf[]` of length$$M$$\(ofthe appropriate data type\)
+* set up an index variable `ix`, initialized at zero
+* every time you receive a new sample, store it in the array at `ix` and increment `ix` modulo $$M;$$
+
+with this, the expression $$x[n-k], k <M,$$can be accessed as `x[(ix + M - k) % M]`.
+
+In a microcontroller, where each CPU cycle counts, modulo operations are expensive but they can be avoided and replaced by binary masks if we choose $$M$$to be a power of two. In those cases, `ix % M` is equivalent to `ix & (M-1)` and the bitwise AND is a much faster operation. Since $$M$$is the minimum number of past values that we need to access, we can always increase its value until we reach a power of two. 
+
+Here is a simple example:
+
+```python
+#define BUF_LEN 16
+#define BUF_MSK 15 /* binary mask is always len - 1 */
+uint16_t x_buf[BUF_LEN];
+uint16_t ix = 0;
+
+/* storing sample x */
+x_buf[ix++] = x;
+ix &= BUF_MSK;
+
+/* accessing x[n-k] */
+uint16_t x_k = x_buf[(ix + BUF_LEN - k) & BUF_MSK];
+```
 
 ## Sinusoidal lookup tables <a id="lookup"></a>
 
@@ -42,7 +68,7 @@ becomes simply
 y[n] = x[n] * C[n % 80]
 ```
 
-Of course, we are trading computational time for memory here so, if $$N$$in the denominator is impractically large, the table lookup method may become prohibitive, especially on architectures such as the Nucleo which do not have a lot of onboard memory.
+Of course, we are trading computational time for memory here so, if $$N$$in the denominator is impractically large, the table lookup method may become prohibitive, especially on architectures such as the Nucleo which do not have a lot of onboard memory. Also note that this is one case in which we most likely won't be able to use binary masks instead of modulo operations since the period of the sinusoid is unlikely to be a power of two.
 
 Another difficulty is when $$\omega_c$$is _not_ a rational multiple of $$2\pi$$. In this case, we may want to slightly adjust the modulation frequency to a value for which the rational multiple expression becomes valid.
 
