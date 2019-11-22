@@ -99,7 +99,7 @@ Ultimately, the application will work by obtaining a fresh data buffer filled by
 The resulting function prototype is:
 
 ```c
-void process(int16_t *pIn, int16_t *pOut, uint16_t size);
+void Process(int16_t *pIn, int16_t *pOut, uint16_t size);
 ```
 
 This will be the main processing function which will be invoked by the interrupts raised by the DMA transfer every time either the first or the second half of the buffer has been filled.
@@ -118,11 +118,11 @@ void HAL_I2S_RxCpltCallback(I2S_HandleTypeDef *hi2s) {
 }
 
 void HAL_I2S_TxHalfCpltCallback(I2S_HandleTypeDef *hi2s) {
-    process(dma_in, dma_out, HALF_BUFFER_SIZE);
+    Process(dma_in, dma_out, HALF_BUFFER_SIZE);
 }
 
 void HAL_I2S_TxCpltCallback(I2S_HandleTypeDef *hi2s) {
-    process(dma_in + HALF_BUFFER_SIZE, dma_out + HALF_BUFFER_SIZE, HALF_BUFFER_SIZE);
+    Process(dma_in + HALF_BUFFER_SIZE, dma_out + HALF_BUFFER_SIZE, HALF_BUFFER_SIZE);
 }
 ```
 
@@ -162,17 +162,13 @@ add his own code by customization of function pointer HAL_I2S_ErrorCallback
 Between the `USER CODE BEGIN 4` and `USER CODE END 4` comment tags, we will define the body of the `process` function which, in this case, implements a simple passthrough.
 
 {% hint style="info" %}
-TASK 4: Use the two buffers - `bufferInStereo` and `bufferOutStereo` - in the loop below in order to realize a passthrough.
-
-_Hint: you just need to add one line! In C, you have to manipulate one element at a time, using_ `[` _and_ `]` _to index the array._
+TASK 4: Complete the main processing function which simply copies the input to the output buffer.
 {% endhint %}
 
 ```c
-void inline process(int16_t *pIn, int16_t *pOut, uint16_t size) {
-    // Strictly copying input to output
-    for (uint16_t i = 0; i < size; i++) {
-        // Here copy input buffer to output buffer
-    }
+void inline Process(int16_t *pIn, int16_t *pOut, uint16_t size) {
+    // copy input to output
+    ...
 }
 ```
 
@@ -200,24 +196,15 @@ We can now try building and debugging the project \(remember to press _Resume_ a
 
 ## Going a bit further
 
-If you still have time and you are curious to go a bit further, we propose to make a modification to the `process` function. Depending on your current implementation, you may have noticed that only one output channel carries the audio while the other is silent. Wouldn't it be nice if both had audio, thereby converting the mono input to a stereo output?
+If you still have time and you are curious to go a bit further, we propose to make a modification to the`Process` function. In the current implementation, since the input is mono and the output is stereo, you may have noticed that only one output channel carries the audio while the other is silent. Wouldn't it be nice if both had audio, thereby converting the mono input to a stereo output?
+
+{% hint style="info" %}
+BONUS: Modify the`Process` function so that both output channels contain audio.
+{% endhint %}
 
 _Note: remember to copy your project before making any significant modifications; that way you will always be able to go back to a stable solution!_
 
-{% hint style="info" %}
-BONUS: Modify the `process` function so that both output channels contain audio.
-{% endhint %}
-
-```c
-void inline process(int16_t *pIn, int16_t *pOut, uint16_t size) {
-    // Strictly copying input to output
-    for (uint16_t i = 0; i < size; i++) {
-        // Here copy either left or right channel to both output channels
-    }
-}
-```
-
-**Congrats on completeting the passthrough! This project will serve as an extremely useful starting point for the following \(more interesting\) applications. The first one we will build is an** [_**alien voice effect**_](../../voice-transformers/alien-voice/)**.**
+**Congrats on completing the passthrough! This project will serve as an extremely useful starting point for the following \(more interesting\) applications. The first one we will build is an** [_**alien voice effect**_](../../voice-transformers/alien-voice/)**. But first, let's talk about some key issues in real-time DSP programming.**
 
 ## Solutions
 
@@ -298,30 +285,32 @@ The double buffer size is then 128 values.
 The pass-through is made by copying the input buffer on the output buffer. This is done like so:
 
 ```c
-void inline process(int16_t *pIn, int16_t *pOut, uint16_t size) {
-    for (uint16_t i = 0; i < size; i++) {
+void inline Process(int16_t *pIn, int16_t *pOut, uint16_t size) {
+    for (uint16_t i = 0; i < size; i++)
         *pOut++ = *pIn++;
-        bufferOutStereo[i] = bufferInStereo[i];
-    }
 }
+
 ```
 {% endtab %}
 
 {% tab title="Bonus" %}
-There is alway several way to the same goal in C, however we propose you the following solution:
+There are always several ways to achieve the same goal in C. Here is a possible solution:
 
 ```c
-void inline process(int16_t *bufferInStereo, int16_t *bufferOutStereo, uint16_t size) {
-    for (uint16_t i = 0; i < size; i+=2) {
-        bufferOutStereo[i] = bufferInStereo[i];
-        bufferOutStereo[i+1] = bufferInStereo[i];
+void inline Process(int16_t *pIn, int16_t *pOut, uint16_t size) {
+	if (HAL_GPIO_ReadPin(LR_SEL_GPIO_Port, LR_SEL_Pin) == GPIO_PIN_SET)
+		pIn++;
+		
+    for (uint16_t i = 0; i < size; i++) {
+        *pOut++ = *pIn;
+        *pOut++ = *pIn;
+        pIn += 2;
     }
 }
+
 ```
 
-In this way the value of the microphone, that is only on one side \(every second channel\) will be copied to both side of the output buffer.
-
-Be careful that the code above will only work of you have set your microphone to the left channel. You can modify the code to take the SET\_MIC\_LEFT/SET\_MIC\_RIGHT macro into account as well.
+In the code, we first check the GPIO pin to see which channel the microphone has been assigned to and use the value to offset the input pointer to the first audio sample. Then we simply copy the same audio sample in two consecutive output samples.
 {% endtab %}
 {% endtabs %}
 
