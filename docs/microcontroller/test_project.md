@@ -34,7 +34,7 @@ When all necessary downloads are completed, you should eventually see something 
 
 ![](../.gitbook/assets/screenshot-2019-09-25-at-15.54.25-2-1-1.png)
 
-Filter by board on the left column and look for our board, the "NUCLEO-F072RB". Double-click the board in the search results. Note that if you are using a different ST board that [fulfills the requirements for our projects](), you should select the model you have.
+Make sure the "Board Selector" tab is the active one \(top-left corner\) and look for our board, the "NUCLEO-F072RB" \(you can use the "Part Number Search" facility\). Double-click the board in the search results. Note that if you are using a different ST board that [fulfills the requirements for our projects](../bill-of-materials.md), you should select the model you have.
 
 ![](../.gitbook/assets/screenshot-2019-10-07-at-13.36.57.png)
 
@@ -58,7 +58,7 @@ Extend the central pane if it was hidden, because it will be needed later!
 
 When a Nucleo template is selected and all peripheral initialized to their default values, the blue button _B1_ and the LED _LD2_ are already configured; this is sufficient for our first project.
 
-We are now ready to generate the initialization code. Save your project by pressing _CTRL+ S_. The project will be automatically generated if a modification was made. At this stage, _CubeMX_ will generate some C files, using _HAL_ libraries, that encode all the settings that was selected via the GUI.
+We are now ready to generate the initialization code. Save your project by pressing _CTRL+ S_. The project will be automatically generated if a modification was made; in this case, since we did not change the layout, you may have to trigger the code generation by pressing _Alt + K_. _CubeMX_ will generate some C files, using _HAL_ libraries, that encode all the settings that was selected via the GUI.
 
 _HAL_ is short for _Hardware Abstraction Layer_ and it is a set of libraries provided by ST to help developers produce _portable_ code, i.e. code that can be used across the whole family of STM32 boards. For more information on HAL, please refer to [this document](https://www.st.com/content/ccc/resource/technical/document/user_manual/2f/77/25/0f/5c/38/48/80/DM00122015.pdf/files/DM00122015.pdf/jcr:content/translations/en.DM00122015.pdf).
 
@@ -117,6 +117,8 @@ Click on the _bug_ icon from the toolbar and select _Debug As &gt; STM32_ MCU _C
 
 ![](../.gitbook/assets/screenshot-2019-10-07-at-14.52.49.png)
 
+If there are no debug configurations available from the menu, set up a configuration first by choosing "Debug configurations..." and clicking on the STM32 Cortex-M option. 
+
 If this is your first time debugging in this workspace, you should see a pop-up similar to the one below appear. Click "Yes" as this perspective will be very useful, and you can check the box for "Remember my decision" so that this pop-up does not appear again.
 
 ![](../.gitbook/assets/22_enter_debug_perspective.PNG)
@@ -151,7 +153,7 @@ A view similar to the one below should then appear. This is the typical "Debug p
 
 Your program should be momentarily paused as is the case in the figure above at Line 90. You can continue the program by pressing the _Resume_ button as pointed out above.
 
-You should now observe the "LD2" LED \(see below\) blinking!
+You should now observe the green "LD2" LED \(see below\) blinking!
 
 ![](../.gitbook/assets/24_led_blinking-2.png)
 
@@ -159,7 +161,7 @@ _Figure: Top view of a NUCLEO board. Red arrow pointing out the location of "LD2
 
 ### Terminating the program
 
-In order to properly stop the program, it is also necessary to disconnect from the board. Both can be done by pressing the _Disconnect_ button on the top toolbar \(see below\).
+In order to properly stop the debugger, it is also necessary to disconnect from the board. Both can be done by pressing the _Disconnect_ button on the top toolbar \(see below\).
 
 ![](../.gitbook/assets/25_disconnect_1-1.png)
 
