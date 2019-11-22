@@ -10,7 +10,9 @@ Real numbers can be mapped to integers via renormalization when we can estimate 
 
 Remember that when you multiply two $$B$$-bit integers the result will need to be computed over a $$2B$$-bit integer to avoid overflow. The result can be rescaled to $$B$$bits later, but try to keep rescaling to the end of a chain of integer arithmetic operations all of which are carried out with double precision. 
 
-With an intelligent use of operation priority \(for example multiplying before dividing in order to perform integer arithmetic without losing precision\), integer arithmetic will not unduly impact the performance of our algorithms.
+In other words, since we're working with 16-bit samples, we will perform the intermediate arithmetics that involve multiplications using 32-bit variables, and then we will shift back the result to 16 bits.
+
+With an intelligent use of operation priority, integer arithmetic will not unduly impact the performance of our algorithms.
 
 More about these kinds of trade-off can be read [here](https://www.embedded.com/design/debug-and-optimization/4440365/Floating-point-data-in-embedded-software) and [here](https://en.wikibooks.org/wiki/Embedded_Systems/Floating_Point_Unit).
 

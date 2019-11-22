@@ -118,11 +118,11 @@ void HAL_I2S_RxCpltCallback(I2S_HandleTypeDef *hi2s) {
 }
 
 void HAL_I2S_TxHalfCpltCallback(I2S_HandleTypeDef *hi2s) {
-    Process(dma_in, dma_out, HALF_BUFFER_SIZE);
+  Process(dma_in, dma_out, HALF_BUFFER_SIZE);
 }
 
 void HAL_I2S_TxCpltCallback(I2S_HandleTypeDef *hi2s) {
-    Process(dma_in + HALF_BUFFER_SIZE, dma_out + HALF_BUFFER_SIZE, HALF_BUFFER_SIZE);
+  Process(dma_in + HALF_BUFFER_SIZE, dma_out + HALF_BUFFER_SIZE, HALF_BUFFER_SIZE);
 }
 ```
 
@@ -167,8 +167,8 @@ TASK 4: Complete the main processing function which simply copies the input to t
 
 ```c
 void inline Process(int16_t *pIn, int16_t *pOut, uint16_t size) {
-    // copy input to output
-    ...
+  // copy input to output
+  ...
 }
 ```
 
@@ -286,8 +286,8 @@ The pass-through is made by copying the input buffer on the output buffer. This 
 
 ```c
 void inline Process(int16_t *pIn, int16_t *pOut, uint16_t size) {
-    for (uint16_t i = 0; i < size; i++)
-        *pOut++ = *pIn++;
+  for (uint16_t i = 0; i < size; i++)
+    *pOut++ = *pIn++;
 }
 
 ```
@@ -298,16 +298,17 @@ There are always several ways to achieve the same goal in C. Here is a possible 
 
 ```c
 void inline Process(int16_t *pIn, int16_t *pOut, uint16_t size) {
+	// if using the RIGHT channel, advance the input pointer
 	if (HAL_GPIO_ReadPin(LR_SEL_GPIO_Port, LR_SEL_Pin) == GPIO_PIN_SET)
 		pIn++;
-		
-    for (uint16_t i = 0; i < size; i++) {
-        *pOut++ = *pIn;
-        *pOut++ = *pIn;
-        pIn += 2;
-    }
+    
+  // advance by two now, since we're duplicating the input
+  for (uint16_t i = 0; i < size; i += 2) {
+    *pOut++ = *pIn;
+    *pOut++ = *pIn;
+    pIn += 2;
+  }
 }
-
 ```
 
 In the code, we first check the GPIO pin to see which channel the microphone has been assigned to and use the value to offset the input pointer to the first audio sample. Then we simply copy the same audio sample in two consecutive output samples.

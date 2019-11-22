@@ -10,7 +10,9 @@ In this module will use the following components:
 
 In principle, any board from STM32 can be used for these exercises, as long as it is supported by [CubeMX](https://www.st.com/en/development-tools/stm32cubemx.html), [System Workbench](https://www.st.com/en/development-tools/sw4stm32.html), and exposes at least _two_ I2S buses since both the microphone and the DAC require a dedicated I2S bus for audio transfers. 
 
-The microcontroller will be programmed and powered by your PC via a USB cable.
+## Prerequisites
 
-You will also need a PC with a working Python environment in order to run the simulation used in the code design phase.
+* working knowledge of C and Python programming
+* a PC with a USB port \(the microcontroller will be programmed and powered by your PC via a USB cable\)
+* and, of course, having completed the the previous DSP modules!
 
