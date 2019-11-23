@@ -14,7 +14,7 @@ If we try to avoid floats, then we need to use some form of fixed-point represen
 
 The idea behind fixed point representations is to encode fractional number as integers, and assuming the position of the decimal point implicitly. 
 
-In our case, let's start with a reasonable assumption: the audio samples produced by the soundcards are signed decimal numbers in the $$(-1, 1)$$open interval. How can we represent numbers in this interval via integers and, more importantly, how does this affect the way we perform computations? 
+In our case, let's start with a reasonable assumption: the audio samples produced by the soundcard are signed decimal numbers in the $$(-1, 1)$$open interval. How can we represent numbers in this interval via integers and, more importantly, how does this affect the way we perform computations? 
 
 Since we are all more familiar with numbers in base 10, let's start with a 2-digit fixed point representation in base 10 for fractional numbers between -1 and 1. With this, for instance, the number 0.35 will be represented by the integer 35; more examples are shown in this table:
 
@@ -38,23 +38,75 @@ We can also choose at one point to, say, _increase the precision_ of our represe
 | 0.1234 | +12340 |
 | 1.3 | +99999 |
 
-It's clear that can convert a 2-digit representation into a 5-digit representation by adding three zeros \(i.e. by mutiplying by 1000\), and vice versa. Note however that increasing the precision does not protect us against overflow: the maximum range of our variables does not change in fixed point, only the granularity of the representation.
+It's clear that can convert a 2-digit representation into a 5-digit representation by adding three zeros \(i.e. by multiplying by 1000\), and vice versa. Note however that increasing the precision does not protect us against overflow: the maximum range of our variables does not change in fixed point, only the granularity of the representation.
 
 ## Fixed-point arithmetic
 
-The tricky part with fixed-point
+The tricky part with fixed-point is when we start to do math. Let's have a quick look at the basic principles, but remember that the topic is very vast!
 
-~~Real numbers can be mapped to integers via renormalization when we can estimate the maximum range; for instance, a floating point value between -1 and +1 can be mapped to a 16-bit integer via a scaling factor of~~ $$2^{15} = 32768$$~~yielding 65536 discrete levels.~~
+### Multiplication
 
-~~Remember that when you multiply two~~ $$B$$~~-bit integers the result will need to be computed over a~~ $$2B$$~~-bit integer to avoid overflow. The result can be rescaled to~~ $$B$$~~bits later, but try to keep rescaling to the end of a chain of integer arithmetic operations all of which are carried out with double precision.~~ 
+The first obvious thing is that when we multiply two 2-digit integer the result can take up to four digits. This case is however easy to handle because it only requires renormalization and it entails "simply" a loss of precision but not overflow.
 
-~~In other words, since we're working with 16-bit samples, we will perform the intermediate arithmetic that involve multiplications using 32-bit variables, and then we will shift back the result to 16 bits.~~
+For example, if we were to multiply two decimal numbers together, we would have something like:
 
-~~~~
+$$
+0.23 \times 0.31 = 0.0713 \approx 0.07
+$$
 
-~~With an intelligent use of operation priority, integer arithmetic will not unduly impact the performance of our algorithms.~~
+If we use fixed-point representations, as long as the multiplication is carried out in double precision, we can renormalize to the original precision by dropping the two least significant digits:
 
-More about these kinds of trade-off can be read [here](https://www.embedded.com/design/debug-and-optimization/4440365/Floating-point-data-in-embedded-software) and [here](https://en.wikibooks.org/wiki/Embedded_Systems/Floating_Point_Unit).
+$$
+(+23) \times (+31) = +0713 \longrightarrow +07
+$$
+
+In the next section we will use this notation to indicate a multiplication in double precision followed by renormalization:
+
+$$
+[(+23) \times (+31)] = +07.
+$$
+
+### Addition
+
+Addition is a bit trickier in the sense that the sum \(or difference\) of two numbers can result in overflow:
+
+$$
+0.72 + 0.55 = 1.27 > 1
+$$
+
+This is of course mirrored by the fixed-point representation
+
+$$
+(+72) + (+55) = 127 > 99
+$$
+
+The result is not representable with two digits and if we cap it at 99 we have a type of distortion that is very different from the rounding we performed in the case of multiplication. 
+
+There is no easy solution to this problem and often it all depends on coding operations in a smart way to avoid overflow. For instance, suppose we want to compute the average of two numbers:
+
+$$
+\frac{a+b}{2}
+$$
+
+In theory, the way in which the average is computed makes no difference and, if $$a=0.72$$and $$b=0.55$$, we would usually compute the sum first and then divide by two:
+
+$$
+(0.72 + 0.55) \times 0.5 = 0.623.
+$$
+
+In fixed-point, however, the order of operations does matter. If we start with the sum, we immediately overflow and, assuming overflows are capped at their maximum value, we obtain
+
+$$
+[((+72) + (+55)) \times (+50)] = [(+99) \times (+50)] = 49
+$$
+
+Which is a totally wrong result. On the other hand, suppose we compute the average as $$a/2 + b/2$$. In fixed point this becomes
+
+$$
+[(+72) \times (+50)] + [(+55) \times (+50)] =  (+36) + (+27) = (+63)
+$$
+
+which is a totally acceptable approximation of the average's true value!
 
 ## Binary representation
 

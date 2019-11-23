@@ -15,7 +15,7 @@ DC offsets are highly undesirable since they limit the dynamic range of our syst
 {% hint style="info" %}
 TASK 1: From your passthrough implementation, determine the value of the offset. Is it significant compared to the range of the microphone?
 
-_Hint: put a breakpoint in the process function; then with the debug tool, check the content of the input buffer._
+_Hint: put a breakpoint in the process function while being quiet; then with the debug tool, check the content of the input buffer._
 {% endhint %}
 
 We have talked about DC offset removal in [Lecture 2.2.3](https://www.coursera.org/learn/dsp2/lecture/JcNy2/2-2-3-intuitive-iir-designs) in the [second DSP course](https://www.coursera.org/learn/dsp2/). Recall that a DC component corresponds to a nonzero frequency value at $$\omega=0$$so the idea is to use a filter with a zero in $$\omega = 0.$$A very simple example is the so-called FIR "DC notch" whose CCDE is simply
@@ -37,8 +37,6 @@ $$
  When $$\lambda$$is close to \(but less than\) one, we can get a magnitude response like this:
 
 ![Frequency response of the IIR DC notch](../.gitbook/assets/image.png)
-
-[https://www.researchgate.net/publication/261775781\_DC\_Blocker\_Algorithms](https://www.researchgate.net/publication/261775781_DC_Blocker_Algorithms)
 
 {% hint style="info" %}
 TASK 2: Assume that our input samples are between -1 and +1 and are encoded as signed 16-bit integers. Write a C function that implements an IIR DC notch with $$\lambda = 0.9$$using integer arithmetic.
@@ -76,19 +74,24 @@ Notice that even if the values are fluctuating, the average is around -1540. Thi
 {% endtab %}
 
 {% tab title="Task 2" %}
-In the function we will use the key points we saw in the previous section 
+In the function we will use the key points we saw in the section on [numerical precision](numerical-precision.md#fixed-point-arithmetic):
 
-```text
-int16_t IIR_DC(int16_t x) {
+* performing the multiplication in double precision and rescaling
+* since $$x[n]$$and $$x[n-1]$$are usually close in value \(audio signals do not swing wildly\), the chance of overflow in the addition and subtraction is negligible
+
+```c
+#define LAMBDA 0x00007999  // (int_32_t)(0.9 * 32768);
+
+static inline int16_t DCNotch(int16_t x) {
   static int16_t x_prev = 0;
   static int16_t y_prev = 0;
-  const int32_t lambda = (int_32_t)(0.9 * 0x7FFF);
-  
-  y_prev = ((lambda * y_prev) >> 16) - x_prev + x;
+  y_prev = (((int32_t)y_prev * 0x00007999) >> 16) - x_prev + x;
   x_prev = x;
   return y_prev;
 }
 ```
+
+The above DC notch is better than the simple one-step difference, but it can be made better with respect to its fixed-point implementation. [Here is an interesting article about that.](https://www.researchgate.net/publication/261775781_DC_Blocker_Algorithms)
 {% endtab %}
 {% endtabs %}
 

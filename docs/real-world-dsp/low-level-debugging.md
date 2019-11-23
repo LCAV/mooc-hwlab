@@ -27,9 +27,9 @@ When the micro controller is stopped, you can either resume, or use the advanced
 
 ![Common debug instruction to manage code execution during debug](../.gitbook/assets/screenshot-2019-11-21-at-11.35.45%20%281%29.png)
 
-Be careful, breakpoint can also lead to break the synchronisation of your internal peripheral or even lead to serious hazard: Imagine, put a breakpoint in the control loop of a coffee machine, this could lead to stop the system with the heater on and you end up melting the whole thing because the control loop is stopped.
+Be careful, breakpoint can also lead to break the synchronization of your internal peripheral or even lead to serious hazard: Imagine, put a breakpoint in the control loop of a coffee machine, this could lead to stop the system with the heater on and you end up melting the whole thing because the control loop is stopped.
 
-For this reason, you might want to watch the internal state of your micro controller without stopping it. Modern IDE usually propose live monitoring. In the case of STM32CubeIDE, there is a _Live Expressions_ tab where you can watch global variables of your program and check their values.
+For this reason, you might want to watch the internal state of your micro controller without stopping it. Modern IDE usually propose live monitoring. In the case of STM32CubeIDE, there is a _Live Expressions_ tab where you can watch global variables of your program and check their values as we have seen in the [benchmaking section](benchmarking.md#benchmarking-live).
 
 
 
@@ -47,7 +47,7 @@ To visualise signals, there usually is two possibilities either a logic analyser
 
 ![View of an analog and 3 digital signal using a digital oscilloscope.](../.gitbook/assets/screenshot-2019-11-21-at-14.01.30.png)
 
-In the past oscilloscope had only 2 signal plotted on an cathodic screen with very few parameter available. Now with digital system and particularly usb oscilloscope the analysis possibilities are endless. We recommend using the Analog Discovery 2 digital oscilloscope as it gives a lot of IO's at a descent price compared to more conventional table top oscilloscope.
+In the past oscilloscope had only 2 signal plotted on an cathodic screen with very few parameter available. Now with digital system and particularly usb oscilloscope the analysis possibilities are endless. We recommend using the [Analog Discovery 2 ](https://analogdiscovery.com/)digital oscilloscope as it gives a lot of IO's at a desreasonable cent price compared to more conventional table top oscilloscopes.
 
 ### Trigger setting
 
@@ -55,5 +55,5 @@ The screen of an oscilloscope is displaying the signal over a period of time tha
 
 ![](../.gitbook/assets/screenshot-2019-11-21-at-14.17.39.png)
 
-It is much easier get an impression of the oscilloscope handling when the signal are moving. For this reason we made a video with more examples.
+It is much easier get an impression of the oscilloscope handling when the signal are moving. For this reason we made a video with [more examples that you can find on Coursera](https://www.coursera.org/learn/dsp4/home/week/3).
 

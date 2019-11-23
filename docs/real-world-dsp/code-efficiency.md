@@ -32,6 +32,8 @@ ix &= BUF_MSK;
 uint16_t x_k = x_buf[(ix + BUF_LEN - k) & BUF_MSK];
 ```
 
+Speaking of circular buffer, remember that [we also set the DMA transfer buffers to be circular!](../audio-peripherals/passthrough/io_setup.md#i2s)
+
 ## Sinusoidal lookup tables <a id="lookup"></a>
 
 Most signal processing algorithms require the use of sinusoidal functions. In a microcontroller, however, computing trigonometric values for arbitrary values of the angle is an expensive operation since it always involves some form of Taylor series approximation. Even using a few terms, as in
@@ -69,59 +71,12 @@ All discrete-time signal processing data and algorithm make use of a free "time"
 
 The second point in particular means that, in real time applications that may run for an arbitrary amount of time,  $$n$$will increase until it reaches the maximum positive value that can be expressed by the variable and then roll over to zero. Since we certainly do not want this rollover to happen at random times and since the roll over is unavoidable, we need to establish a strategy to carry it out explicitly.
 
-In practice, all real-time applications only use circular buffer, either explicitly \(to access past input and output values or to access lookup tables\) or implicitly \(to compute the output of functions that are inherently periodic\). As a consequence, we never need the exact value of $$n$$but only the position of a set of indices into circular buffers.
+In practice, all real-time applications only use circular buffers, either explicitly \(to access past input and output values or to access lookup tables\) or implicitly \(to compute the output of functions that are inherently periodic\). As a consequence, we never need the _exact_ value of $$n$$but only the position of a set of indices into synchronous circular buffers.
 
-In our code, therefore, we will explicitly roll over these indexes independently and, to make sure all variables are stepped synchronously, we will define them as [static variables](https://stackoverflow.com/questions/572547/what-does-static-mean-in-c) inside our `process` function, since static variables keep their values between consecutive function calls. Such variables are often referred to _state variables_ in C programming.
+In our code, therefore, we will explicitly roll over these indexes independently and incrementally. To this end:
 
+* in functions, indexes will be defined as [static variables](https://stackoverflow.com/questions/572547/what-does-static-mean-in-c) so that their value will be preserved between consecutive function calls.
+* to make sure that state variables used by different functions are stepped synchronously, we will define them as global-scope variables at the application level.
 
-
-~~Remember that, as we explained in the~~ [~~implementation of the passthrough~~](../audio-peripherals/passthrough/coding.md#constants)~~, we receive \(and process\) the incoming audio in _buffers_ that consist of multiple _frames_; each frame contains one sample _per channel_. The dimesions are:~~
-
-* ~~buffer size = number of frames per buffer~~
-* ~~buffer length = number of~~ 
-
-~~The buffer size is therefore We will refer to the number of frames in each buffer as the "buffer length" and the total number of samples \(as one frame could have multiple samples\) as the "buffer size".~~
-
-~~Imagine that we have 128 frames per buffer and two channels, so the "buffer length" is half the size of the "buffer size". For the first buffer we receive, i.e. the first 128 samples, the voice effect computation is straightforward:~~
-
-$$
-y[n] = x[n] \cdot \sin(\omega_{mod} \cdot [n \textrm{ \% LOOKUP_SIZE}]), \quad n \in [0, 127],
-$$
-
-~~where~~ $$\textrm{LOOKUP_SIZE}$$ ~~is the number of entries in our lookup table. However, the second and subsequent buffers require us to know the current time index. We **cannot** simply multiply the input signal with~~ $$\sin(\omega_{mod} \cdot [n \textrm{ \% LOOKUP_SIZE}]), n \in [0, 127]$$ ~~at each buffer as this would result in multiplying our input signal with a _discontinuous_ estimate of our sinusoid. In the figure below, we can observe how our input signal could be multiplied with a discontinuous estimate of a sinusoid if information is not passed between buffers. Such an operation would lead to _glitches_ in the output audio, which have a very noticeable "clicking" sound.~~
-
-![](../.gitbook/assets/discontinuous_sine-1.png)
-
-_Figure: Discontinuous sinusoid estimate \(blue, right-side up triangles\) across consecutive buffers. For the new buffer, the discontinuous estimate simply starts at the beginning of the lookup table rather than continuing along the lookup table \(green, upside-down triangles\)._
-
-One solution would be to keep track of the number of buffers processed thus far so that we could multiply with the appropriate time index as such:
-
-$$
-y[128 \cdot B + n] = x[128 \cdot B + n] \cdot \sin(\omega_{mod} \cdot [(128 \cdot B + n) \textrm{ % LOOKUP_SIZE}]), \quad n \in [0, 127],
-$$
-
-where $$B$$ is the number of buffers processed so far. Below is the corresponding _pseudocode_ \(do not copy this to Eclipse!\):
-
-```python
-B = 0
-for k in range(n_buffers):
-    for n in range(n_frames):
-        y[n] = x[n] * sine_table[(n_frames*B+n)%LOOKUP_SIZE]
-    B += 1
-```
-
-This works but the range of values $$B$$ could assume is technically unbounded if we never stop processing buffers! It would be more feasible to consider a value that has a limited range of possible values.
-
-A better solution would be to keep track of our current "location", i.e. index, in the sinusoid lookup table. This way, in between buffers we know which is the last index in the lookup table we used so that we can use the appropriate offset in the processing of the new buffer. Below is the corresponding _pseudocode_ for this approach \(do not copy this to Eclipse!\):
-
-```python
-sine_pointer = 0
-while(True):    # can go "forever" without worrying about the value of our state variable as it will wrap around!
-    for n in range(n_frames):
-        y[n] = x[n] * sine_table[sine_pointer]
-        sine_pointer += 1
-        sine_pointer %= LOOKUP_SIZE     # limited to the range [0, LOOKUP_SIZE-1]
-```
-
-These values that we keep track of in between buffers, such as a pointer to the lookup table, are commonly referred to as _state variables_. For our applications in C, we recommend using [static variables](https://stackoverflow.com/questions/572547/what-does-static-mean-in-c) for state variables inside the `process` function, as static variables keep their values between consecutive invocations inside a function.
+These types of variables are often referred to _state variables_ in C programming and they are usually much frowned upon; the truth is, in a microcontroller real-time application where performance is key, they simply cannot be avoided.
 
