@@ -16,15 +16,33 @@ The idea behind fixed point representations is to encode fractional number as in
 
 In our case, let's start with a reasonable assumption: the audio samples produced by the soundcards are signed decimal numbers in the $$(-1, 1)$$open interval. How can we represent numbers in this interval via integers and, more importantly, how does this affect the way we perform computations? 
 
-Since we are all more familiar with numbers in base 10, let's start with a 2-digit fixed point representation in base 10 for fractional numbers between -1 and 1. With this, for instance, the number 0.35 will be represented by the integer 35 and -0.2 will be encoded by -20. Since we can  only have 2 digit, the number 0.1234 will have to be truncated to the representation 12. Similarly, we will not be able to encode numbers greater that 0.99 or smaller than -0.99. OK, a finite number of digits involves a loss of precision and this makes sense.
+Since we are all more familiar with numbers in base 10, let's start with a 2-digit fixed point representation in base 10 for fractional numbers between -1 and 1. With this, for instance, the number 0.35 will be represented by the integer 35; more examples are shown in this table:
 
-It is clear that in this representation we go from decimal numbers to integers by multiplying the fractional nuber by $$10^2 = 100$$ \(see the 2 in the exponent: that's our number of digits\) and taking the integer part of the result. Vice versa, we can go back to the decimal representation by dividing the integer by 100.
+| decimal representation | 2-digit fixed-point representation |
+| :--- | :--- |
+| 0.35 | +35 |
+| -0.2 | -20 |
+| 0.1234 | +12 |
+| 1.3 | +99 |
 
-We can also choose at one point to, say, double the precision of our representation. In this example, we would use four digits and so 0.99 would become 9900 and 0.1234 will become 1234. Again, we can convert a single-precision \(2 digits\) number into a double-precision number by mutiplying by 100 \(and vice versa\). 
+Note that since we can  only have 2 digit, the number 0.1234 will have to be truncated to the representation 12. Similarly, we will not be able to encode numbers greater that 0.99 or smaller than -0.99, which will induce an _overflow_ in the representation. That's OK, a finite number of digits involves a loss of precision and this makes sense.
+
+It is clear that in this representation we go from decimal numbers to integers by multiplying the decimal number by $$10^2 = 100$$ \(see the 2 in the exponent: that's our number of digits\) and taking the integer part of the result. Vice-versa, we can go back to the decimal representation by dividing the integer by 100.
+
+We can also choose at one point to, say, _increase the precision_ of our representation. In this example, if we were to now use five digits, 
+
+| decimal representation | 5-digit fixed-point representation |
+| :--- | :--- |
+| 0.35 | +35000 |
+| -0.2 | -20000 |
+| 0.1234 | +12340 |
+| 1.3 | +99999 |
+
+It's clear that can convert a 2-digit representation into a 5-digit representation by adding three zeros \(i.e. by mutiplying by 1000\), and vice versa. Note however that increasing the precision does not protect us against overflow: the maximum range of our variables does not change in fixed point, only the granularity of the representation.
 
 ## Fixed-point arithmetic
 
-TODO
+The tricky part with fixed-point
 
 ~~Real numbers can be mapped to integers via renormalization when we can estimate the maximum range; for instance, a floating point value between -1 and +1 can be mapped to a 16-bit integer via a scaling factor of~~ $$2^{15} = 32768$$~~yielding 65536 discrete levels.~~
 
