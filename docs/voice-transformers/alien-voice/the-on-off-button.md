@@ -41,6 +41,14 @@ The interrupt handler toggles the variable effect\_enabled and switches the LED 
 TASK 1: Modify the alien voice`Process` function so that it switches between a passthrough and the alien voice.
 {% endhint %}
 
+## Benchmarking
+
+Now that we have an ON/OFF button, we can use the [benchmarking timer we defined before](../../real-world-dsp/benchmarking.md) to see how expensive it is to compute the alien voice.
+
+{% hint style="info" %}
+TASK 2: Add the timing macros to the Process function and use the push button to compare execution times.
+{% endhint %}
+
 ## Solution
 
 {% tabs %}
@@ -65,6 +73,30 @@ void Process(int16_t *pIn, int16_t *pOut, uint16_t size) {
   }
 }
 ```
+{% endtab %}
+
+{% tab title="Task 2" %}
+The modified Process function is trivial:
+
+```c
+void Process(int16_t *pIn, int16_t *pOut, uint16_t size) {
+  START_TIMER
+
+  if (effect_enabled) {
+    VoiceEffect(pIn, pOut, size);
+  } else {
+    // just pass through
+    for (uint16_t i = 0; i < size; pIn += 2, i += 2) {
+      *pOut++ = *pIn;
+      *pOut++ = *pIn;
+    }
+  }
+
+  STOP_TIMER
+}
+```
+
+You should find that, while the passthrough requires approximately 33 microseconds, the alien voice effec requires 94 microseconds.
 {% endtab %}
 {% endtabs %}
 
