@@ -28,9 +28,21 @@ Unfortunately this filter has the very poor frequency response shown here and, w
 
 ![Frequency response of the FIR DC notch](../.gitbook/assets/dcnotch.jpg)
 
-A better filter is obtained by using a an IIR DC notch which, while marginally more expensive computationally, provides a much flatter frequency response over the audio frequency band. We will talk more about the DC notch and filter implementation [later](filters.md).
+A better filter is obtained by using a an IIR DC notch which, while marginally more expensive computationally, provides a much flatter frequency response over the audio frequency band:
+
+$$
+y[n] = \lambda y[n − 1] + x[n] − x[n − 1]
+$$
+
+ When $$\lambda$$is close to \(but less than\) one, we can get a magnitude response like this:
 
 ![Frequency response of the IIR DC notch](../.gitbook/assets/image.png)
+
+[https://www.researchgate.net/publication/261775781\_DC\_Blocker\_Algorithms](https://www.researchgate.net/publication/261775781_DC_Blocker_Algorithms)
+
+{% hint style="info" %}
+TASK 2: Assume that our input samples are between -1 and +1 and are encoded as signed 16-bit integers. Write a C function that implements an IIR DC notch with $$\lambda = 0.9$$using integer arithmetic.
+{% endhint %}
 
 ## Tasks solutions
 
@@ -62,5 +74,23 @@ It is then possible to right-click in the editor and press _Add Watch Expression
 
 Notice that even if the values are fluctuating, the average is around -1540. This is the offset that we where looking for. It is introduced by the microphone and can be variable from one sample to an other.
 {% endtab %}
+
+{% tab title="Task 2" %}
+In the function we will use the key points we saw in the previous section 
+
+```text
+int16_t IIR_DC(int16_t x) {
+  static int16_t x_prev = 0;
+  static int16_t y_prev = 0;
+  const int32_t lambda = (int_32_t)(0.9 * 0x7FFFF);
+  
+  y_prev = ((lambda * y_prev) >> 16) - x_prev + x;
+  x_prev = x;
+  return y_prev;
+}
+```
+{% endtab %}
 {% endtabs %}
+
+
 

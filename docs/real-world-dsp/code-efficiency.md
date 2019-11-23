@@ -1,26 +1,12 @@
 # Code efficiency
 
-Coding a "real-world" DSP application on dedicated hardware is a bit of a shock when we are used to the idealized world of theoretical derivations. In this section we will review some of the most common issues that we have to keep in mind.
-
-## float vs. int <a id="float"></a>
-
-Operations with `float` variables can take significantly more time than the same operations with `int` variables. For our application, we noticed that an implementation with `float` variables can take up to 35% more processing time! Therefore, we recommend avoiding `float` variables whenever possible!
-
-Real numbers can be mapped to integers via renormalization when we can estimate the maximum range; for instance, a floating point value between -1 and +1 can be mapped to a 16-bit integer via a scaling factor of $$2^{15} = 32768$$yielding 65535 discrete levels.
-
-Remember that when you multiply two $$B$$-bit integers the result will need to be computed over a $$2B$$-bit integer to avoid overflow. The result can be rescaled to $$B$$bits later, but try to keep rescaling to the end of a chain of integer arithmetic operations all of which are carried out with double precision. 
-
-In other words, since we're working with 16-bit samples, we will perform the intermediate arithmetics that involve multiplications using 32-bit variables, and then we will shift back the result to 16 bits.
-
-With an intelligent use of operation priority, integer arithmetic will not unduly impact the performance of our algorithms.
-
-More about these kinds of trade-off can be read [here](https://www.embedded.com/design/debug-and-optimization/4440365/Floating-point-data-in-embedded-software) and [here](https://en.wikibooks.org/wiki/Embedded_Systems/Floating_Point_Unit).
+In this section we will illustrate some common coding practices that are used in real-time DSP implementations and that will be used later in our examples.
 
 ## Circular buffers
 
 In [Lecture 2.2.5a](https://www.coursera.org/learn/dsp2/lecture/6oXrx/2-2-5-a-implementation-of-digital-filters) in the [second DSP course](https://www.coursera.org/learn/dsp2/) we discussed some implementation issues related to discrete-time filters and, in particular, we talked about circular buffers. 
 
-As a quick recap, remember that if you need to store past vaues of a signal, the best solution is to use a circular buffer; assume that you need to access at most $$M$$past values of the signal $$x[n]$$:
+As a quick recap, remember that if you need to store past values of a signal, the best solution is to use a circular buffer; assume that you need to access at most $$M$$past values of the signal $$x[n]$$:
 
 * set up an array `x_buf[]` of length$$M$$\(ofthe appropriate data type\)
 * set up an index variable `ix`, initialized at zero

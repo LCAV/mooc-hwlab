@@ -23,6 +23,7 @@
 
 ## Real-World DSP
 
+* [Numerical precision](real-world-dsp/numerical-precision.md)
 * [Code efficiency](real-world-dsp/code-efficiency.md)
 * [Signal levels](real-world-dsp/signal-levels.md)
 * [Filters](real-world-dsp/filters.md)

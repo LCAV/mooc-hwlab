@@ -19,8 +19,8 @@ cos_table[n] = (int16_t)(32767.0 * cos(0.0785398 * n));
 The  lookup table is provided here for your convenience. Begin by copying it between the `USER CODE BEGIN PV` and `USER CODE END PV` comment tags.
 
 ```c
-#define COS_TABLE_SIZE 80
-const int16_t COS_TABLE[COS_TABLE_SIZE ] = {
+#define COS_400_32_SIZE 80
+const int16_t COS_400_32[COS_400_32_SIZE ] = {
 0x0000,0x0a0a,0x1405,0x1de1,0x278d,0x30fb,0x3a1b,0x42e0,
 0x4b3b,0x5320,0x5a81,0x6154,0x678d,0x6d22,0x720b,0x7640,
 0x79bb,0x7c75,0x7e6b,0x7f99,0x7fff,0x7f99,0x7e6b,0x7c75,
@@ -58,7 +58,7 @@ void inline Process(int16_t *pIn, int16_t *pOut, uint16_t size) {
 
   // we assume we're using the LEFT channel
   for (uint16_t i = 0; i < size; i += 2) {
-    // simple highpass filter
+    // simple DC notch
     int32_t y = (int32_t)(*pIn - x_prev);
     x_prev = *pIn;
 
@@ -104,13 +104,13 @@ void inline Process(int16_t *pIn, int16_t *pOut, uint16_t size) {
 
   // we assume we're using the LEFT channel
   for (uint16_t i = 0; i < size; i += 2) {
-    // simple highpass filter
+    // simple DC notch
     int32_t y = (int32_t)(*pIn - x_prev);
     x_prev = *pIn;
 
     // modulation
-    y = y * COS_TABLE[ix++];
-    ix %= COS_TABLE_SIZE;
+    y = y * COS_400_32[ix++];
+    ix %= COS_400_32_SIZE;
 
     // rescaling to 16 bits
     y >>= (16 - GAIN);

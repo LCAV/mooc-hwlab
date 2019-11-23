@@ -24,9 +24,11 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
     // blue button pressed
     if (effect_enabled) {
       effect_enabled = 0;
+      // turn off LED
       HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_RESET);
     } else {
       effect_enabled = 1;
+      // turn on LED
       HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_SET);
     }
   }
@@ -39,8 +41,6 @@ The interrupt handler toggles the variable effect\_enabled and switches the LED 
 TASK 1: Modify the alien voice`Process` function so that it swiches between a passthrough and the alien voice.
 {% endhint %}
 
-
-
 ## Solution
 
 {% tabs %}
@@ -49,38 +49,18 @@ Are you sure you are ready to see the solution? ;\)
 {% endtab %}
 
 {% tab title="Task 1" %}
-Note that, since we don't want to check for the value of `effect_enabled` _inside_ the processing loop for efficiency reasons, we simply duplicate the processing
+We don't want to check the `effect_enabled`status variable all the time, so we will place the logic at the DMA interrupt level. First, rename the function that implements the alien voice form `Process` to `VoiceEffect`. Then modify the function prototypes between the `/* USER CODE BEGIN PFP */`tags like so:
 
 ```c
-void inline Process(int16_t *pIn, int16_t *pOut, uint16_t size) {
-  static int16_t x_prev = 0;
-  static uint8_t ix = 0;
+void VoiceEffect(int16_t *pIn, int16_t *pOut, uint16_t size);
 
-  // we assume we're using the LEFT channel
+void Process(int16_t *pIn, int16_t *pOut, uint16_t size) {
   if (effect_enabled) {
-    for (uint16_t i = 0; i < size; i += 2) {
-      // simple highpass filter
-      int32_t y = (int32_t)(*pIn - x_prev);
-      x_prev = *pIn;
-
-      // modulation
-      y = y * COS_TABLE[ix++];
-      ix %= COS_TABLE_SIZE;
-
-      // rescaling to 16 bits
-      y >>= (16 - GAIN);
-
-      // duplicate output to LEFT and RIGHT channels
-      *pOut++ = (int16_t)y;
-      *pOut++ = (int16_t)y;
-      pIn += 2;
-    }
-  } else {
-    for (uint16_t i = 0; i < size; i += 2) {
-      // passthrough
+    VoiceEffect(pIn, pOut, size);
+  } else { // just pass through
+    for (uint16_t i = 0; i < size; pIn += 2, i += 2) {
       *pOut++ = *pIn;
       *pOut++ = *pIn;
-      pIn += 2;
     }
   }
 }
