@@ -1,10 +1,10 @@
 # The ON/OFF button
 
-The Nucleo board has two onboard pushbuttons. We will now use one as an ON/OFF button for the alien voice effect.
+The Nucleo board has two onboard push buttons. We will now use one as an ON/OFF button for the alien voice effect.
 
 ## Configuration <a id="extra"></a>
 
-The idea is to use the pushbutton to call an asynchronous routine in our code. To do that, we need to configure the button to trigger an interrupt and then we need to catch the interrupt in our code.
+The idea is to use the push button to call an asynchronous routine in our code. To do that, we need to configure the button to trigger an interrupt and then we need to catch the interrupt in our code.
 
 Go into CubeMX by clicking on the `ioc` file in your alien voice project; in the left panel click on "System &gt; NVIC" and enable the line "EXTI line 4 to 15" by checking the corresponding checkmark.
 
@@ -38,7 +38,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
 The interrupt handler toggles the variable effect\_enabled and switches the LED on when its value is true.
 
 {% hint style="info" %}
-TASK 1: Modify the alien voice`Process` function so that it swiches between a passthrough and the alien voice.
+TASK 1: Modify the alien voice`Process` function so that it switches between a passthrough and the alien voice.
 {% endhint %}
 
 ## Solution

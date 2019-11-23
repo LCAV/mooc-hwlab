@@ -39,7 +39,7 @@ const int16_t COS_400_32[COS_400_32_SIZE ] = {
 Let's also define a gain factor to increase the output volume. As we said before, we will use a gain that is a power of two and therefore just define its exponent. If you find that the sound is distorted, you may want to reduce this number.
 
 ```c
-#define GAIN 3  /* multiply the output by a factor of 8 */
+#define GAIN 3  /* multiply the output by a factor of 2^GAIN */
 ```
 
 ## The processing function <a id="effect"></a>
@@ -49,7 +49,7 @@ In the following version of the main processing function you will need to provid
 * we are assuming that we're using the LEFT channel for the microphone and we go through the input buffer two samples at a time, while we duplicate the output to produce a stereo signal.
 * `ix` is the [state variable](../../real-world-dsp/code-efficiency.md#state_var) that keeps track of our position in the lookup table. Since the alien voice is an _instantaneous_ transformation, this is the only global time reference that we need to have
 * the function also implements [a simple DC notch](../../real-world-dsp/signal-levels.md#removing_dc). Since this filter only requires memory of a single past input sample, there is no need to implement a circular buffer and we just use a single static variable in the function
-* [the multiplications are performed using 32-bit integers](../../real-world-dsp/code-efficiency.md#float) and the result is scaled back to 16 bits; we take the gain into account in this rescaling.
+* [the multiplications should be performed using 32-bit integers](../../real-world-dsp/code-efficiency.md#float) and the result is scaled back to 16 bits; we take the gain into account in this rescaling.
 
 ```c
 void inline Process(int16_t *pIn, int16_t *pOut, uint16_t size) {

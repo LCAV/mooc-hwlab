@@ -82,7 +82,7 @@ In the function we will use the key points we saw in the previous section
 int16_t IIR_DC(int16_t x) {
   static int16_t x_prev = 0;
   static int16_t y_prev = 0;
-  const int32_t lambda = (int_32_t)(0.9 * 0x7FFFF);
+  const int32_t lambda = (int_32_t)(0.9 * 0x7FFF);
   
   y_prev = ((lambda * y_prev) >> 16) - x_prev + x;
   x_prev = x;
