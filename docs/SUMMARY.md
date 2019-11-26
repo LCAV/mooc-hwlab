@@ -36,6 +36,8 @@
 * [Alien Voice](voice-transformers/alien-voice/README.md)
   * [Basic implementation](voice-transformers/alien-voice/alien_implementation.md)
   * [The ON/OFF button](voice-transformers/alien-voice/the-on-off-button.md)
+* [Interlude: prototyping in Python](voice-transformers/interlude-prototyping-in-python.md)
+* [Granular Synthesis](voice-transformers/granular-synthesis.md)
 * [4. DIGITAL FILTER DESIGN](filter-design/README.md)
   * [4.1 Design approaches](filter-design/approaches.md)
   * [4.2 Real-time implementation](filter-design/implementation.md)
