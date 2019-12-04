@@ -4,7 +4,7 @@
 
 One thing that you might have noticed from the passthrough example is that the output signal is not very loud. To correct this, we can add a gain factor to the `process`function that multiplies each signal sample by a constant. 
 
-In order to take advantage of the architecture of the microcontroller's internal multiplier, it is recommended to use factors that are a power of 2 since in this case a multiplication corresponds to a simple binary shift of the integer values to the left.
+In order to take advantage of the architecture of the microcontroller's internal multiplier, it is recommended to use factors that are a power of 2 since in this case a multiplication corresponds to a simple binary shift of the integer values to the left. We measured$$1\mu s$$difference in processing time when tested with the first voice transformer algorithme.
 
 ## Removing the DC offset <a id="removing_dc"></a>
 
@@ -54,21 +54,21 @@ Are you sure you are ready to see the solution? ;\)
 
 When the code is running, you can double click on any line number to add a breakpoint.
 
-We suggest you to ad a breakpoint at line 430:
+We suggest you to ad a breakpoint at line _430_:
 
-![](../.gitbook/assets/screenshot-2019-10-10-at-16.29.32-1.png)
+![Figure: Breakpoint set at line 430](../.gitbook/assets/screenshot-2019-10-10-at-16.29.32-1.png)
 
 If the micro-controller is connected and a debug session is ongoing, you will see a change in the software and the following list:
 
-![](../.gitbook/assets/screenshot-2019-10-10-at-16.32.28-1.png)
+![Figure: Execution call hierarchy when stopped at a brakepoint](../.gitbook/assets/screenshot-2019-10-10-at-16.32.28-1.png)
 
 It is the hierarchy of the function executed by the micro-controller, indeed main\(\) is the root. Please note that the button _Skip All Breakpoints_ should not be activated for the micro-controller to stop at the given line.
 
-![](../.gitbook/assets/screenshot-2019-10-10-at-16.29.58.png)
+![Figure: Breakpoint bypass button](../.gitbook/assets/screenshot-2019-10-10-at-16.29.58.png)
 
 It is then possible to right-click in the editor and press _Add Watch Expression_ you can now enter the name of the variable you want to explore and it will show up in the _Expression_ viewer panel. Unfold the array and you should see something close to this:
 
-![](../.gitbook/assets/screenshot-2019-10-10-at-16.27.39.png)
+![Figure: Variable watch panel](../.gitbook/assets/screenshot-2019-10-10-at-16.27.39.png)
 
 Notice that even if the values are fluctuating, the average is around -1540. This is the offset that we where looking for. It is introduced by the microphone and can be variable from one sample to an other.
 {% endtab %}

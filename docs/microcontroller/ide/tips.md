@@ -27,11 +27,11 @@ Don't worry you just have to stop the previously made "Debug session" as the dri
 
 ![](../../.gitbook/assets/debug_config_menu-1.png)
 
-And then you can proceed to deleting the old file and creating a new session.
+And then you can proceed to deleting the old debug configuration files and creating a new session.
 
 ![](../../.gitbook/assets/debug_config_old_name-1.png)
 
-Consequently, building the project after renaming the project and performing these steps will result in an ELF file with the new project!
+Consequently, building the project after renaming it and performing these steps will result in an ELF file with the new project's name!
 
 * You can double-click just to the left of a line number to create a breakpoint at a particular line. When running the program in "Debug" mode, the execution will stop at this line and you can resume using one of the buttons on the toolbar.
 

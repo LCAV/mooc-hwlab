@@ -13,7 +13,7 @@ The I2S bus is a 3-line serial bus consisting of:
 
 1. A **clock \(CLK\)** line that indicates the timing for each binary digit
 2. A **data** line for the actual sequence of binary digits.
-3. A **word select \(WS\)** line to indicate the beginning of a binary word.
+3. A **word select \(WS\)** line to indicate the beginning of a binary word and it's channel \(Left or Right\).
 
 A typical word transfer over the I2S bus looks like so:
 
@@ -42,9 +42,9 @@ DMA transfers occur automatically, but they need to be configured; for an input 
 * _where_ in memory the peripheral should store the data; this means that we need to set up a buffer reserved for input DMA
 * _how much_ data should a DMA transfer handle before notifying the microcontroller; this will determine the size of the DMA buffer.
 
-Obviously, yhe same design decisions need to be performed for an output DMA.
+Obviously, the same design decisions need to be performed for an output DMA.
 
-The buffer's length is a key parameter that needs to be fine-tuned to the demands of a specific audio application. In general, the longer the buffer, the fewer DMA transfers per second, which is desirable since it minimizes the number of interrupts and allows for more code optimization. Additionally, certain types of signal processing operations provide results that are dependent on the buffer length; the DFT of a signal, for instance, will provide a frequency resolution that is proportional to the buffer's length. On the other hand, a large buffer will also introduce a ssignificant _latency,_ as we need to wait for more samples to arrive before we can begin processing. For real-time audio applications, having a low latency is extremely important for the user experience and so we are in a situation of conflicting requirements for which a suitable compromise needs to be determined on a case-by-case basis.
+The buffer's length is a key parameter that needs to be fine-tuned to the demands of a specific audio application. In general, the longer the buffer, the fewer DMA transfers per second, which is desirable since it minimizes the number of interrupts and allows for more code optimization. Additionally, certain types of signal processing operations provide results that are dependent on the buffer length; the DFT of a signal, for instance, will provide a frequency resolution that is proportional to the buffer's length. On the other hand, a large buffer will also introduce a significant _latency,_ as we need to wait for more samples to arrive before we can begin processing. For real-time audio applications, having a low latency is extremely important for the user experience and so we are in a situation of conflicting requirements for which a suitable compromise needs to be determined on a case-by-case basis.
 
 For a refresher on buffering in real-time applications, please refer to Lecture 2.2.5b in the [second DSP module](https://www.coursera.org/learn/dsp2/) on Coursera.
 

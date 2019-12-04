@@ -15,7 +15,7 @@ Macros are usually defined before the `main` function; we will place our macros 
 As an example, we will begin by creating _macros_ to change the logical level of the **MUTE** pin. As in the blinking LED example, we will be using HAL library calls in order to modify the state of the **MUTE** GPIO pin.
 
 {% hint style="info" %}
-TASK 1: Complete the two macros below - `MUTE` and `UNMUTE` - in order to mute/unmute the output. Simply replace the `XXX` the definitions with either`GPIO_PIN_SET` or `GPIO_PIN_RESET` according to whether you need a HIGH or LOW level.  
+TASK 1: Complete the two macros below  -`MUTE` and `UNMUTE`-  in order to mute/unmute the output. Simply replace the `XXX` the definitions with either`GPIO_PIN_SET` or `GPIO_PIN_RESET` according to whether you need a HIGH or LOW level.  
   
 _Hint: you should check the_ [_datasheet of the DAC_](https://www.nxp.com/docs/en/data-sheet/UDA1334ATS.pdf) _to determine whether you need a HIGH \(value to turn on the mute function of the DAC._
 {% endhint %}
@@ -108,7 +108,7 @@ This will be the main processing function which will be invoked by the interrupt
 
 As previously mentioned, the STM32 board uses DMA to transfer data in and out of memory from the peripherals and issues interrupts when the DMA buffer is half full and when it's full.
 
-The HAL family of instructions allows us the define [callback functions](https://www.reddit.com/r/DSP/comments/53t2k3/whats_an_audio_callback_function/) triggered by these interrupts. Add the following function definitions for the callbacks, covering the four cases of two input and output DMAs times two interrupt signals:
+The HAL family of instructions allows us to define [callback functions](https://www.reddit.com/r/DSP/comments/53t2k3/whats_an_audio_callback_function/) triggered by these interrupts. Add the following function definitions for the callbacks, covering the four cases of two input and output DMAs times two interrupt signals:
 
 ```c
 void HAL_I2S_RxHalfCpltCallback(I2S_HandleTypeDef *hi2s) {
@@ -187,7 +187,7 @@ This is accomplished by the following lines:
 UNMUTE
 SET_MIC_LEFT
 
-// begin DMAs
+// Start DMAs
 HAL_I2S_Transmit_DMA(&hi2s1, (uint16_t*) dma_out, FULL_BUFFER_SIZE);
 HAL_I2S_Receive_DMA(&hi2s2, (uint16_t*) dma_in, FULL_BUFFER_SIZE);
 ```
@@ -232,7 +232,7 @@ or
 GPIO_PIN_RESET
 ```
 
-The table 6 section 8.6.3 of the DAC [datasheet](https://www.nxp.com/docs/en/data-sheet/UDA1334ATS.pdf) sais: LOW = mute off, HIGH = mute on.  
+The table 6 section 8.6.3 of the DAC [datasheet](https://www.nxp.com/docs/en/data-sheet/UDA1334ATS.pdf) says: LOW = mute off, HIGH = mute on.  
 We will thus define the following macros:
 
 ```c
@@ -246,7 +246,7 @@ We will thus define the following macros:
 {% endtab %}
 
 {% tab title="Task 2" %}
-In the same way as we did for the DAC, we will look in the microphone datasheet. the information we are looking for in on page 6 of the datasheet: _The Tri-state Control \(gray\) uses the state of the WS and SELECT inputs to determine if the DATA pin is driven or tri-stated. This allows 2 microphones to operate on a single I2S port. When SELECT =HIGH the DATA pin drives the SDIN bus when WS=HIGH otherwise DATA= tri-state. When SELECT =LOW the DATA pin drives the SDIN bus when WS=LOW otherwise DATA= tri-state._ As the WS pin is LOW when the left signal is transmitted \(cf. fig. 5 of the DAC datasheet\), we will define the macro as following:
+In the same way as we did for the DAC, we will look in the microphone datasheet. The information we are looking for is on page 6 of the datasheet: _The Tri-state Control \(gray\) uses the state of the WS and SELECT inputs to determine if the DATA pin is driven or tri-stated. This allows 2 microphones to operate on a single I2S port. When SELECT=HIGH the DATA pin drives the SDIN bus when WS=HIGH otherwise DATA=tri-state. When SELECT=LOW the DATA pin drives the SDIN bus when WS=LOW otherwise DATA=tri-state._ As the WS pin is LOW when the left signal is transmitted \(cf. fig. 5 of the DAC datasheet\), we will define the macro as following:
 
 ```c
 /* USER CODE BEGIN Includes */

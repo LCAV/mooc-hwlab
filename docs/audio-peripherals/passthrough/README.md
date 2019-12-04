@@ -12,7 +12,5 @@ TASK: This is a task for you!
 
 A passthrough is a great _sanity check_ when first beginning with an audio DSP system. Moreover, it serves as a useful starting point for new projects, as we will see in the following chapters when we develop more complicated programs.
 
-![](../../.gitbook/assets/final_wiring.jpg)
-
-_Figure: Final wiring._
+![Figure: Final wiring.](../../.gitbook/assets/final_wiring.jpg)
 

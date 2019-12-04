@@ -2,9 +2,9 @@
 
 Hi, and welcome to this final module of the DSP course, in which we will learn how to build a real time signal processing system using a general-purpose microcontroller unit. 
 
-Developing DSP applications for a low-level device does not affect the _theory_ behind the algorithms that we implement but the constraints imposed by a low-power CPU will demand that we pay particular attention to details such as code efficiency, memory use and input/output routines.
+Developing DSP applications for a low-level device does not affect the _theory_ behind the algorithms that we implemen. However, the constraints imposed by a low-power CPU will demand that we pay particular attention to details such as code efficiency, memory use and input/output routines.
 
-In addition to that, working "close to the metal", so to speak, will give us the chance to look in some detail at the often neglected _physical_ aspect of DSP, namely, the actual electronic components and the signaling protocols that are used to move data around in a complex circuit.
+In addition to that, working "close to the metal", so to speak, will give us the chance to look in some detail at the often neglected _physical_ aspect of DSP, namely, the actual electronic components and the signalling protocols that are used to move data around in a complex circuit.
 
 We will focus this module on **audio signal processing**, so as to build a system whose functions we can immediately enjoy; in particular, we will design and implement a variety of **voice scramblers**, that is, devices that you can use to alter your speaking voice in real time and sound, say, like a chipmunk or like Darth Vader.
 

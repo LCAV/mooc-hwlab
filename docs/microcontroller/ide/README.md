@@ -1,6 +1,6 @@
 # STM32 Cube IDE
 
-The ST Nucleo board is a microcontroller that is both:
+The ST Nucleo board hosts a microcontroller that is both:
 
 * highly _configurable_, in the sense that some of its electrical pins can be rerouted in software and assigned to specific function
 * _programmable at a high level,_ since we can use C code and use a compiler to produce the microcode that will be uploaded onboard
@@ -11,9 +11,9 @@ To handle this great flexibility, ST provides us with an integrated development 
 
 The IDE includes a chip configuration graphical interface called CubeMX:
 
-![](../../.gitbook/assets/screenshot-2019-09-25-at-17.51.49-1-1.png)
+![Figure: Screenshot of STM32CubeMX](../../.gitbook/assets/screenshot-2019-09-25-at-17.51.49-1-1.png)
 
-and an Eclipse-based programming enviromnent:
+and an Eclipse-based programming environment:
 
 ![Figure: Screenshot of STM32CubeIDE.](../../.gitbook/assets/screenshot-2019-09-25-at-12.18.18-1.png)
 
@@ -25,7 +25,7 @@ The following steps are the same for Windows, Linux, and MacOS and they simply c
 
 ### Download instructions
 
-The following steps are the same for Windows, Linux, and MacOS as they simply consist of downloading the installation files. Please refer to the distributor website for detailed installation instructions. Please refer to the corresponding subsection after the following instructions for our additional remarks.
+Please refer to the distributor website for detailed installation instructions. Please refer to the corresponding subsection after the following instructions for our additional remarks.
 
 1\) Go on [ST official download page](https://www.st.com/en/development-tools/stm32cubeide.html) with your favorite browser.
 
@@ -37,7 +37,7 @@ The following steps are the same for Windows, Linux, and MacOS as they simply co
 
 5\) When you will have completed the log-in, the download will normally start.
 
-6\) Open the installer and follow the steps. You need to perform a standard installation. Some driver will also be installed during the process. Don't skip this.
+6\) Open the installer and follow the steps. You need to perform a standard installation. Some driver will also be installed during the process. Don't skip this, otherwise you will not be able to download your code into the microcontroller.
 
 [Here](tips.md), we provide some useful shortcuts tips when working with Eclipse-based tools like SW4STM32.
 
@@ -51,5 +51,5 @@ You may encounter the following dialog on macOS, please follow the instructions 
 
 1\) Open your _System Preferences_ and navigate to _Security & Privacy_
 
-2\) _\_In the \_General_ tab, click _Open Anyway_
+2\) In the _General_ tab, click _Open Anyway_
 

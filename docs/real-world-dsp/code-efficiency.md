@@ -8,7 +8,7 @@ In [Lecture 2.2.5a](https://www.coursera.org/learn/dsp2/lecture/6oXrx/2-2-5-a-im
 
 As a quick recap, remember that if you need to store past values of a signal, the best solution is to use a circular buffer; assume that you need to access at most $$M$$past values of the signal $$x[n]$$:
 
-* set up an array `x_buf[]` of length$$M$$\(ofthe appropriate data type\)
+* set up an array `x_buf[]` of length$$M$$\(of the appropriate data type\)
 * set up an index variable `ix`, initialized at zero
 * every time you receive a new sample, store it in the array at `ix` and increment `ix` modulo $$M;$$
 
@@ -42,7 +42,7 @@ $$
 \cos x = x - \dfrac{x^2}{2!} + \dfrac{x^4}{4!} - \dfrac{x^6}{6!} + \mathcal{O}(x^8)
 $$
 
-clearly requires a significant number of multiplications. A computationally cheaper alternative is based on the use of a [lookup table](https://en.wikipedia.org/wiki/Lookup_table). In a lookup table, we precompute the sinusoidal values that we need and use the time index $$n$$simply  to retrieve the correct value. 
+clearly requires a significant number of multiplications. A computationally cheaper alternative is based on the use of a [lookup table](https://en.wikipedia.org/wiki/Lookup_table). In a lookup table, we precompute the sinusoidal values that we need and use the time index$$n$$simply to retrieve the correct value. 
 
 In sinusoidal modulation we need to know the values of the sequence $$\cos(\omega_c n)$$ for all values of $$n$$. However, if $$\omega_c$$is a rational multiple of $$2\pi$$, that is, if $$\omega_c = 2\pi(M/N)$$for $$M,N \in \mathbb{N}$$, then the sequence of sinusoidal values repeats exactly every $$N$$samples. 
 
@@ -69,9 +69,9 @@ All discrete-time signal processing data and algorithm make use of a free "time"
 * start the processing with all buffers empty and with $$n=0$$\(initial conditions\)
 * store $$n$$in an unsigned integer variable and increment it at each iteration.
 
-The second point in particular means that, in real time applications that may run for an arbitrary amount of time,  $$n$$will increase until it reaches the maximum positive value that can be expressed by the variable and then roll over to zero. Since we certainly do not want this rollover to happen at random times and since the roll over is unavoidable, we need to establish a strategy to carry it out explicitly.
+The second point in particular means that, in real time applications that may run for an arbitrary amount of time,$$n$$will increase until it reaches the maximum positive value that can be expressed by the variable and then roll over to zero. Since we certainly do not want this rollover to happen at random times and since the roll over is unavoidable, we need to establish a strategy to carry it out explicitly.
 
-In practice, all real-time applications only use circular buffers, either explicitly \(to access past input and output values or to access lookup tables\) or implicitly \(to compute the output of functions that are inherently periodic\). As a consequence, we never need the _exact_ value of $$n$$but only the position of a set of indices into synchronous circular buffers.
+In practice, all real-time applications only use circular buffers, either explicitly \(to access past input and output values or to access lookup tables\) or implicitly \(to compute the output of functions that are inherently periodic\). As a consequence, we never need the _exact_ value of$$n$$but only the position of a set of indices into synchronous circular buffers.
 
 In our code, therefore, we will explicitly roll over these indexes independently and incrementally. To this end:
 

@@ -25,7 +25,7 @@ Since we are all more familiar with numbers in base 10, let's start with a 2-dig
 | 0.1234 | +12 |
 | 1.3 | +99 |
 
-Note that since we can  only have 2 digit, the number 0.1234 will have to be truncated to the representation 12. Similarly, we will not be able to encode numbers greater that 0.99 or smaller than -0.99, which will induce an _overflow_ in the representation. That's OK, a finite number of digits involves a loss of precision and this makes sense.
+Note that since we can only have 2 digit, the number 0.1234 will have to be truncated to the representation 12. Similarly, we will not be able to encode numbers greater that 0.99 or smaller than -0.99, which will induce an _overflow_ in the representation. That's OK, a finite number of digits involves a loss of precision and this makes sense.
 
 It is clear that in this representation we go from decimal numbers to integers by multiplying the decimal number by $$10^2 = 100$$ \(see the 2 in the exponent: that's our number of digits\) and taking the integer part of the result. Vice-versa, we can go back to the decimal representation by dividing the integer by 100.
 
@@ -88,7 +88,7 @@ $$
 \frac{a+b}{2}
 $$
 
-In theory, the way in which the average is computed makes no difference and, if $$a=0.72$$and $$b=0.55$$, we would usually compute the sum first and then divide by two:
+In theory, the way in which the average is computed makes no difference and, if$$a=0.72$$and$$b=0.55$$, we would usually compute the sum first and then divide by two:
 
 $$
 (0.72 + 0.55) \times 0.5 = 0.623.

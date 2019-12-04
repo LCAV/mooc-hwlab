@@ -1,12 +1,12 @@
 # A simple test project
 
-In this section we will guide you step by step through the process of coding a simple application for the microcontroller, connecting the board, and running the application on the microcontroller. This first application does not use any peripherals and simply makes an LED blink, it will be a basic project template that we can reuse many times later.
+In this section we will guide you step by step through the process of coding a simple application for the microcontroller, connecting the board, and running the application on the microcontroller. This first application does not use any peripherals and simply makes an onboard LED blink, it will be a basic project template that we can reuse many times later.
 
 ## Open the IDE and select a workspace <a id="init_code"></a>
 
 1\) Open the STM32CubeIDE that you just installed in the previous section.
 
-2\) Select a workspace, this is going to be the folder where all project are going to be stored. You can create multiple workspaces if you work on different projects.
+2\) Select a workspace, this will be the folder where all project are going to be stored. You can create multiple workspaces if you work on different projects.
 
 ![Workspace selection](../.gitbook/assets/screenshot-2019-10-01-at-11.34.37.png)
 
@@ -26,7 +26,7 @@ If you have a workspace that already contains project, the _new project button_ 
 
 ## Configuring the hardware with CubeMX <a id="init_code"></a>
 
-We will be using CubeMX's graphical interface to generate the initialization steps for the board and its peripherals. Once the board is configured, the IDE will translate our configuration choices into automatically-generated code
+We will be using CubeMX's graphical interface to generate the initialization steps for the board and its peripherals. Once the board is configured, the IDE will translate our configuration choices into automatically-generated _C_ code.
 
 ### Board selection
 
@@ -34,7 +34,7 @@ When all necessary downloads are completed, you should eventually see something 
 
 ![](../.gitbook/assets/screenshot-2019-09-25-at-15.54.25-2-1-1.png)
 
-Make sure the "Board Selector" tab is the active one \(top-left corner\) and look for our board, the "NUCLEO-F072RB" \(you can use the "Part Number Search" facility\). Double-click the board in the search results. Note that if you are using a different ST board that [fulfills the requirements for our projects](../bill-of-materials.md), you should select the model you have.
+Make sure the "Board Selector" tab is the active one \(top-left corner\) and look for our board, the "NUCLEO-F072RB" \(you can use the "Part Number Search" facility\). Double-click the board in the search results. Note that if you are using a different ST board that [fulfills the requirements for our projects](../bill-of-materials.md), you should select the model you actually have.
 
 ![](../.gitbook/assets/screenshot-2019-10-07-at-13.36.57.png)
 
@@ -139,7 +139,7 @@ Just press _OK_ and then _Yes._
 
 ![](../.gitbook/assets/screenshot-2019-10-07-at-15.11.56.png)
 
-First press _Open in update mode,_ and then _Upgrade_ the firmware of your Nucleo.
+When the Nucleo is reconnected. First press _Open in update mode,_ and then _Upgrade_ the firmware of your Nucleo.
 
 ![](../.gitbook/assets/screenshot-2019-10-07-at-15.15.01.png)
 

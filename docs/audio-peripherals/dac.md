@@ -1,25 +1,23 @@
 # The stereo DAC
 
-The microphone we are using measures an _analog_ signal and returns a _digital_ signal, which can be further processed by our microcontroller entirely in the digital domain. In order to playback or listen to this digital signal, it is necessary to convert it back to analog form; this can be done with a DAC \(Digital-to-Analog Converter\). We will be using Adafruit's [I2S Stereo Decoder Breakout](https://learn.adafruit.com/adafruit-i2s-stereo-decoder-uda1334a/overview), which contains a DAC, an audio jack for connecting headphones, and the necessary additional components. In the following subsections, we will explain the important inputs/outputs of the DAC we will be using, the I2S stereo output protocol our application will have to conform to, and a bit about the breakout board from Adafruit.
+The microphone we are using measures an _analog_ signal and returns a _digital_ signal, which can be further processed by our microcontroller entirely in the digital domain. In order to playback or listen to this digital signal, it is necessary to convert it back to analog form; this can be done with a DAC \(Digital-to-Analog Converter\). We will be using Adafruit's [I2S Stereo Decoder Breakout](https://learn.adafruit.com/adafruit-i2s-stereo-decoder-uda1334a/overview), which contains a DAC, an audio jack for connecting headphones, and the necessary additional components. In the following subsections, we will explain the important inputs/outputs of the DAC we will be using, the I2S stereo output protocol our application will have to conform to, and an explanation about the breakout board from Adafruit.
 
 ## DAC inputs/outputs
 
 The DAC component in the Adafruit breakout is the [UDA1334ATS](https://www.nxp.com/docs/en/data-sheet/UDA1334ATS.pdf) by NXP, whose block diagram is shown below.
 
-![](../.gitbook/assets/block_diagram.png)
+![Figure: UDA1334ATS block diagram, p. 5 of forementioned datasheet.](../.gitbook/assets/block_diagram.png)
 
-_Figure: UDA1334ATS block diagram,_ p. 5 of [datasheet](https://www.nxp.com/docs/en/data-sheet/UDA1334ATS.pdf).
+\_\_
 
 A couple interesting things to take note of:
 
 1. The "DIGITAL INTERFACE" block takes an I2S input, and therefore exposes the three lines **BCK**, **WS**, **DATA** that are used in the I2S protocol. _Note: I2S input is not a necessary feature of DACs; other input formats are also possible._
-2. This component has two DACs; one for the left channel \(**VOUTL**\)and another for the right channel \(**VOUTR**\) for stereo output.
+2. This component has two DACs; one for the left channel \(**VOUTL**\) and another for the right channel \(**VOUTR**\) for stereo output.
 
 All input and output pins are briefly explained in the figure below.
 
-![](../.gitbook/assets/pinning.png)
-
-_Figure: UDA1334ATS pinning,_ p. 6 of [datasheet](https://www.nxp.com/docs/en/data-sheet/UDA1334ATS.pdf).
+![Figure: UDA1334ATS pinning, p. 6 of forementioned datasheet.](../.gitbook/assets/pinning.png)
 
 Compared to the [microphone](microphone.md) which only had six pins, the above list of pins may seem overwhelming! But not to worry; we will explain the important settings for our application, referred to as "audio mode" in the [datasheet](https://www.nxp.com/docs/en/data-sheet/UDA1334ATS.pdf). Moreover, as we will see later on, the breakout board by Adafruit nicely abstracts the interfacing between our microcontroller and the UDA1334ATS component.
 
@@ -29,7 +27,7 @@ PLL stands for "Phase-locked loop"; you can find more information about PLLs on 
 
 ### Input configuration \(p. 9 of [datasheet](https://www.nxp.com/docs/en/data-sheet/UDA1334ATS.pdf)\)
 
-In addition to I2S input, the DAC also accepts other formats. Therefore, we must explicitly configure the chip for it to know to expect an I2S input. This is done by setting both **SFOR1** \(Pin 7\) and **SFOR0** \(Pin 11\) to LOW. **BCK** \(Pin 1\), **WS** \(Pin 2\), and **DATAI** \(Pin 3\) will serve as our I2S inputs.
+In addition to I2S input, the DAC also accepts other formats. Therefore, we must explicitly configure the chip to expect an I2S input. This is done by setting both **SFOR1** \(Pin 7\) and **SFOR0** \(Pin 11\) to LOW. **BCK** \(Pin 1\), **WS** \(Pin 2\), and **DATAI** \(Pin 3\) will  then serve as our I2S inputs.
 
 De-emphasis is a low-pass filter to undo a high frequency boost \(aka pre-emphasis\) that may have been performed at the ADC \(Analog-to-Digital Converter\). We do not expect any pre-emphasis and this only applies for 44.1 kHz so we can set **DEEM/CLKOUT** \(Pin 9\) to LOW for de-emphasis off.
 
@@ -61,17 +59,13 @@ In the figure below, we have a timing diagram for an I2S input signal. We can se
 
 Finally, the first requirement will be met as we have that the **BCK** frequency equals 64 times the **WS** frequency for the microphone.
 
-![](../.gitbook/assets/i2s_timing.png)
-
-_Figure: UDA1334ATS I2S timing,_ p. 10 of [datasheet](https://www.nxp.com/docs/en/data-sheet/UDA1334ATS.pdf).
+![Figure: UDA1334ATS I2S timing, p. 10 forementioned datasheet.](../.gitbook/assets/i2s_timing.png)
 
 ## UDA1334ATS Wiring / Adafruit Breakout
 
 As we are interested in using the UDA1334ATS component under "audio mode", this requires a wiring as shown in the figure below.
 
-![](../.gitbook/assets/wiring.png)
-
-_Figure: UDA1334ATS audio mode wiring,_ p. 15 of [datasheet](https://www.nxp.com/docs/en/data-sheet/UDA1334ATS.pdf).
+![Figure: UDA1334ATS audio mode wiring, p. 15 of formentioned datasheet.](../.gitbook/assets/wiring.png)
 
 In addition to the capacitors and resistors needed for the UDA1334ATS component, we would also like to listen to the resulting audio output with heaphones. For this, an audio jack would be ideal.
 

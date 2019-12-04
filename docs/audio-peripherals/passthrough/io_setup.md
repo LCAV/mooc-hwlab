@@ -4,7 +4,7 @@ The initialization code we generated in the [blinking LED example](../../microco
 
 ## Create a new project
 
-First_**,**_ let's make a copy of our working LED blinking project. We want to keep tracks of old projects in order to be able to go back to a known working configuration if something is not functioning anymore. To copy the project use the "Project Explorer" of the SW4STM32 software and a simple copy/paste operation. When you paste the project, a pop-up will ask you the rename the copied project: we recommend choosing a name that includes the current date and the word "passthrough" in it for bookkeeping purposes. 
+First_**,**_ let's make a copy of our working LED blinking project. We want to keep tracks of old projects in order to be able to go back to a known working configuration if something is not functioning anymore. To copy the project use the "Project Explorer" of the SW4STM32 software. Open the project you want and do a simple copy/paste operation. When you paste the project, a pop-up will ask you the rename the copied project: we recommend choosing a name that includes the current date and the word "passthrough" in it for bookkeeping purposes. 
 
 To finish the copying process:
 
@@ -35,7 +35,7 @@ Move your attention now to the "Configuration" panel below; we'll need to set up
 
 Select the "Parameter Setting" tab and set the transmission mode to "Mode Master Transmit" and the Communication Standard to "I2S Philips".
 
-Now let's configure the DMA transfers. Select the "DMA Settings" tab and press "Add". Adjust the settings so that DMA Request is set to "SPI1\_TX, Data Width is set to "Half Word" and Mode is set to "Circular", as in the screenshot below.
+Now let's configure the DMA transfers. Select the "DMA Settings" tab and press "Add". Adjust the settings so that DMA Request is set to "SPI1\_TX, Data Width is set to "Half Word" and Mode is set to "Circular", as in the screenshot below. Note that the DMA stream can differ if you are using a different microcontroler as it is dependent on the physical implementation of the internal circuitry.
 
 ![](../../.gitbook/assets/dma.jpg)
 
@@ -53,12 +53,12 @@ Repeat the previous steps for I2S2 with the following differences:
 Finally, complete the configuration:
 
 {% hint style="info" %}
-TASK 2: Finish the set up for I2S1 so that it can be used to communicate with the microphone by setting the Data and Frame Format and the Audio Frequency. You will have to check the [microphone datasheet](https://cdn-shop.adafruit.com/product-files/3421/i2S+Datasheet.PDF) in order to find the correct parameters \(sampling frequency, data and frame format\).
+TASK 2: Finish the set up for I2S2 so that it can be used to communicate with the microphone by setting the Data and Frame Format and the Audio Frequency. You will have to check the [microphone datasheet](https://cdn-shop.adafruit.com/product-files/3421/i2S+Datasheet.PDF) in order to find the correct parameters \(sampling frequency, data and frame format\).
 
 _Hint: make sure that the DAC and the microphone have the same "Selected Audio Frequency" while satisfying the specifications detailed on the datasheets! An audio frequency below the specified limits will most likely result in_ [_aliasing_](http://www.dspguide.com/ch3/2.htm)_._
 {% endhint %}
 
-As a final sanity check, click on "NVIC" under "System"  in the left column and ensure that the interrupts are enabled for the selected DMA channels, as below.
+As a final sanity check, click on "NVIC" under "System"  in the left column and ensure that the interrupts are enabled for both selected DMA channels, as below.
 
 ![](../../.gitbook/assets/screenshot-2019-09-25-at-17.54.49-1.png)
 
@@ -125,7 +125,7 @@ The **communication standard** is "I2S" or "LSB-justified" as shown in first par
 
 This datasheet gives more information about the **Data and Frame format**. We will chose the same parameter as for I2S1 but figure 7 of the datasheet shows us that the frame is 32bits and that the microphone will send 18 bits with the actual value, then 6 of 0 state and then 8 of tri-state. We will chose "16 Bits Data on 32 Bits Frame" in order to use 16Bits variable and have a faster processing.
 
-The **Audio frequency** have to be defined. This device is a bit more restrictive that the DAC. Indeed in page 7 of the datasheet we can read the following: _Clock frequencies from 2.048Mhz to 4.096MHz are supported so sampling rates from 32KHz to 64KHz can be had by changing the clock frequency._ In this case we clearly see that a frequency slower than 32kHz will not work properly.
+The **Audio frequency** have to be defined. This device is a bit more restrictive that the DAC. Indeed in page 7 of the datasheet we can read the following: _Clock frequencies from 2.048Mhz to 4.096MHz are supported so sampling rates from 32KHz to 64KHz can be had by changing the clock frequency._ In this case we clearly see that a frequency slower than 32kHz will theoretically not work properly.
 {% endtab %}
 {% endtabs %}
 
