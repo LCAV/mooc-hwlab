@@ -1,12 +1,12 @@
 # The ON/OFF button
 
-The Nucleo board has two onboard push buttons. We will now use one as an ON/OFF button for the alien voice effect.
+The Nucleo board has a user programable push button.  We will now use it as an ON/OFF button for the alien voice effect.
 
 ## Configuration <a id="extra"></a>
 
 The idea is to use the push button to call an asynchronous routine in our code. To do that, we need to configure the button to trigger an interrupt and then we need to catch the interrupt in our code.
 
-Go into CubeMX by clicking on the `ioc` file in your alien voice project; in the left panel click on "System &gt; NVIC" and enable the line "EXTI line 4 to 15" by checking the corresponding checkmark.
+Go into CubeMX by clicking on the `ioc` file in your alien voice project; in the left panel click on "System &gt; NVIC" and enable the line "EXTI line 4 to 15" by checking the corresponding checkmark. Indeed PC13 is linked to EXTI13 in the hardware of the microcontroler because interrupts are very fast access to the core of the system.
 
 Always in CubeMX, verify that the label for pin PA5 is "LD2" and the label for pin PC13 is "B1".
 
@@ -38,7 +38,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
 The interrupt handler toggles the variable effect\_enabled and switches the LED on when its value is true.
 
 {% hint style="info" %}
-TASK 1: Modify the alien voice`Process` function so that it switches between a passthrough and the alien voice.
+TASK 1: Modify the alien voice`Process`function so that it switches between a passthrough and the alien voice.
 {% endhint %}
 
 ## Benchmarking
@@ -96,7 +96,7 @@ void Process(int16_t *pIn, int16_t *pOut, uint16_t size) {
 }
 ```
 
-You should find that, while the passthrough requires approximately 33 microseconds, the alien voice effec requires 94 microseconds.
+You should find that, while the passthrough requires approximately 33 microseconds, the alien voice effect requires 94 microseconds.
 {% endtab %}
 {% endtabs %}
 

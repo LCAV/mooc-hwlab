@@ -10,5 +10,5 @@ In the notebook you will find a theoretical explanation of the algorithms that w
 
 Reading and understanding the notebook is fundamental to understanding the sections that follow since, from now on, we will focus solely on the implementation details associated to our specific hardware and on the need to implement the algorithms in strict real time.
 
-![the Voice Transformer Jupyter notebook](../.gitbook/assets/screenshot-3.jpg)
+![Figure: The Voice Transformer Jupyter notebook](../.gitbook/assets/screenshot-3.jpg)
 

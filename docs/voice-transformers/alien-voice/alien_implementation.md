@@ -1,6 +1,6 @@
 # Basic implementation
 
-Assuming you have successfully implemented the [passthrough](../../audio-peripherals/passthrough/), you can simply copy and paste that project from within the STM32CubeIDE software. We recommend choosing a name with the current date and `"alien_voice"` in it. Remember to delete the binary \(ELF\) file inside the copied project.
+Assuming you have successfully implemented the [passthrough](../../audio-peripherals/passthrough/), you can simply copy and paste that project from within the STM32CubeIDE environment. We recommend choosing a name with the current date and `"alien_voice"` in it. Remember to delete the old binary \(ELF\) file inside the copied project.
 
 ## Lookup table
 
@@ -46,7 +46,7 @@ Let's also define a gain factor to increase the output volume. As we said before
 
 In the following version of the main processing function you will need to provide a couple of lines yourself. In the meantime please note the following:
 
-* we are assuming that we're using the LEFT channel for the microphone and we go through the input buffer two samples at a time, while we duplicate the output to produce a stereo signal.
+* we are assuming that we're using the LEFT channel for the microphone and we go through the input buffer two samples at a time, while we duplicate the output to produce a signal to both ears.
 * `ix` is the [state variable](../../real-world-dsp/code-efficiency.md#state_var) that keeps track of our position in the lookup table. Since the alien voice is an _instantaneous_ transformation, this is the only global time reference that we need to have
 * the function also implements [a simple DC notch](../../real-world-dsp/signal-levels.md#removing_dc). Since this filter only requires memory of a single past input sample, there is no need to implement a circular buffer and we just use a single static variable in the function
 * [the multiplications should be performed using 32-bit integers](../../real-world-dsp/code-efficiency.md#float) and the result is scaled back to 16 bits; we take the gain into account in this rescaling.
