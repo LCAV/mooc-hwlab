@@ -4,7 +4,7 @@ Coding a "real-world" DSP application on dedicated hardware is a bit of a shock 
 
 ## float vs. int <a id="float"></a>
 
-Floating point numbers, as implemented in most architecture today, free us of the need to explicitly consider the _range_ of the numeric values that appear in our algorithm. Although not without caveats, a 64-bit `double` in C is pretty much equivalent to an ideal real number for most intents and purposes, with a dynamic range \(that is, the ratio between the smalles and largest numbers that can be represented\) in excess of $$10^{600}$$.
+Floating point numbers, as implemented in most architecture today, free us of the need to explicitly consider the _range_ of the numeric values that appear in our algorithm. Although not without caveats, a 64-bit `double` in C is pretty much equivalent to an ideal real number for most intents and purposes, with a dynamic range \(that is, the ratio between the smallest and largest numbers that can be represented\) in excess of $$10^{600}$$.
 
 However, operations with floating point variables can take significantly more time than the same operations with integer variables on a microcontroller; on the Nucleo, for instance, we noticed that an implementation with floating-point variables can take up to 35% more processing time than an equivalent implementation with integer variables
 
@@ -38,7 +38,7 @@ We can also choose at one point to, say, _increase the precision_ of our represe
 | 0.1234 | +12340 |
 | 1.3 | +99999 |
 
-It's clear that can convert a 2-digit representation into a 5-digit representation by adding three zeros \(i.e. by multiplying by 1000\), and vice versa. Note however that increasing the precision does not protect us against overflow: the maximum range of our variables does not change in fixed point, only the granularity of the representation.
+It's clear that we can convert a 2-digit representation into a 5-digit representation by adding three zeros \(i.e. by multiplying by 1000\), and vice versa. Note however that increasing the precision does not protect us against overflow: the maximum range of our variables does not change in fixed point, only the granularity of the representation.
 
 ## Fixed-point arithmetic
 
@@ -46,7 +46,7 @@ The tricky part with fixed-point is when we start to do math. Let's have a quick
 
 ### Multiplication
 
-The first obvious thing is that when we multiply two 2-digit integer the result can take up to four digits. This case is however easy to handle because it only requires renormalization and it entails "simply" a loss of precision but not overflow.
+The first obvious thing is that when we multiply two 2-digit integers the result can take up to four digits. This case is however easy to handle because it only requires renormalization and it entails "simply" a loss of precision but not overflow.
 
 For example, if we were to multiply two decimal numbers together, we would have something like:
 
@@ -80,9 +80,9 @@ $$
 (+72) + (+55) = 127 > 99
 $$
 
-The result is not representable with two digits and if we cap it at 99 we have a type of distortion that is very different from the rounding we performed in the case of multiplication. 
+The result is not representable with two digits and if we cap it at 99 we have a type of distortion that is very different from the rounding that we performed in the case of multiplication. 
 
-There is no easy solution to this problem and often it all depends on coding operations in a smart way to avoid overflow. For instance, suppose we want to compute the average of two numbers:
+There is no easy solution to this problem and often it all depends on writing the code that performs the required operations in a smart way that avoids overflow \(or makes it very unlikely\). For instance, suppose we want to compute the average of two numbers:
 
 $$
 \frac{a+b}{2}
@@ -100,7 +100,7 @@ $$
 [((+72) + (+55)) \times (+50)] = [(+99) \times (+50)] = 49
 $$
 
-Which is a totally wrong result. On the other hand, suppose we compute the average as $$a/2 + b/2$$. In fixed point this becomes
+which is a _really_ wrong value. On the other hand, suppose we compute the average as $$a/2 + b/2$$. In fixed point this becomes
 
 $$
 [(+72) \times (+50)] + [(+55) \times (+50)] =  (+36) + (+27) = (+63)
@@ -109,4 +109,6 @@ $$
 which is a totally acceptable approximation of the average's true value!
 
 ## Binary representation
+
+
 
