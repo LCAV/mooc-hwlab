@@ -1,0 +1,43 @@
+# Preliminaries
+
+The key technique behind simple pitch shifting is that of playing the audio file either more slowly \(to lower the pitch\) or faster \(to raise the pitch\). This is just like spinning an old record at a speed different than the nominal RPM value.
+
+In the digital world we can always simulate the effect of changing an analog playing speed by using fractional resampling; for a refresher on this technique please refer to [Lecture 3.3.2 on Coursera](https://www.coursera.org/learn/dsp3/home/week/3). Resampling, however, has two problems:
+
+* the pitch of speech is changed but so is its speed, which we don't want;
+* the ratio of output to input samples for the operation is not one, so it cannot be implemented in real time.
+
+To overcome these limitations, we can use _granular synthesis_: we split the input signal into chunks of a given length \(the grains\) and we perform resampling on each grain independently to produce a sequence of equal-length output grains.
+
+### Grain rate vs length
+
+In order to implement granular synthesis in real time we need to take into account the concepts of grain _length_ and grain _stride_. A grain should be long enough so that it contains enough pitched speech for resampling to work; but it should also be short enough so that it doesn't straddle too many different sounds in an utterance. Experimentally, the best results for speech are obtained using grains between 20 and 40ms.
+
+The grain stride indicates the displacement in samples between successive grains and it is a function of grain length and of the _overlap_ between successive grains. With no overlap, the grain stride is equal to the grain length; however, overlap between neighboring grains is essential to reduce the artifacts due to the segmentation. 
+
+Call $$\rho$$the amount of overlap \(as a percentage\) between neighboring grains. With $$\rho = 0$$there is no overlap whereas with $$\rho = 1$$all the samples in a grain overlap with another grain. The relationship between grain length $$L$$and grain stride $$S$$is $$L = (1+\rho)S$$. This is illustrated in the following figure for varying degrees of overlap and a stride of 100 samples:
+
+
+
+Note that the stride is constant for all amounts of overlap; this is the key observation that will allow us to implement granular synthesis in real time. 
+
+### Darth Vader, Chipmunks and causality
+
+The algorithm that lowers the voice's pitch \(the "Darth Vader" voice transformer\) is strictly causal, that is, at any point in time we only need past input samples to compute the output. This is because lowering the pitch involves _oversampling_ and this operation is itself causal. 
+
+We can look at it this way: in our granular synthesis approach we are filling the output grains with a resampled version of their original content. When we oversample, only a fraction of the grain's data will be used to regenerate its content; if a grain's length is, say, 100, and we are lowering the frequency by 2/3, we will only need 2/3 of the grain's original data to build the new grain. 
+
+By contrast, the Chipmunk voice transformers uses local subsampling, that is, samples are being discarded to create an output grain and so, to fill the grain, we will need to "look ahead" and borrow data from beyond the original grain's end boundary. The algorithm therefore is noncausal but, crucially, we can exactly quantify the amount of lookahead and handle that with some buffering. For instance, if we are raising the frequency by 3/2 and our grain length is, say, 100 samples, we will need a buffer of extra 50 samples. This will result in an additional processing delay of 50 samples. 
+
+The difference between over- and under-sampling is clear when we look at the illustration in the notebook that shows the input sample index as a function of the output sample index:
+
+![input index vs output index for a\) the passthrough, b\) the Chipmunk, c\) Darth Vader](../../../.gitbook/assets/granular.jpg)
+
+We will see in the next section that buffering is required anyway in order to implement overlapping windows, so that the extra buffering required by undersampling will just be an extension of the general setup.
+
+#### Overlapping windows 
+
+* _increasing_ the number of samples so a resampled grain will only require samples that are local to the grain. 
+
+
+
