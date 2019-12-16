@@ -57,7 +57,7 @@ Are you sure you are ready to see the solution? ;\)
 {% endtab %}
 
 {% tab title="Task 1" %}
-We don't want to check the `effect_enabled`status variable all the time, so we will place the logic at the DMA interrupt level. First, rename the function that implements the alien voice form `Process` to `VoiceEffect`. Then modify the function prototypes between the `/* USER CODE BEGIN PFP */`tags like so:
+We don't want to check the `effect_enabled`status variable every time we process a sample, so we will place the logic at the DMA interrupt level, before we process a data buffer. First, rename the function that implements the alien voice form `Process` to `VoiceEffect`. Then modify the function prototypes between the `/* USER CODE BEGIN PFP */`tags like so:
 
 ```c
 void VoiceEffect(int16_t *pIn, int16_t *pOut, uint16_t size);
