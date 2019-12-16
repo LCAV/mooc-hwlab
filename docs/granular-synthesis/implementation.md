@@ -16,7 +16,7 @@ def GS_pshift(x, f, G, overlap=0.2):
     return y
 ```
 
-However, this implementation _**does not**_ work for a real-time scenario as the input buffer `x[n:n+igs]` and the output buffer `y[n:n+G]` do not have the same length! Also, we would like to perform operations on individual samples rather than vectors because the former is more representative of how we manipulate data/audio in C.
+However, this implementation _**does not**_ work for a real-time scenario as the input buffer `x[n:n+igs]` and the output buffer `y[n:n+G]` do not have the same length! Also, we would like to perform operations on individual samples rather than vectors because the former is more representative of how we manipulate data/audio in C.bbbbbb
 
 Nonetheless, having an implementation like the one above is still very useful before beginning a buffer-based implementation. It serves as a reference/sanity check before we attempt the \(typically\) more difficult buffer-based implementation.
 
