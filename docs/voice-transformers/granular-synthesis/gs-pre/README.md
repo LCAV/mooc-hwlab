@@ -7,19 +7,19 @@ In the digital world we can always simulate the effect of changing an analog pla
 * the pitch of speech is changed but so is its speed, which we don't want;
 * the ratio of output to input samples for the operation is not one, so it cannot be implemented in real time.
 
-To overcome these limitations, we can use _granular synthesis_: we split the input signal into chunks of a given length \(the grains\) and we perform resampling on each grain independently to produce a sequence of equal-length output grains.
+To overcome these limitations, we can use _granular synthesis_: we split the input signal into chunks of a given length \(the _grains_\) and we perform resampling on each grain independently to produce a sequence of equal-length output grains.
 
 ### Grain rate vs length
 
 In order to implement granular synthesis in real time we need to take into account the concepts of grain _length_ and grain _stride_. A grain should be long enough so that it contains enough pitched speech for resampling to work; but it should also be short enough so that it doesn't straddle too many different sounds in an utterance. Experimentally, the best results for speech are obtained using grains between 20 and 40ms.
 
-The grain stride indicates the displacement in samples between successive grains and it is a function of grain length and of the _overlap_ between successive grains. With no overlap, the grain stride is equal to the grain length; however, overlap between neighboring grains is essential to reduce the artifacts due to the segmentation. 
+The grain stride indicates the displacement in samples between successive grains and it is a function of grain length and of the _overlap_ between successive grains. With no overlap, the grain stride is equal to the grain length; however, overlap between neighboring grains is essential to reduce the artifacts due to the segmentation. Overlapping output grains are blended together using a tapering window; the window is designed so that it performs straight linear interpolation between samples from overlapping grains.
 
-Call $$\rho$$the amount of overlap \(as a percentage\) between neighboring grains. With $$\rho = 0$$there is no overlap whereas with $$\rho = 1$$all the samples in a grain overlap with another grain. The relationship between grain length $$L$$and grain stride $$S$$is $$L = (1+\rho)S$$. This is illustrated in the following figure for varying degrees of overlap and a stride of 100 samples:
+Call $$\rho$$the amount of overlap \(as a percentage\) between neighboring grains. With $$\rho = 0$$there is no overlap whereas with $$\rho = 1$$all the samples in a grain overlap with another grain. The relationship between grain length $$L$$and grain stride $$S$$is $$L = (1+\rho)S$$. This is illustrated in the following figure for varying degrees of overlap and a stride of 100 samples; grains are represented using the shape of the appropriate tapering window:
 
+![](../../../.gitbook/assets/grains.jpg)
 
-
-Note that the stride is constant for all amounts of overlap; this is the key observation that will allow us to implement granular synthesis in real time. 
+Note that the stride is constant for any amount of overlap and that each grain is centered at the same instants independently of overlap; this is the key observation that will allow us to implement granular synthesis in real time. 
 
 ### Darth Vader, Chipmunks and causality
 
@@ -35,9 +35,25 @@ The difference between over- and under-sampling is clear when we look at the ill
 
 We will see in the next section that buffering is required anyway in order to implement overlapping windows, so that the extra buffering required by undersampling will just be an extension of the general setup.
 
-#### Overlapping windows 
+### General formula
 
-* _increasing_ the number of samples so a resampled grain will only require samples that are local to the grain. 
+$$
+A_k = (k - \rho/2)S
+$$
+
+$$
+g_k[m] = x(kS + \alpha m), \qquad 0 \leq m < L
+$$
+
+$$
+n = kS + m
+$$
+
+then
+
+$$
+y[n] = w[S+m]g_{k-1}[S+m] + w[m]g_k[m]
+$$
 
 
 
