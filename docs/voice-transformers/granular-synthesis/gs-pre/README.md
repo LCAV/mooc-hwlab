@@ -19,41 +19,45 @@ Call $$\rho$$the amount of overlap \(as a percentage\) between neighboring grain
 
 ![](../../../.gitbook/assets/grains.jpg)
 
-Note that the stride is constant for any amount of overlap and that each grain is centered at the same instants independently of overlap; this is the key observation that will allow us to implement granular synthesis in real time. 
+Note that the stride is constant for any amount of overlap and that each grain starts at the same instants independently of overlap; this is the key observation that will allow us to implement granular synthesis in real time. 
+
+### The periodic pattern
+
+We can express the content of the $$k$$-th output grain as 
+
+$$
+g_k[m] = x(kS + \alpha m), \qquad 0 \leq m < L
+$$
+
+where $$x(t)$$is the interpolated, continuous-time version of the input signal and $$\alpha$$is the sampling rate change factor \(with $$\alpha < 1$$for subsampling, i.e. lower voice, and $$\alpha > 1$$for upsampling, i.e. higher voice\). In practice we will obviously perform local interpolation rather than full interpolation to continuous time. Note that the $$k$$-th grain starts at $$n=kS$$and is built using input data from $$n=kS$$as well.
+
+The full output signal can be expressed in closed form by looking at the following picture, which shows the periodic pattern of overlapping grains:
+
+![](../../../.gitbook/assets/pattern.jpg)
+
+Any output index $$n$$can be written as 
+
+$$
+n = kS + m, \qquad 0 \leq m < S;
+$$
+
+with this, the output is always the sum of the $$k$$-th grain content at $$m$$plus the content of the previous grain at $$s+m$$; both quantities should be weighed by the tapering window $$w[\cdot]$$:
+
+$$
+y[n] = w[S+m]g_{k-1}[S+m] + w[m]g_k[m]
+$$
 
 ### Darth Vader, Chipmunks and causality
 
 The algorithm that lowers the voice's pitch \(the "Darth Vader" voice transformer\) is strictly causal, that is, at any point in time we only need past input samples to compute the output. This is because lowering the pitch involves _oversampling_ and this operation is itself causal. 
 
-We can look at it this way: in our granular synthesis approach we are filling the output grains with a resampled version of their original content. When we oversample, only a fraction of the grain's data will be used to regenerate its content; if a grain's length is, say, 100, and we are lowering the frequency by 2/3, we will only need 2/3 of the grain's original data to build the new grain. 
+We can look at it this way: in our granular synthesis approach we are filling the output grains with a resampled version of their original content. When we oversample, only a fraction of the grain's data will be used to regenerate its content; if a grain's length is, say, 100, and we are lowering the frequency by $$\alpha=2/3$$, we will only need 2/3 of the grain's original data to build the new grain. 
 
-By contrast, the Chipmunk voice transformers uses local subsampling, that is, samples are being discarded to create an output grain and so, to fill the grain, we will need to "look ahead" and borrow data from beyond the original grain's end boundary. The algorithm therefore is noncausal but, crucially, we can exactly quantify the amount of lookahead and handle that with some buffering. For instance, if we are raising the frequency by 3/2 and our grain length is, say, 100 samples, we will need a buffer of extra 50 samples. This will result in an additional processing delay of 50 samples. 
+By contrast, the Chipmunk voice transformers uses local subsampling, that is, samples are being discarded to create an output grain and so, to fill the grain, we will need to "look ahead" and borrow data from beyond the original grain's end boundary. The algorithm therefore is noncausal but, crucially, we can exactly quantify the amount of lookahead and handle that with some buffering. For instance, if we are raising the frequency by $$\alpha=3/2$$ and our grain length is, say, 100 samples, we will need a buffer of extra 50 samples. This will result in an additional processing delay of 50 samples. 
 
 The difference between over- and under-sampling is clear when we look at the illustration in the notebook that shows the input sample index as a function of the output sample index:
 
 ![input index vs output index for a\) the passthrough, b\) the Chipmunk, c\) Darth Vader](../../../.gitbook/assets/granular.jpg)
 
 We will see in the next section that buffering is required anyway in order to implement overlapping windows, so that the extra buffering required by undersampling will just be an extension of the general setup.
-
-### General formula
-
-$$
-A_k = (k - \rho/2)S
-$$
-
-$$
-g_k[m] = x(kS + \alpha m), \qquad 0 \leq m < L
-$$
-
-$$
-n = kS + m
-$$
-
-then
-
-$$
-y[n] = w[S+m]g_{k-1}[S+m] + w[m]g_k[m]
-$$
-
-
 
