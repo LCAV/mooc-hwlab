@@ -29,7 +29,7 @@ $$
 g_k[m] = x(kS + \alpha m), \qquad 0 \leq m < L
 $$
 
-where $$x(t)$$is the interpolated, continuous-time version of the input signal and $$\alpha$$is the sampling rate change factor \(with $$\alpha < 1$$for subsampling, i.e. lower voice, and $$\alpha > 1$$for upsampling, i.e. higher voice\). In practice we will obviously perform local interpolation rather than full interpolation to continuous time. Note that the $$k$$-th grain starts at $$n=kS$$and is built using input data from $$n=kS$$as well.
+where $$x(t)$$is the interpolated, continuous-time version of the input signal and $$\alpha$$is the sampling rate change factor \(with $$\alpha < 1$$for subsampling, i.e. to lower the pitch, and $$\alpha > 1$$for upsampling, i.e. to raise the pitch\). In practice we will obviously perform local interpolation rather than full interpolation to continuous time. Note that the $$k$$-th grain starts at $$n=kS$$and is built using input data from $$n=kS$$as well.
 
 The full output signal can be expressed in closed form by looking at the following picture, which shows the periodic pattern of overlapping grains:
 
@@ -38,7 +38,7 @@ The full output signal can be expressed in closed form by looking at the followi
 Any output index $$n$$can be written as 
 
 $$
-n = kS + m, \qquad 0 \leq m < S;
+n = kS + m, \qquad k, m \in \mathbb{Z},  0 \leq m < S;
 $$
 
 $$k$$ is the index of the current grain and $$m$$ is the index of the sample _within_ the current grain. Note that the sample at $$n$$ is also the sample with index $$S+m$$ with respect to the _previous_ grain. With this, the output at $$n$$is the sum of the $$m$$-th grain sample for grain $$k$$plus the content of the previous grain at $$s+m$$; both quantities should be weighed by the tapering window $$w[\cdot]$$:
