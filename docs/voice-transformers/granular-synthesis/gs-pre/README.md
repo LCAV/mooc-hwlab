@@ -41,7 +41,7 @@ $$
 n = kS + m, \qquad 0 \leq m < S;
 $$
 
-with this, the output is always the sum of the $$k$$-th grain content at $$m$$plus the content of the previous grain at $$s+m$$; both quantities should be weighed by the tapering window $$w[\cdot]$$:
+$$k$$ is the index of the current grain and $$m$$ is the index of the sample _within_ the current grain. Note that the sample at $$n$$ is also the sample with index $$S+m$$ with respect to the _previous_ grain. With this, the output at $$n$$is the sum of the $$m$$-th grain sample for grain $$k$$plus the content of the previous grain at $$s+m$$; both quantities should be weighed by the tapering window $$w[\cdot]$$:
 
 $$
 y[n] = w[S+m]g_{k-1}[S+m] + w[m]g_k[m]
