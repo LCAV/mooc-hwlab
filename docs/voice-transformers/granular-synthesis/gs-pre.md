@@ -15,7 +15,7 @@ In order to implement granular synthesis in real time we need to take into accou
 
 The grain stride indicates the displacement in samples between successive grains and it is a function of grain length and of the _overlap_ between successive grains. With no overlap, the grain stride is equal to the grain length; however, overlap between neighboring grains is essential to reduce the artifacts due to the segmentation. Overlapping output grains are blended together using a _tapering window_; the window is designed so that it performs _linear interpolation_ between samples from overlapping grains.
 
-Call $$\rho$$the amount of overlap \(as a percentage\) between neighboring grains. With $$\rho = 0$$there is no overlap whereas with $$\rho = 1$$all the samples in a grain overlap with another grain. The relationship between grain length $$L$$and grain stride $$S$$is $$L = (1+\rho)S$$. This is illustrated in the following figure for varying degrees of overlap and a stride of 100 samples; grains are represented using the shape of the appropriate tapering window:
+Call $$\rho$$the amount of overlap \(as a percentage\) between neighboring grains. With $$\rho = 0$$there is no overlap whereas with $$\rho = 1$$all the samples in a grain overlap with another grain. The relationship between grain length $$L$$and grain stride $$S$$is $$L = (1+\rho)S$$. This is illustrated in the following figure for varying degrees of overlap and a stride of $$S=100$$ samples; grains are represented using the shape of the appropriate tapering window:
 
 ![](../../.gitbook/assets/grains.jpg)
 
@@ -51,10 +51,13 @@ We will see in the next section that buffering is required anyway in order to im
 
 ### The tapering window
 
-The tapering window is as long as the grain and it is shaped so that the overlapping grains are linearly interpolated. The left sloping part of the window is $$W$$samples long, with $$W=(L-S)/2 = \rho S/2.$$The sloping samples are therefore expressed by the formula
+The tapering window is as long as the grain and it is shaped so that the overlapping grains are linearly interpolated. The left sloping part of the window is $$W$$samples long, with $$W=L-S = \rho S.$$The tapering weights are therefore expressed by the formula
 
 $$
-w[n] = n/W, \qquad n = 0, \ldots, W-1.
+w[n] = \begin{cases}
+ n/W & 0 \leq n < W \\
+1 & W \leq n < S 
+\end{cases}
 $$
 
 ### The output signal
@@ -72,6 +75,6 @@ $$
 $$k$$ is the index of the current grain and $$m$$ is the index of the sample _within_ the current grain. Note that the sample at $$n$$ is also the sample with index $$S+m$$ with respect to the _previous_ grain. With this, the output at $$n$$is the sum of the sample number $$m$$ from the current grain plus the sample number $$S+m$$from the previous grain; both samples are be weighed by the linear  tapering slope$$w[\cdot]$$:
 
 $$
-y[n] = w[T-m]g_{k-1}[S+m] + w[m]g_k[m]
+y[n] = (1-w[m])g_{k-1}[S+m] + w[m]g_k[m]
 $$
 

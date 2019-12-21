@@ -20,6 +20,30 @@ Since we need to use double buffering for DMA, and since we need symmetric input
 
 ### Tricks of the trade
 
+To avoid the need of large DMA buffers, we will implement granular synthesis using the following tricks:
+
+* we will use a single internal circular buffer that holds enough data to build the grains
+* we will fill the internal buffer with short DMA input transfers and compute a corresponding amount of output samples for each DMA call
+* to save memory, all processing will be carried out on a mono signal
+* we will use a "smart choice" for the size of the grain, the tapering and the DMA transfer, so as to minimize processing
 
 
-* 
+
+
+
+Consider once again the following figure
+
+When we are computing the output grain number $$k$$, what is the input range that we need to access? The index within the grain goes from zero to $$S$$and, when $$m=0$$we need to compute
+
+$$
+g_{k-1}[S] = x(kS + \alpha S - S)
+$$
+
+whereas when $$m=S$$we need to compute
+
+$$
+g_k[S] = x(kS + \alpha S)
+$$
+
+At all times, therefore, we need to have access to exactly $$S$$input samples. 
+
