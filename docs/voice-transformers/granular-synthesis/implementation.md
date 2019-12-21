@@ -1,6 +1,6 @@
 # Implementation
 
-We are building a real-time system and so the output data rate will necessarily be equal to the input data rate. Since grains are produced at a rate which is the inverse of the stride length, it would make perfect sense to set the length of the DMA buffer equal to the stride and perform all necessary buffering in the processing code.
+We are building a real-time system and so the output data rate will necessarily be equal to the input data rate. Since grains are produced at a rate which is the inverse of the stride length, it would make perfect sense to set the length of the DMA buffer equal to the stride.
 
 Unfortunately this simple approach clashes with the capabilities of the hardware and so we need to trade resources for code complexity: welcome to the world of embedded DSP!
 
