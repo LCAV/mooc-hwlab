@@ -38,7 +38,7 @@
   * [The ON/OFF button](voice-transformers/alien-voice/the-on-off-button.md)
 * [Interlude: prototyping in Python](voice-transformers/interlude-prototyping-in-python.md)
 * [Granular Synthesis](voice-transformers/granular-synthesis/README.md)
-  * [Preliminaries](voice-transformers/granular-synthesis/gs-pre/README.md)
+  * [The Formulas](voice-transformers/granular-synthesis/gs-pre/README.md)
     * [Clicky Vader](voice-transformers/granular-synthesis/gs-pre/clicky-vader.md)
     * [Smooth Vader](voice-transformers/granular-synthesis/gs-pre/smooth-vader.md)
     * [Chipmunks](voice-transformers/granular-synthesis/gs-pre/chipmunks.md)

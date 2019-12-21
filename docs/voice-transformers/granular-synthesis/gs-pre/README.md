@@ -1,4 +1,4 @@
-# Preliminaries
+# The Formulas
 
 The key technique behind simple pitch shifting is that of playing the audio file either more slowly \(to lower the pitch\) or faster \(to raise the pitch\). This is just like spinning an old record at a speed different than the nominal RPM value.
 
@@ -13,7 +13,7 @@ To overcome these limitations, we can use _granular synthesis_: we split the inp
 
 In order to implement granular synthesis in real time we need to take into account the concepts of grain _length_ and grain _stride_. A grain should be long enough so that it contains enough pitched speech for resampling to work; but it should also be short enough so that it doesn't straddle too many different sounds in an utterance. Experimentally, the best results for speech are obtained using grains between 20 and 40ms.
 
-The grain stride indicates the displacement in samples between successive grains and it is a function of grain length and of the _overlap_ between successive grains. With no overlap, the grain stride is equal to the grain length; however, overlap between neighboring grains is essential to reduce the artifacts due to the segmentation. Overlapping output grains are blended together using a _tapering window_; the window is designed so that it performs straight linear interpolation between samples from overlapping grains.
+The grain stride indicates the displacement in samples between successive grains and it is a function of grain length and of the _overlap_ between successive grains. With no overlap, the grain stride is equal to the grain length; however, overlap between neighboring grains is essential to reduce the artifacts due to the segmentation. Overlapping output grains are blended together using a _tapering window_; the window is designed so that it performs _linear interpolation_ between samples from overlapping grains.
 
 Call $$\rho$$the amount of overlap \(as a percentage\) between neighboring grains. With $$\rho = 0$$there is no overlap whereas with $$\rho = 1$$all the samples in a grain overlap with another grain. The relationship between grain length $$L$$and grain stride $$S$$is $$L = (1+\rho)S$$. This is illustrated in the following figure for varying degrees of overlap and a stride of 100 samples; grains are represented using the shape of the appropriate tapering window:
 
@@ -21,7 +21,7 @@ Call $$\rho$$the amount of overlap \(as a percentage\) between neighboring grain
 
 Note that the stride is constant for any amount of overlap and that each grain starts at the same instants independently of overlap; this is the key observation that will allow us to implement granular synthesis in real time. 
 
-### The periodic pattern
+### The grains' content
 
 We can express the content of the $$k$$-th output grain as 
 
@@ -30,6 +30,16 @@ g_k[m] = x(kS + \alpha m), \qquad 0 \leq m < L
 $$
 
 where $$x(t)$$is the interpolated, continuous-time version of the input signal and $$\alpha$$is the sampling rate change factor \(with $$\alpha < 1$$for subsampling, i.e. to lower the pitch, and $$\alpha > 1$$for upsampling, i.e. to raise the pitch\). In practice we will obviously perform local interpolation rather than full interpolation to continuous time. Note that the $$k$$-th grain starts at $$n=kS$$and is built using input data from $$n=kS$$as well.
+
+### The tapering window
+
+The tapering window is as long as the grain and it is shaped so that the overlapping grains are linearly interpolated. The left sloping part of the window is $$T$$samples long, where $$T=(L-S)/2 = \rho S/2.$$The sloping samples are therefore expressed by the formula
+
+$$
+w[n] = n/T, \qquad n = 0, \ldots, T-1.
+$$
+
+### The output signal
 
 The full output signal can be expressed in closed form by looking at the following picture, which shows the periodic pattern of overlapping grains:
 
@@ -41,7 +51,7 @@ $$
 n = kS + m, \qquad k, m \in \mathbb{Z},  0 \leq m < S;
 $$
 
-$$k$$ is the index of the current grain and $$m$$ is the index of the sample _within_ the current grain. Note that the sample at $$n$$ is also the sample with index $$S+m$$ with respect to the _previous_ grain. With this, the output at $$n$$is the sum of the $$m$$-th grain sample for grain $$k$$plus the content of the previous grain at $$s+m$$; both quantities should be weighed by the tapering window $$w[\cdot]$$:
+$$k$$ is the index of the current grain and $$m$$ is the index of the sample _within_ the current grain. Note that the sample at $$n$$ is also the sample with index $$S+m$$ with respect to the _previous_ grain. With this, the output at $$n$$is the sum of the sample number $$m$$ from the current grain plus the sample number $$S+m$$from the previous grain; both samples are be weighed by the linear  tapering slope$$w[\cdot]$$:
 
 $$
 y[n] = w[S+m]g_{k-1}[S+m] + w[m]g_k[m]
