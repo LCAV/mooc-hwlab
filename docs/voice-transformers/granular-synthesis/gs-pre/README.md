@@ -29,14 +29,32 @@ $$
 g_k[m] = x(kS + \alpha m), \qquad 0 \leq m < L
 $$
 
-where $$x(t)$$is the interpolated, continuous-time version of the input signal and $$\alpha$$is the sampling rate change factor \(with $$\alpha < 1$$for subsampling, i.e. to lower the pitch, and $$\alpha > 1$$for upsampling, i.e. to raise the pitch\). In practice we will obviously perform local interpolation rather than full interpolation to continuous time. Note that the $$k$$-th grain starts at $$n=kS$$and is built using input data from $$n=kS$$as well.
+where $$x(t)$$is the interpolated, continuous-time version of the input signal and $$\alpha$$is the sampling rate change factor \(with $$\alpha < 1$$for subsampling, i.e. to lower the pitch, and $$\alpha > 1$$for upsampling, i.e. to raise the pitch\). Note that the $$k$$-th grain starts at $$n=kS$$and is built using input data from $$n=kS$$as well.
+
+In practice we will obviously perform local interpolation rather than full interpolation to continuous time: let $$t=kS+\alpha m$$and set $$T = \lfloor T \rfloor$$and $$\tau = t - T$$; with this the interpolation can be approximated as
+
+$$
+g_k[m] \approx (1-\tau)x[T] + \tau\, x[T+1].
+$$
+
+### Causality
+
+Note that when we lower the voice's pitch \(i.e. we implement the "Darth Vader" voice transformer\) since $$\alpha < 1$$ the computation of the output grains is strictly causal, that is, at any point in time we only need past input samples. Indeed, when we oversample, only a fraction of the grain's data will be used to regenerate its content; if a grain's length is, say, 100, and we are lowering the frequency by $$\alpha=2/3$$, we will only need 2/3 of the grain's original data to build the new grain. 
+
+By contrast when we raise the pitch we are using _sub_sampling, that is, samples are being discarded to create an output grain and so, to fill the grain, we will need to "look ahead" and borrow data from beyond the original grain's end boundary. The algorithm therefore is noncausal but, crucially, we can exactly quantify the amount of lookahead and handle that via buffering. 
+
+For instance, if we are raising the frequency by $$\alpha=3/2$$ and our grain length is, say, 100 samples, we will need a buffer of 50 "future" samples; this can be accomplished by accepting an additional processing delay of 50 samples. The difference between over- and under-sampling is clear when we look at the illustration in the notebook that shows the input sample index as a function of the output sample index:
+
+![input index vs output index for a\) the passthrough, b\) the Chipmunk, c\) Darth Vader](../../../.gitbook/assets/granular.jpg)
+
+We will see in the next section that buffering is required anyway in order to implement overlapping windows, so that the extra buffering required by undersampling will just be an extension of the general setup.
 
 ### The tapering window
 
-The tapering window is as long as the grain and it is shaped so that the overlapping grains are linearly interpolated. The left sloping part of the window is $$T$$samples long, where $$T=(L-S)/2 = \rho S/2.$$The sloping samples are therefore expressed by the formula
+The tapering window is as long as the grain and it is shaped so that the overlapping grains are linearly interpolated. The left sloping part of the window is $$W$$samples long, with $$W=(L-S)/2 = \rho S/2.$$The sloping samples are therefore expressed by the formula
 
 $$
-w[n] = n/T, \qquad n = 0, \ldots, T-1.
+w[n] = n/W, \qquad n = 0, \ldots, W-1.
 $$
 
 ### The output signal
@@ -54,20 +72,6 @@ $$
 $$k$$ is the index of the current grain and $$m$$ is the index of the sample _within_ the current grain. Note that the sample at $$n$$ is also the sample with index $$S+m$$ with respect to the _previous_ grain. With this, the output at $$n$$is the sum of the sample number $$m$$ from the current grain plus the sample number $$S+m$$from the previous grain; both samples are be weighed by the linear  tapering slope$$w[\cdot]$$:
 
 $$
-y[n] = w[S+m]g_{k-1}[S+m] + w[m]g_k[m]
+y[n] = w[T-m]g_{k-1}[S+m] + w[m]g_k[m]
 $$
-
-### Darth Vader, Chipmunks and causality
-
-The algorithm that lowers the voice's pitch \(the "Darth Vader" voice transformer\) is strictly causal, that is, at any point in time we only need past input samples to compute the output. This is because lowering the pitch involves _oversampling_ and this operation is itself causal. 
-
-We can look at it this way: in our granular synthesis approach we are filling the output grains with a resampled version of their original content. When we oversample, only a fraction of the grain's data will be used to regenerate its content; if a grain's length is, say, 100, and we are lowering the frequency by $$\alpha=2/3$$, we will only need 2/3 of the grain's original data to build the new grain. 
-
-By contrast, the Chipmunk voice transformers uses local subsampling, that is, samples are being discarded to create an output grain and so, to fill the grain, we will need to "look ahead" and borrow data from beyond the original grain's end boundary. The algorithm therefore is noncausal but, crucially, we can exactly quantify the amount of lookahead and handle that with some buffering. For instance, if we are raising the frequency by $$\alpha=3/2$$ and our grain length is, say, 100 samples, we will need a buffer of extra 50 samples. This will result in an additional processing delay of 50 samples. 
-
-The difference between over- and under-sampling is clear when we look at the illustration in the notebook that shows the input sample index as a function of the output sample index:
-
-![input index vs output index for a\) the passthrough, b\) the Chipmunk, c\) Darth Vader](../../../.gitbook/assets/granular.jpg)
-
-We will see in the next section that buffering is required anyway in order to implement overlapping windows, so that the extra buffering required by undersampling will just be an extension of the general setup.
 
