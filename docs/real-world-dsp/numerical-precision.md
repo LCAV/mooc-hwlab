@@ -135,3 +135,7 @@ This representation allows for an easy implementation of divisions by powers of 
 
 In the C language standard, the implementation of a right shift is left undetermined as to the propagation of the sign bit. On the Nucleo, however, you can safely use right-shift renormalization since the shifts preserve the sign.
 
+## Fixed-point programming in C
+
+
+
