@@ -1,6 +1,6 @@
 # The ON/OFF button
 
-The Nucleo board has a user programable push button.  We will now use it as an ON/OFF button for the alien voice effect.
+The Nucleo board has a user programable push button. We will now use it as an ON/OFF button for the alien voice effect.
 
 ## Configuration <a id="extra"></a>
 

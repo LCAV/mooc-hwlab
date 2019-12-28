@@ -1,4 +1,4 @@
-# Initial Implementation
+# Implementation
 
 We are building a real-time system and so the output data rate will necessarily be equal to the input data rate. In the previous section we saw that grains are produced via a periodic pattern whose period is equal to the stride length. It would make perfect sense, therefore, to set the length of the DMA buffer equal to the stride and let that be the cadence of the processing function.
 
@@ -8,7 +8,7 @@ Unfortunately this simple approach clashes with the capabilities of the hardware
 
 If we play around with the Jupyter notebook implementation of granular synthesis, we can quickly verify that the voice changer works best with a grain length of about 30ms and an overlap factor of about 50%. Using the formula derived in the previous section, this gives us a grain stride of 20ms.
 
-Now, remember that the smallest sampling frequency of our digital microphone is 32KHz so that 20ms correspond to 640 samples. Each sample is 2 bytes and the I2S protocol requires us to allocate a stereo buffer. This means that each DMA _half_-buffer will be 
+Now, remember that the smallest sampling frequency of our digital microphone is 32KHz so that 20ms correspond to 640 samples. Each sample is 2 bytes and the I2S protocol requires us to allocate a stereo buffer. This means that each DMA _half_-buffer will be
 
 $$
 2 * 2 * 640 = 2560 \rm{~bytes.}
@@ -25,24 +25,22 @@ To avoid the need of large DMA buffers, we will implement granular synthesis usi
 * we will fill the internal buffer with short DMA input transfers and compute a corresponding amount of output samples for each DMA call; DMA transfers can be as short as 16 or 32 samples each, thereby reducing the amount of memory required by the DMA buffers.
 * we will use a "smart choice" for the size of the grain, the tapering and the DMA transfer, so as to minimize processing
 
-
 ## The code
 
-To code the granular synthesis algorithm, copy and paste the Alien Voice project from within the STM32CubeIDE environment. We recommend choosing a name with the current date and `"granular_syn"` in it. Remember to delete the old binary \(ELF\) file inside the copied project.
+To code the granular synthesis algorithm, copy and paste the Alien Voice project from within the STM32CubeIDE environment. We recommend choosing a name with the current date and `"granular"` in it. Remember to delete the old binary \(ELF\) file inside the copied project.
 
 Here, we will set up the code for the "Darth Vader" voice transformer and will consider more advanced modifications in the next section.
-
 
 ### DMA size
 
 As we explained, the idea is to fill the main audio buffer in small increments to save memory. To this end, set the DMA half-buffer size to 32 samples in the `USER CODE BEGIN PV` section:
 
 ```c
-#define FRAMES_PER_BUFFER 32    
+#define FRAMES_PER_BUFFER 32
 ```
 
-
 ### Grain size and taper
+
 We will use a grain length of $$L=1024$$ samples which corresponds to about 30ms for a sampling rate of 32KHz. The overlap is set at 50%, i.e., we will use a tapering slope of $$W=384$$ samples. The resulting grain stride is $$S=640$$.
 
 {% hint style="info" %}
@@ -64,7 +62,7 @@ static int32_t TAPER[TAPER_LEN] = {...};
 
 ### Main buffer
 
-We choose the buffer length to be equal to the size of the grain, since the voice transformer doesn't sound good for $$\alpha > 1.5$$ anyway. With the size equal to a power of two, we will be able to use bit masking to enforce circular access to the buffer. Add the following lines after the previous ones:
+We choose the buffer length to be equal to the size of the grain, since anyway the voice transformer doesn't sound too good for $$\alpha > 1.5$$. With a size equal to a power of two, we will be able to use bit masking to enforce circular access to the buffer. Add the following lines after the previous ones:
 
 ```c
 #define BUF_LEN 1024
@@ -73,18 +71,17 @@ static int16_t buffer[BUF_LEN];
 
 // input index for inserting DMA data
 static uint16_t buf_ix = 0;
-// index to beginning of previous grain
-static uint16_t prev_ix = 0;
 // index to beginning of current grain
-static uint16_t curr_ix = GRAIN_STRIDE;
+static uint16_t curr_ix = 0;
+// index to beginning of previous grain
+static uint16_t prev_ix = BUF_LEN - GRAIN_STRIDE;
 // index of sample within grain
 static uint16_t grain_m = 0;
 ```
 
-With these values the buffers are set up for causal operation (i.e., for lowering the voice pitch); we will tackle the problem of noncausal operation later.
+With these values the buffers are set up for causal operation \(i.e., for lowering the voice pitch\); we will tackle the problem of noncausal operation later.
 
 You can now examine the memory footprint of the application by compiling the code and looking at the "Build Analyzer" tab on the lower right corner of the IDE. You should see that we are only using less than 30% of the onboard RAM.
-
 
 ### Processing function
 
@@ -108,9 +105,9 @@ inline static void VoiceEffect(int16_t *pIn, int16_t *pOut, uint16_t size) {
       z += y * TAPER[grain_m];
       y = (int16_t)(z >> 15);
     }
-	// put sample into both LEFT and RIGHT output slots
+    // put sample into both LEFT and RIGHT output slots
     pOut[n] = pOut[n+1] = y;
-	// update index inside grain; if we are at the end of the stride, update buffer indices
+    // update index inside grain; if we are at the end of the stride, update buffer indices
     if (++grain_m >= GRAIN_STRIDE) {
       grain_m = 0;
       prev_ix = curr_ix;
@@ -120,9 +117,9 @@ inline static void VoiceEffect(int16_t *pIn, int16_t *pOut, uint16_t size) {
 }
 ```
 
-The processing loop uses an auxiliary function `Resample(uint16_t m, uint16_t start)` that is supposed to return the interpolated value $$x(start + \alpha m)$$. 
+The processing loop uses an auxiliary function `Resample(uint16_t m, uint16_t N)` that is supposed to return the interpolated value $$x(N + \alpha m)$$.
 
-A simplistic implementation is to return the sample with integer index closest to $$ix + \alpha m$$:
+A simplistic implementation is to return the sample with integer index closest to $$N + \alpha m$$:
 
 ```c
 // rate change factor
@@ -137,15 +134,14 @@ inline static int16_t Resample(uint16_t m, uint16_t start) {
 ```
 
 {% hint style="info" %}
-TASK 2: Write version of `Resample()` that performs proper linear interpolation between neighboring samples. 
+TASK 2: Write version of `Resample()` that performs proper linear interpolation between neighboring samples.
 {% endhint %}
-
 
 ## Benchmarking
 
-Since our processing function is becoming a bit more complex than before, it is interesting to start benchmarking its performance. 
+Since our processing function is becoming a bit more complex than before, it is interesting to start benchmarking its performance.
 
-Remember that, at 32KHz, we can use at most $$30\mu s$$ per sample; we can modify the timing function to return the number of microseconds per sample like so: 
+Remember that, at 32KHz, we can use at most $$30\mu s$$ per sample; we can modify the timing function to return the number of microseconds per sample like so:
 
 ```c
 #define STOP_TIMER {\
@@ -153,8 +149,7 @@ Remember that, at 32KHz, we can use at most $$30\mu s$$ per sample; we can modif
   HAL_TIM_Base_Stop(&htim2); }
 ```
 
-If we now use the method of the benchmarking live section, we can see that the current implementation (with the full fractional resampling code) requires between $$5.2\mu s$$ and $$8.5\mu s$$ per sample, which is  well below the limit. The oscillation between the two values reflects the larger computational requirements of tapering slope.
-
+If we now use the [method described before](../../real-world-dsp/benchmarking.md#benchmarking-live), we can see that the current implementation \(with the full fractional resampling code\) requires between $$5.2\mu s$$ and $$8.5\mu s$$ per sample, which is well below the limit. The oscillation between the two values reflects the larger computational requirements during the tapering slope.
 
 ## **Solutions**
 
@@ -229,8 +224,6 @@ inline static int16_t Resample(uint16_t m, uint16_t start) {
   return (int16_t)(y >> 15);
 }
 ```
-
 {% endtab %}
-
 {% endtabs %}
 

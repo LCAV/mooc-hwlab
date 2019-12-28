@@ -14,7 +14,7 @@ $$
 
 The corresponding block diagram is shown below.
 
-![](../.gitbook/assets/biquad_direct_1_wiki-1-1.png)
+![](../../.gitbook/assets/biquad_direct_1_wiki-1-1.png)
 
 _Figure: Block diagram of biquad, Direct Form 1._ [Source](https://en.wikipedia.org/wiki/Digital_biquad_filter#/media/File:Biquad_filter_DF-I.svg).
 
@@ -70,11 +70,11 @@ TASK 3: In the final `for` loop, update the state variables, that is the previou
 
 Running the incomplete script will yield the following plot, in which only a gain \(less than one\) is applied to the input signal.
 
-![](../.gitbook/assets/direct_form_1_incomplete-1-2.png)
+![](../../.gitbook/assets/direct_form_1_incomplete-1-2.png)
 
 If you successfully complete the `process` function, you should obtain the following plot.
 
-![](../.gitbook/assets/direct_form_1_complete-1.png)
+![](../../.gitbook/assets/direct_form_1_complete-1.png)
 
 ## Direct Form 2
 
@@ -94,7 +94,7 @@ $$
 
 The corresponding block diagram is shown below.
 
-![](../.gitbook/assets/biquad_direct_2_wiki-1-1.png)
+![](../../.gitbook/assets/biquad_direct_2_wiki-1-1.png)
 
 _Figure: Block diagram of biquad, Direct Form 2._ [Source](https://en.wikipedia.org/wiki/Digital_biquad_filter#/media/File:Biquad_filter_DF-II.svg).
 
@@ -161,11 +161,11 @@ TASK 6: Complete the final `for` loop in order to update the values of `w`.
 
 Running the incomplete script will yield the following plot, where the output is all-zeros.
 
-![](../.gitbook/assets/direct_form_2_incomplete-1.png)
+![](../../.gitbook/assets/direct_form_2_incomplete-1.png)
 
 If you successfully complete the `process` function, you should obtain the following plot.
 
-![](../.gitbook/assets/direct_form_2_complete-1.png)
+![](../../.gitbook/assets/direct_form_2_complete-1.png)
 
 ## C implementation
 
@@ -191,7 +191,7 @@ TASK 7: Try your biquad filter implementation with the [`sounddevice` template](
 _Hint: for the C implementation, start off with the passthrough example._
 {% endhint %}
 
-**Congrats on implementing the biquad filter! This is a fundamental tool in the arsenal of a DSP engineer. In the** [**next chapter**](../granular-synthesis/)**, we will build a more sophisticated voice effect that can alter the pitch so that you sound like a chipmunk or Darth Vader.**
+**Congrats on implementing the biquad filter! This is a fundamental tool in the arsenal of a DSP engineer. In the** [**next chapter**](../granular-synthesis-1/)**, we will build a more sophisticated voice effect that can alter the pitch so that you sound like a chipmunk or Darth Vader.**
 
 ## Tasks solutions
 
