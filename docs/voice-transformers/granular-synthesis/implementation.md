@@ -153,7 +153,7 @@ Remember that, at 32KHz, we can use at most $$30\mu s$$ per sample; we can modif
   HAL_TIM_Base_Stop(&htim2); }
 ```
 
-If we now use the method of the benchmarking live section, we can see that the current implementation (with the full fractional resampling code) oscillates between $$5.2\mu s$$ and $$8.5\mu s$$ per sample, which is  well below the limit. 
+If we now use the method of the benchmarking live section, we can see that the current implementation (with the full fractional resampling code) requires between $$5.2\mu s$$ and $$8.5\mu s$$ per sample, which is  well below the limit. The oscillation between the two values reflects the larger computational requirements of tapering slope.
 
 
 ## **Solutions**
