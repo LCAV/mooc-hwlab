@@ -19,20 +19,21 @@ cos_table[n] = (int16_t)(32767.0 * cos(0.0785398 * n));
 The  lookup table is provided here for your convenience. Begin by copying it between the `USER CODE BEGIN PV` and `USER CODE END PV` comment tags.
 
 ```c
-#define COS_400_32_SIZE 80
-const int16_t COS_400_32[COS_400_32_SIZE ] = {
-0x0000,0x0a0a,0x1405,0x1de1,0x278d,0x30fb,0x3a1b,0x42e0,
-0x4b3b,0x5320,0x5a81,0x6154,0x678d,0x6d22,0x720b,0x7640,
-0x79bb,0x7c75,0x7e6b,0x7f99,0x7fff,0x7f99,0x7e6b,0x7c75,
-0x79bb,0x7640,0x720b,0x6d22,0x678d,0x6154,0x5a81,0x5320,
-0x4b3b,0x42e0,0x3a1b,0x30fb,0x278d,0x1de1,0x1405,0x0a0a,
-0x0000,0xf5f6,0xebfb,0xe21f,0xd873,0xcf05,0xc5e5,0xbd20,
-0xb4c5,0xace0,0xa57f,0x9eac,0x9873,0x92de,0x8df5,0x89c0,
-0x8645,0x838b,0x8195,0x8067,0x8001,0x8067,0x8195,0x838b,
-0x8645,0x89c0,0x8df5,0x92de,0x9873,0x9eac,0xa57f,0xace0,
-0xb4c5,0xbd20,0xc5e5,0xcf05,0xd873,0xe21f,0xebfb,0xf5f6
-};
+#define COS_TABLE_LEN 80
+static int16_t COS_TABLE[COS_TABLE_LEN] = {
+	0x7FFF, 0x7F99, 0x7E6B, 0x7C75, 0x79BB, 0x7640, 0x720B, 0x6D22, 0x678D, 0x6154, 0x5A81, 0x5320, 
+	0x4B3B, 0x42E0, 0x3A1B, 0x30FB, 0x278D, 0x1DE1, 0x1405, 0x0A0A, 0x0000, 0xF5F6, 0xEBFB, 0xE21F, 
+	0xD873, 0xCF05, 0xC5E5, 0xBD20, 0xB4C5, 0xACE0, 0xA57F, 0x9EAC, 0x9873, 0x92DE, 0x8DF5, 0x89C0, 
+	0x8645, 0x838B, 0x8195, 0x8067, 0x8001, 0x8067, 0x8195, 0x838B, 0x8645, 0x89C0, 0x8DF5, 0x92DE, 
+	0x9873, 0x9EAC, 0xA57F, 0xACE0, 0xB4C5, 0xBD20, 0xC5E5, 0xCF05, 0xD873, 0xE21F, 0xEBFB, 0xF5F6, 
+	0x0000, 0x0A0A, 0x1405, 0x1DE1, 0x278D, 0x30FB, 0x3A1B, 0x42E0, 0x4B3B, 0x5320, 0x5A81, 0x6154, 
+	0x678D, 0x6D22, 0x720B, 0x7640, 0x79BB, 0x7C75, 0x7E6B, 0x7F99};
 ```
+
+{% hint style="info" %}
+TASK 1: Write a short Python function that prints out the above table given a value for the period of the sinusoid.
+{% endhint %}
+
 
 ## Gain
 
@@ -67,7 +68,7 @@ void inline Process(int16_t *pIn, int16_t *pOut, uint16_t size) {
     ...
 
     // rescaling to 16 bits
-    y >>= (16 - GAIN);
+    y >>= (15 - GAIN);
 
     // duplicate output to LEFT and RIGHT channels
     *pOut++ = (int16_t)y;
@@ -78,7 +79,7 @@ void inline Process(int16_t *pIn, int16_t *pOut, uint16_t size) {
 ```
 
 {% hint style="info" %}
-TASK 1: Complete the function to perform sinusoidal modulation.
+TASK 2: Complete the function to perform sinusoidal modulation.
 {% endhint %}
 
 Now place the function between the `USER CODE BEGIN 4` and `USER CODE END 4` comment tags and test the application!
@@ -87,7 +88,8 @@ Now place the function between the `USER CODE BEGIN 4` and `USER CODE END 4` com
 
 You can now try changing the modulation frequency by creating your own lookup tables!
 
-## Solution
+
+## Solutions
 
 {% tabs %}
 {% tab title="Anti-spoiler tab" %}
@@ -95,6 +97,18 @@ Are you sure you are ready to see the solution? ;\)
 {% endtab %}
 
 {% tab title="Task 1" %}
+```python
+def make_cos_table(period):
+    c = 0x7FFF * np.cos(2 * np.pi * np.arange(0, period) / period)
+    print('#define COS_TABLE_LEN {}'.format(period))
+    print('static int16_t COS_TABLE[COS_TABLE_LEN] = {', end='\n\t')
+    for n in range(period - 1):
+        print('0x{:04X}, '.format(np.uint16(c[n])), end='' + '\n\t' if (n+1) % 12 == 0 else '')
+    print('0x{:04X}}};'.format(np.uint16(c[period-1])))
+```
+{% endtab %}
+
+{% tab title="Task 2" %}
 Here is the complete function:
 
 ```c
@@ -109,11 +123,11 @@ void inline Process(int16_t *pIn, int16_t *pOut, uint16_t size) {
     x_prev = *pIn;
 
     // modulation
-    y = y * COS_400_32[ix++];
-    ix %= COS_400_32_SIZE;
+    y = y * COS_TABLE[ix++];
+    ix %= COS_TABLE_LEN;
 
     // rescaling to 16 bits
-    y >>= (16 - GAIN);
+    y >>= (15 - GAIN);
 
     // duplicate output to LEFT and RIGHT channels
     *pOut++ = (int16_t)y;

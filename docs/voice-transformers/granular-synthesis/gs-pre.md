@@ -47,11 +47,11 @@ For instance, if we are raising the frequency by $$\alpha=3/2$$ and our grain le
 
 ![input index vs output index for a\) the passthrough, b\) the Chipmunk, c\) Darth Vader](../../.gitbook/assets/granular.jpg)
 
-We will see in the next section that buffering is required anyway in order to implement overlapping windows, so that the extra buffering required by undersampling will just be an extension of the general setup.
+We will see in the next sections that buffering is required anyway in order to implement overlapping windows, so that the extra buffering required by undersampling will just be an extension of the general setup.
 
 ### The tapering window
 
-The tapering window is as long as the grain and it is shaped so that the overlapping grains are linearly interpolated. The left sloping part of the window is $$W$$samples long, with $$W=L-S = \rho S.$$The tapering weights are therefore expressed by the formula
+The tapering window is as long as the grain and it is shaped so that the overlapping grains are linearly interpolated. The left sloping part of the window is $$W$$ samples long, with $$W=L-S = \rho S.$$ The tapering weights are therefore expressed by the formula
 
 $$
 w[n] = \begin{cases}
@@ -77,4 +77,48 @@ $$k$$ is the index of the current grain and $$m$$ is the index of the sample _wi
 $$
 y[n] = (1-w[m])g_{k-1}[S+m] + w[m]g_k[m]
 $$
+
+
+### Buffering
+
+Consider once again the way the output is computed according to the following figure:
+
+
+The computation pattern is periodic with period $$S$$; let's use the index $$m$$ to indicates the current position _inside_ the current pattern; as $$m$$ goes from zero to $$S$$ we need to compute:
+
+* $$g_k[m]$$ for all values of $$mS$$
+* AND $$g_{k-1}[S+m]$$ for $$0 \leq m < W$$ (the tail of the previous grain).
+
+Which audio samples do we need to have access to at any given time? Without loss of generality, consider the grain for $$k = 0$$; in this case we need to compute
+
+* $$g_0[m] = x(\alpha m)$$ for $$0 \leq m < S$$
+* $$g_{-1}[S+m] = x(\alpha m + (\alpha - 1)S$$ for $$0 \leq m < W$$
+
+If $$\alpha \leq 1$$ both expression are causal so that we can use a standard buffer to store past values. The size of the buffer is determined by "how far" in the past we need to reach; in the limit, for $$\alpha$$ close to zero, we need to access $$x(-S)$$ from $$m=W$$ when we compute the end of the tapering section, so that the buffer length is at most equal to the grain size $$L = S+W$$. The overall processing delay of the voice changer in this case is equal to the size of the DMA transfer.
+
+If $$alpha > 1$$, on the other hand, we need to also access _future_ samples; this is of course not possible but we can circumvent the problem by introducing a larger processing delay. This is achieved by moving the input data pointer in the buffer further ahead with respect to the output data pointer. The maximum displacement between the current time and the sample we need is for $$m = W$$ (i.e., at the end of the tapering slope) for which
+
+$$
+\right. \alpha m  + (\alpha -1)S - m \left|_{m=W} = (\alpha - 1)(S+W) = (\alpha - 1)L
+$$
+
+By offsetting the input and output pointers by $$D = (\alpha -1)L$$ samples, we can raise the pitch of the voice at the price of a processing delay equal to $$D$$.
+
+{% hint style="info" %}
+TASK 1: Determine the maximum range for $$\alpha$$ if the size of the audio buffer is equal to the grain size $$L$$.
+{% endhint %}
+
+
+## **Solutions**
+
+{% tabs %}
+{% tab title="Anti-spoiler Tab" %}
+Are you ready to see the answer? :\)
+{% endtab %}
+
+{% tab title="Task 1" %}
+We have already seen that for $$\alpha < 1$$ we need a causal buffer whose maximum length is equal to $$L$$. For $$\alpha > 1$$ the needed buffer size is $$(1-\alpha)L$$ so, if the maximum buffer size is $$L$$, it must be $$0 \leq \alpha < 2$$. 
+
+{% endtab %}
+{% endtabs %}
 

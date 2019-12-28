@@ -108,11 +108,11 @@ $$
 
 which is a totally acceptable approximation of the average's true value!
 
-## Binary representation
+## Two's complement
 
 To encode signed integer in binary representation, the most  common format is known as [two's complement](https://en.wikipedia.org/wiki/Two%27s_complement); this format allows for the normal addition operations to work across a range of representable positive and negative numbers. 
 
-The main idea is that of addition of positive integers with truncated overflow and it originates in mechanical calculators whose digits roll around to zero after overflow. Suppose that we are using a single decimal digit; we can obviously use the digit to represent ten positive values from zero to 9. Alternatively, we can use the digits from 0 to four to represent themselves and map the digits from 5 to 9 to the negative numbers -5 to -1, in that order. With this representation, here is how addition now works:
+The main idea is that of addition of positive integers with truncated overflow and it originates in mechanical calculators whose digits roll around to zero after overflow. Suppose that we are using a single decimal digit; we can obviously use the digit to represent ten positive values from zero to 9. Alternatively, we can use the digits from 0 to 4 to represent themselves and map the digits from 5 to 9 to the negative numbers -5 to -1, in that order. With this "complement" representation, here is how addition now works:
 
 | normal notation | complement notation |
 | :--- | :--- |
@@ -122,7 +122,7 @@ The main idea is that of addition of positive integers with truncated overflow a
 | 3 -2 = 1 | 3 + 8 = 1  \(11, with truncated overflow\) |
 | -2 - 2 = -4 | 8 + 8 = 6  \(6 is mapped to -4\) |
 
-The same concept can be extended to multi-digit numbers and, obviously, to binary digits. In the latter case, the notation is particularly simple: to negate a positive binary number we need to invert all its digits and add one. For instance, using 4 bits, the decimal value 4 is 0100; the value -4 is therefore 1011 + 0001 = 1100. With this, 4 - 4 = 0100 + 1100 = \(1\)0000 = 0
+The same concept can be extended to multi-digit numbers and, obviously, to binary digits, in which case the representation is called "two's complement". In the binary case, the notation is particularly simple: to negate a positive binary number we need to invert all its digits and add one. For instance, using 4 bits, the decimal value 4 is 0100; the value -4 is therefore 1011 + 0001 = 1100. With this, 4 - 4 = 0100 + 1100 = \(1\)0000 = 0
 
 Note that in two's complement notation, the value of the leading bits indicates the sign of the number, with zeros for positive quantities and ones for negatives. With 16-bit words adn using hexadecimal notation, for instance, the numbers 0x0000 to 0x7FFF \(zero to 32767 in decimal\) have their most significant bit equal to zero and they represent positive quantities. Conversely, the number 0x8000 is mapped to -32768, 0x8001 to -32767, all the way up to 0xFFFF which represents -1. 
 
@@ -135,7 +135,20 @@ This representation allows for an easy implementation of divisions by powers of 
 
 In the C language standard, the implementation of a right shift is left undetermined as to the propagation of the sign bit. On the Nucleo, however, you can safely use right-shift renormalization since the shifts preserve the sign.
 
+
 ## Fixed-point programming in C
 
+In the C language standard, the behavior of many numeric types is not standardized and is dependent on the compiler. To avoid unexpected side effects, in numerical programming it is customary to inlcude the header `<types.h>` in which numeric types are defined precisely. In our code we will use the following types:
 
+* `int16_t`: 16-bit integers, two's complement representation. Ranges from -32768 (0x8000) to 32767 (0x7FFF). Zero is 0x0000 and -1 is 0xFFFF.
+* `int32_t`: 32-bit integers, two's complement representation. Used to perform multiplications prior to rescaling. 
+
+The provided types also include unsigned versions such as `uint8_t` and `uint16_t`, which can be used when the sign is not needed; for instance, an `uint16_t` ranges from zero to 65535 (0xFFFF).
+
+Since we will be using integer arithmetic, here are a few practical rules that will be useful to understand and write the C code
+
+* all audio samples, unless specified otherwise, are assumed to be values in the $$[-1, 1)$$ range and represented by 16-bit words, two's complement;
+* to convert a floating point number $$x \in [-1, 1)$$ to its fixed-point represntation, use ```int16_t x16 = (int16_t)(x * 0x7FFF)```
+* to multiply two 16-bit variables using double precision and rescaling, use ```int16_t z = (int16_t)(((int32_t)x * (int32_t)y)) >> 15)```
+* careful with overflow when performing addition.
 

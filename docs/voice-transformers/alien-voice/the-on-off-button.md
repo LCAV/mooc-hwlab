@@ -13,7 +13,7 @@ Always in CubeMX, verify that the label for pin PA5 is "LD2" and the label for p
 Add the following state variable to the `USER CODE BEGIN PV` section
 
 ```c
-char effect_enabled = 0;  /* audio effect switch, triggered by button */
+char user_button = 0;  /* user button status */
 ```
 
 and add the following interrupt handler to the `USER CODE BEGIN 0` section:
@@ -22,12 +22,12 @@ and add the following interrupt handler to the `USER CODE BEGIN 0` section:
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
   if (GPIO_Pin == B1_Pin) {
     // blue button pressed
-    if (effect_enabled) {
-      effect_enabled = 0;
+    if (user_button) {
+      user_button = 0;
       // turn off LED
       HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_RESET);
     } else {
-      effect_enabled = 1;
+      user_button = 1;
       // turn on LED
       HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_SET);
     }
@@ -63,7 +63,7 @@ We don't want to check the `effect_enabled`status variable every time we process
 void VoiceEffect(int16_t *pIn, int16_t *pOut, uint16_t size);
 
 void Process(int16_t *pIn, int16_t *pOut, uint16_t size) {
-  if (effect_enabled) {
+  if (user_button == 1) {
     VoiceEffect(pIn, pOut, size);
   } else { // just pass through
     for (uint16_t i = 0; i < size; pIn += 2, i += 2) {
@@ -76,13 +76,13 @@ void Process(int16_t *pIn, int16_t *pOut, uint16_t size) {
 {% endtab %}
 
 {% tab title="Task 2" %}
-The modified Process function is trivial:
+The modified Process function is trivial since we just need to add the timing macros before and after the code:
 
 ```c
 void Process(int16_t *pIn, int16_t *pOut, uint16_t size) {
   START_TIMER
 
-  if (effect_enabled) {
+  if (user_button == 1) {
     VoiceEffect(pIn, pOut, size);
   } else {
     // just pass through
