@@ -1,3 +1,7 @@
+---
+description: 'by Eric Bezzam, Adrien Hoffet and Paolo Prandoni. (c) LCAV, EPFL, 2020.'
+---
+
 # DSP4.3 - Real-Time DSP
 
 Hi, and welcome to this final module of the DSP course, in which we will learn how to build a real time signal processing system using a general-purpose microcontroller unit. 
