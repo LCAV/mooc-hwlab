@@ -1,16 +1,16 @@
-# More Implementation Details
+# Last Details
 
 In the previous section we implemented a basic granular synthesis voice transformer that _lowers_ the pitch of the input voice. In this section we will address some remaining issues, namely:
 
-* implement an effect that raises the pitch of the voice (aka the "Chipmunks" effect)
+* implement an effect that raises the pitch of the voice \(aka the "Chipmunks" effect\)
 * properly initialize the buffer as a function of the pitch change
 * optimize the code a little more 
 
 ## The Chipmunks
 
-To raise the pitch of the voice we need to set $$\alpha$$ to values larger than one. As we have seen, this makes the effect noncausal, which we need to address by introducing some processing delay. 
+To raise the pitch of the voice we need to set $$\alpha$$ to values larger than one. As we have seen, this makes the effect noncausal, which we need to address by introducing some processing delay.
 
-The way to achieve this is to place the audio buffer's input index _forward_ with respect to the output index; let's do this properly by creating an initialization function for the buffer that takes the resampling factor as the input. 
+The way to achieve this is to place the audio buffer's input index _forward_ with respect to the output index; let's do this properly by creating an initialization function for the buffer that takes the resampling factor as the input.
 
 {% hint style="info" %}
 TASK 1: Determine the proper initial value for `buf_ix` when $$\alpha > 1$$ in the function below.
@@ -25,7 +25,7 @@ static void InitBuffer(float Alpha) {
   if (Alpha <= 1)
       buf_ix = 0;
   else
-    buf_ix = (uint16_t)(GRAIN_LEN * (Alpha - 1) + 0.5) & BUFLEN_MASK;
+    buf_ix = ...;
 
   prev_ix = BUF_LEN - GRAIN_STRIDE;
   curr_ix = 0;
@@ -33,16 +33,18 @@ static void InitBuffer(float Alpha) {
 }
 ```
 
-By now you know where to place this code but don't forget to 
+By now you know where to place this code but don't forget to
 
-* add the line 
-```c
-#include <memory.h>
-```
-to the file `main.h` between the `/* USER CODE BEGIN Includes */` tags.
+* add the following line to the file `main.h` between the `/* USER CODE BEGIN Includes */` tags.
+
+  ```c
+  #include <memory.h>
+  ```
+
 * declare the function prototype in the `USER CODE BEGIN PFP` block 
 * call the function before launching the DMA transfers:
-```c
+
+  ```c
   UNMUTE
   SET_MIC_LEFT
 
@@ -51,7 +53,7 @@ to the file `main.h` between the `/* USER CODE BEGIN Includes */` tags.
   // begin DMAs
   HAL_I2S_Transmit_DMA(&hi2s1, (uint16_t *) dma_tx, FULL_BUFFER_SIZE);
   HAL_I2S_Receive_DMA(&hi2s2, (uint16_t *) dma_rx, FULL_BUFFER_SIZE);
-```
+  ```
 
 ## Switching between effect
 
@@ -85,23 +87,18 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
 
 In the main processing loop, we are performing two checks on the value of `grain_m` per output sample. However, in the current implementation, both the stride and the taper lengths are multiples of the size of the DMA half-buffer. This allows us to move these checks outside of the processing loop and perform them once per call rather than once per sample
 
-
 {% hint style="info" %}
 TASK 2: Modify the `VoiceEffect()` function to reduce the number of `if` statements per call. Benchmark the result and observe the change in performance.
 {% endhint %}
-
-
-
 
 ## **Solutions**
 
 {% tabs %}
 {% tab title="Anti-spoiler Tab" %}
-Are you ready to see the answer? :\)
+Are you ready to see the answers ? :\)
 {% endtab %}
 
 {% tab title="Task 1" %}
-
 We have seen in the previous section that the maximum displacement between current output index and needed input index is $$D = (\alpha - 1)L$$. Since this value can be non-integer, we round it up to the nearest integer value:
 
 ```c
@@ -109,26 +106,8 @@ We have seen in the previous section that the maximum displacement between curre
 ```
 {% endtab %}
 
-{% tab title="Task 1" %}
-Here is the complete resampling function:
-
-```c
-inline static int16_t Resample(uint16_t m, uint16_t start) {
-  // non-integer index
-  int32_t t = alpha * (int32_t)m;
-  // anchor sample
-  int16_t T = (int16_t)(t >> 15) + (int16_t)start;
-  // fractional part
-  int32_t tau = t & 0x07FFF;
-  // compute linear interpolation
-  int32_t y = (0x07FFF - tau) * buffer[T & BUFLEN_MASK] + tau * buffer[(T+1) & BUFLEN_MASK];
-  return (int16_t)(y >> 15);
-}
-```
-{% endtab %}
-
 {% tab title="Task 2" %}
-Since the DMA transfer size is a exact divisor of both grain stride and taper len, the boundaries that we check `grain_m` against can only be crossed at the end of a function call. We can therefore rewrite the function like so:
+Since the DMA transfer size is a exact divisor of both grain stride and taper length, the boundaries that we check `grain_m` against can only be crossed at the end of a function call. We can therefore rewrite the function like so:
 
 ```c
 inline static void VoiceEffect(int16_t *pIn, int16_t *pOut, uint16_t size) {
@@ -160,6 +139,5 @@ inline static void VoiceEffect(int16_t *pIn, int16_t *pOut, uint16_t size) {
 
 With this implementation, the computational cost per sample oscillates between $$4.4\mu s$$ and $$7.8\mu s$$ per sample, which represent a saving of almost one microsecond per sample or, equivalently, a performance increase of at least 9%.
 {% endtab %}
-
 {% endtabs %}
 

@@ -1,6 +1,6 @@
 # 3.3 Real-time with Python
 
-In the process of implementing an algorithm on an embedded system, it is sometimes worth testing it in a workspace with less constraints than on the final environment. Here we propose a Python framework that will help in this prototype/debugging state for the alien voice effect \(and for future applications\). In the [next section](voice-transformers/alien-voice/alien_implementation.md) we will implement it on the STM32 board and set up a timer to benchmark our implementation.
+In the process of implementing an algorithm on an embedded system, it is sometimes worth testing it in a workspace with less constraints than on the final environment. Here we propose a Python framework that will help in this prototype/debugging state for the alien voice effect \(and for future applications\). In the [next section](alien-voice/alien_implementation.md) we will implement it on the STM32 board and set up a timer to benchmark our implementation.
 
 The main idea of this framework is to code in the same way as it will be done in C. This probably means that the Python implementation will be very cumbersome. However, this will make the porting to C much easier. One big obstacle is to think in a block-based manner, as if buffers were filled and processed one after the other in real-time. The other obstacle of porting the code from Python to C is the definition of variables and to manage their sizes.
 
@@ -261,7 +261,7 @@ _Hint: complete the `process` function in the script_ [_`alien_voice_sounddevice
 
 As before, run your script from the command line to try out your alien voice effect in real-time. Use headphones so that you avoid feedback!
 
-**In the** [**next section**](voice-transformers/alien-voice/alien_implementation.md)**, we guide you through implementing the alien voice effect on the microcontroller, as we also setup a timer to benchmark the implementation.**
+**In the** [**next section**](alien-voice/alien_implementation.md)**, we guide you through implementing the alien voice effect on the microcontroller, as we also setup a timer to benchmark the implementation.**
 
 \*\*\*\*
 

@@ -120,7 +120,7 @@ void build_linear_interp_table(interp_lookup_t * interp_val, uint16_t n_samples,
 
 Now we should consider what values, such as samples or pointers to lookup tables \(as we saw in the alien voice effect\), need to be shared between consecutive frames, i.e. to notify the next buffer of the current state. A visual of the overlapping tapered grains will help us identify what needs to be "passed" between buffers.
 
-![](../.gitbook/assets/viz_buffer.png)
+![](../../.gitbook/assets/viz_buffer.png)
 
 _Figure: Visualizing buffers within overlapping grains._
 
