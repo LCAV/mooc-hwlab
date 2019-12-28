@@ -38,5 +38,5 @@
 * [Granular Synthesis](voice-transformers/granular-synthesis/README.md)
   * [The Formulas](voice-transformers/granular-synthesis/gs-pre.md)
   * [Implementation](voice-transformers/granular-synthesis/implementation.md)
-  * [Last Details](voice-transformers/granular-synthesis/advanced.md)  
+  * [Last Details](voice-transformers/granular-synthesis/advanced.md)
 

@@ -101,7 +101,8 @@ def make_cos_table(period):
     print('#define COS_TABLE_LEN {}'.format(period))
     print('static int16_t COS_TABLE[COS_TABLE_LEN] = {', end='\n\t')
     for n in range(period - 1):
-        print('0x{:04X}, '.format(np.uint16(c[n])), end='' + '\n\t' if (n+1) % 12 == 0 else '')
+        print('0x{:04X}, '.format(np.uint16(c[n])), \
+            end='' + '\n\t' if (n+1) % 12 == 0 else '')
     print('0x{:04X}}};'.format(np.uint16(c[period-1])))
 ```
 {% endtab %}

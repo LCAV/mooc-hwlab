@@ -92,7 +92,7 @@ Which audio samples do we need to have access to at any given time? Without loss
 We need to compute:
 
 * $$g_0[m] = x(\alpha m)$$ for $$0 \leq m < S$$
-* $$g_{-1}[S+m] = x(\alpha m + (\alpha - 1)S$$ for $$0 \leq m < W$$
+* $$g_{-1}[S+m] = x(\alpha m + (\alpha - 1)S)$$ for $$0 \leq m < W$$
 
 If $$\alpha \leq 1$$ both expression are causal so that we can use a standard buffer to store past values. The size of the buffer is determined by "how far" in the past we need to reach; in the limit, for $$\alpha$$ close to zero, we need to access $$x(-S)$$ from $$m=W$$ when we compute the end of the tapering section, so that, in the worst case, the buffer must be as long as the grain size $$L = S+W$$. The overall processing delay of the voice changer in this case is equal to the size of the DMA transfer.
 
