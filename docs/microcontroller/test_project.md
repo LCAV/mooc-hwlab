@@ -2,6 +2,8 @@
 
 In this section we will guide you step by step through the process of coding a simple application for the microcontroller, connecting the board, and running the application on the microcontroller. This first application does not use any peripherals and simply makes an onboard LED blink, it will be a basic project template that we can reuse many times later.
 
+Please note that, if you get stuck, you can always download the working STM32 projects for the examples in this gitbook [here](https://github.com/LCAV/mooc-hwlab/blob/master/scripts/hwlab.zip).
+
 ## Open the IDE and select a workspace <a id="init_code"></a>
 
 1\) Open the STM32CubeIDE that you just installed in the previous section.
