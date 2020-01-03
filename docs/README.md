@@ -16,7 +16,7 @@ The skills and the experience needed to port a real-time signal processing algor
 
 In this online book we will provide you with step-by-step instructions together with links to videos on [Coursera ](https://www.coursera.org/learn/dsp4/)that illustrate all the steps leading to the "finished product". Working with hardware can often prove overwhelming and dealing with the numerous protocols, lengthy documentation, and specific components can be frustrating at times. But, thanks to these notes and the videos, you should be able to navigate around these issues with ease and taste the fun and exciting side of practical DSP right away.
 
-Even if you don't have access to the selected hardware platform, you will still be able to appreciate the main lessons on real-time, low-level programmin and we still recommend you read the [section on Audio I/O theory](audio-peripherals/audio-io.md) nevertheless.
+Even if you don't have access to the selected hardware platform, you will still be able to appreciate the main lessons on real-time, low-level programming and we still recommend you read the [section on Audio I/O theory](audio-peripherals/audio-io.md) nevertheless.
 
 We hope you'll find this tutorial instructive and entertaining!
 
