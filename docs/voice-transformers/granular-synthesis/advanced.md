@@ -99,7 +99,7 @@ Are you ready to see the answers ? :\)
 {% endtab %}
 
 {% tab title="Task 1" %}
-We have seen in the previous section that the maximum displacement between current output index and needed input index is $$D = (\alpha - 1)L$$. Since this value can be non-integer, we round it up to the nearest integer value:
+We have seen in the previous section that the maximum displacement between current output index and needed input index is $$D = (\alpha - 1)\,L$$. Since this value can be non-integer, we round it up to the nearest integer value:
 
 ```c
     buf_ix = (uint16_t)(GRAIN_LEN * (Alpha - 1) + 0.5) & BUFLEN_MASK;

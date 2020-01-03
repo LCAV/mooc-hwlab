@@ -15,7 +15,7 @@ In order to implement granular synthesis in real time we need to take into accou
 
 The grain stride indicates the displacement in samples between successive grains and it is a function of grain length and of the _overlap_ between successive grains. With no overlap, the grain stride is equal to the grain length; however, overlap between neighboring grains is essential to reduce the artifacts due to the segmentation. Overlapping output grains are blended together using a _tapering window_; the window is designed so that it performs _linear interpolation_ between samples from overlapping grains.
 
-Call $$\rho$$the amount of overlap \(as a percentage\) between neighboring grains. With $$\rho = 0$$there is no overlap whereas with $$\rho = 1$$all the samples in a grain overlap with another grain. The relationship between grain length $$L$$and grain stride $$S$$is $$L = (1+\rho)S$$. This is illustrated in the following figure for varying degrees of overlap and a stride of $$S=100$$ samples; grains are represented using the shape of the appropriate tapering window:
+Call $$\rho$$the amount of overlap \(as a percentage\) between neighboring grains. With $$\rho = 0$$there is no overlap whereas with $$\rho = 1$$all the samples in a grain overlap with another grain. The relationship between grain length $$L$$and grain stride $$S$$is $$L = (1+\rho)\,S$$. This is illustrated in the following figure for varying degrees of overlap and a stride of$$S=100$$samples; grains are represented using the shape of the appropriate tapering window:
 
 ![](../../.gitbook/assets/grains%20%281%29.jpg)
 
@@ -29,12 +29,12 @@ $$
 g_k[m] = x(kS + \alpha m), \qquad 0 \leq m < L
 $$
 
-where $$x(t)$$is the interpolated, continuous-time version of the input signal and $$\alpha$$is the sampling rate change factor \(with $$\alpha < 1$$for subsampling, i.e. to lower the pitch, and $$\alpha > 1$$for upsampling, i.e. to raise the pitch\). Note that the $$k$$-th grain starts at $$n=kS$$and is built using input data from $$n=kS$$as well.
+where$$x(t)$$is the interpolated, continuous-time version of the input signal and$$\alpha$$is the sampling rate change factor \(with $$\alpha < 1$$for subsampling, i.e. to lower the pitch, and $$\alpha > 1$$for upsampling, i.e. to raise the pitch\). Note that the $$k$$-th grain starts at $$n=kS$$and is built using input data from $$n=kS$$as well.
 
 In practice we will obviously perform local interpolation rather than full interpolation to continuous time, as explained in [Lecture 3.3.2 on Coursera](https://www.coursera.org/learn/dsp3/home/week/3).  Let $$t=kS+\alpha m$$and set $$T = \lfloor T \rfloor$$and $$\tau = t - T$$; with this, the interpolation can be approximated as
 
 $$
-g_k[m] \approx (1-\tau)x[T] + \tau\, x[T+1].
+g_k[m] \approx (1-\tau)\,x[T] + \tau\, x[T+1].
 $$
 
 ### Causality
@@ -51,7 +51,7 @@ We will see in the next sections that buffering is required anyway in order to i
 
 ### The tapering window
 
-The tapering window is as long as the grain and it is shaped so that the overlapping grains are linearly interpolated. The left sloping part of the window is $$W$$ samples long, with $$W=L-S = \rho S.$$ The tapering weights are therefore expressed by the formula
+The tapering window is as long as the grain and it is shaped so that the overlapping grains are linearly interpolated. The left sloping part of the window is $$W$$samples long, with $$W=L-S = \rho S.$$ The tapering weights are therefore expressed by the formula:
 
 $$
 w[n] = \begin{cases}
@@ -66,7 +66,7 @@ The full output signal can be expressed in closed form by looking at the followi
 
 ![](../../.gitbook/assets/grains.jpg)
 
-Any output index $$n$$can be written as
+Any output index $$n$$can be written as:
 
 $$
 n = kS + m, \qquad k, m \in \mathbb{Z},  0 \leq m < S;
@@ -75,7 +75,7 @@ $$
 $$k$$ is the index of the current grain and $$m$$ is the index of the sample _within_ the current grain. Note that the sample at $$n$$ is also the sample with index $$S+m$$ with respect to the _previous_ grain. With this, the output at $$n$$is the sum of the sample number $$m$$ from the current grain plus the sample number $$S+m$$from the previous grain; both samples are be weighed by the linear tapering slope$$w[\cdot]$$:
 
 $$
-y[n] = (1-w[m])g_{k-1}[S+m] + w[m]g_k[m]
+y[n] = (1-w[m])\,g_{k-1}[S+m] + w[m]\,g_k[m]
 $$
 
 ### Buffering
@@ -92,17 +92,17 @@ Which audio samples do we need to have access to at any given time? Without loss
 We need to compute:
 
 * $$g_0[m] = x(\alpha m)$$ for $$0 \leq m < S$$
-* $$g_{-1}[S+m] = x(\alpha m + (\alpha - 1)S)$$ for $$0 \leq m < W$$
+* $$g_{-1}[S+m] = x(\alpha m + (\alpha - 1)\,S)$$ for $$0 \leq m < W$$
 
 If $$\alpha \leq 1$$ both expression are causal so that we can use a standard buffer to store past values. The size of the buffer is determined by "how far" in the past we need to reach; in the limit, for $$\alpha$$ close to zero, we need to access $$x(-S)$$ from $$m=W$$ when we compute the end of the tapering section, so that, in the worst case, the buffer must be as long as the grain size $$L = S+W$$. The overall processing delay of the voice changer in this case is equal to the size of the DMA transfer.
 
-If $$\alpha > 1$$, on the other hand, we need to also access _future_ samples; this is of course not possible but we can circumvent the problem by introducing a larger processing delay. This is achieved by moving the input data pointer in the buffer further ahead with respect to the output data pointer. The maximum displacement between the current time and the future sample that we need takes plasce for $$m = W$$ \(i.e., at the end of the tapering slope\) for which
+If $$\alpha > 1$$, on the other hand, we need to also access _future_ samples; this is of course not possible but we can circumvent the problem by introducing a larger processing delay. This is achieved by moving the input data pointer in the buffer further ahead with respect to the output data pointer. The maximum displacement between the current time and the future sample that we need takes place for $$m = W$$ \(i.e., at the end of the tapering slope\) for which:
 
 $$
-[\alpha m  + (\alpha -1)S - m ]_{m=W} = (\alpha - 1)(S+W) = (\alpha - 1)L
+[\alpha m  + (\alpha -1)\,S - m ]_{m=W} = (\alpha - 1)(S+W) = (\alpha - 1)\,L
 $$
 
-By offsetting the input and output pointers by $$D = (\alpha -1)L$$ samples, we can raise the pitch of the voice by $$\alpha$$ at the price of a processing delay equal to $$D$$samples.
+By offsetting the input and output pointers by $$D = (\alpha -1)\,L$$ samples, we can raise the pitch of the voice by $$\alpha$$ at the price of a processing delay equal to $$D$$samples.
 
 {% hint style="info" %}
 TASK 1: Determine the maximum range for $$\alpha$$ if the size of the audio buffer is equal to the grain size $$L$$.
@@ -116,7 +116,7 @@ Are you ready to see the answer? :\)
 {% endtab %}
 
 {% tab title="Task 1" %}
-We have already seen that for $$\alpha < 1$$ we need a causal buffer whose maximum length is equal to $$L$$. For $$\alpha > 1$$ the needed buffer size is $$(1-\alpha)L$$ so, if the maximum buffer size is $$L$$, it must be $$0 \leq \alpha < 2$$.
+We have already seen that for $$\alpha < 1$$ we need a causal buffer whose maximum length is equal to $$L$$. For $$\alpha > 1$$ the needed buffer size is $$(1-\alpha)\,L$$ so, if the maximum buffer size is $$L$$, it must be $$0 \leq \alpha < 2$$.
 {% endtab %}
 {% endtabs %}
 
