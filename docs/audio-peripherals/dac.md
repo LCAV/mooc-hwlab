@@ -23,7 +23,7 @@ Compared to the [microphone](microphone.md) which only had six pins, the above l
 
 ### Mode configuration \(p. 7 of [datasheet](https://www.nxp.com/docs/en/data-sheet/UDA1334ATS.pdf)\)
 
-PLL stands for "Phase-locked loop"; you can find more information about PLLs on [Wikipedia](https://en.wikipedia.org/wiki/Phase-locked_loop). In the UDA1334ATS component, it is used to generate the internal system clock from the **WS** signal in "audio mode". In fact, in order to enable "audio mode", **PLL0** \(Pin 10\) must be set to LOW. Moreover, **SYSCLK/PLL1** \(Pin 6\) should also be set to LOW to select a sampling frequency typical for audio application, e.g. within $$f_s = 16 - 50$$ kHz.
+PLL stands for "Phase-locked loop"; you can find more information about PLLs on [Wikipedia](https://en.wikipedia.org/wiki/Phase-locked_loop). In the UDA1334ATS component, it is used to generate the internal system clock from the **WS** signal in "audio mode". In fact, in order to enable "audio mode", **PLL0** \(Pin 10\) must be set to LOW. Moreover, **SYSCLK/PLL1** \(Pin 6\) should also be set to LOW to select a sampling frequency typical for audio application, i.e. within $$f_s = 16 - 50$$ kHz.
 
 ### Input configuration \(p. 9 of [datasheet](https://www.nxp.com/docs/en/data-sheet/UDA1334ATS.pdf)\)
 
@@ -48,7 +48,7 @@ The breakout board we are using will nicely abstract these signals into a "singl
 
 ## I2S output timing
 
-The UDA1334ATS chip supports word lengths up to 24 bits for the I2S bus. Moreover, as our microphone has a maximum bit precision of 18 bits, we do not need to go above this precision.
+The UDA1334ATS chip supports word lengths up to 24 bits for the I2S bus. As our microphone anyways has a maximum bit precision of only 18 bits, we do not need to go above this precision.
 
 There are also some requirements on the **BCK** and **WS** signals \(p. 9 of [datasheet](https://www.nxp.com/docs/en/data-sheet/UDA1334ATS.pdf)\):
 
@@ -75,7 +75,7 @@ Using this breakout board has a few other benefits when used in "audio mode", as
 
 1. **SFOR1**, **SFOR0**, **PLL0**, **SYSCLK/PLL1**, and **DEEM/CLKOUT** of UDA1334ATS are all pulled LOW by the breakout board; so the **SF1**, **SF0**, **PLL**, and **DEEM** pins of the breakout board do not need to be set for our application as we are interested in "audio mode".
 2. We can provide a 3V to 5V power on the **VIN** and **GND** pins of the breakout board; a built-in regulator will take care of supplying the digital voltage supply \(**VDDD** and **VSSD**\) and the DAC supply voltage \(**VDDA** and **VSSA**\).
-3. As an audio jack is already built into the breadboard, we do not need to worry about connecting the **VOUTR**, **VOUTL**, and **Vref\(DAC\)** pins of the UDA1334ATS component. However, we can easily debug these signals from **Lout**, **AGND**, and **Rout** of the breakout board.
+3. As an audio jack is already built into the breakout board, we do not need to worry about connecting the **VOUTR**, **VOUTL**, and **Vref\(DAC\)** pins of the UDA1334ATS component. However, we can easily debug these signals from **Lout**, **AGND**, and **Rout** of the breakout board.
 
 Check Adafruit's [website](https://learn.adafruit.com/adafruit-i2s-stereo-decoder-uda1334a/pinouts) for more information on each pin.
 
