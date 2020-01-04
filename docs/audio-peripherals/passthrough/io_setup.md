@@ -4,14 +4,14 @@ The initialization code we generated in the [blinking LED example](../../microco
 
 ## Create a new project
 
-First_**,**_ let's make a copy of our working LED blinking project. We want to keep tracks of old projects in order to be able to go back to a known working configuration if something is not functioning anymore. To copy the project use the "Project Explorer" of the SW4STM32 software. Open the project you want and do a simple copy/paste operation. When you paste the project, a pop-up will ask you the rename the copied project: we recommend choosing a name that includes the current date and the word "passthrough" in it for bookkeeping purposes. 
+First, let's make a copy of our working LED blinking project. We want to keep tracks of old projects in order to be able to go back to a known working configuration if something is not functioning anymore. To copy the project use the "Project Explorer" of the SW4STM32 software. Open the project you want and do a simple copy/paste operation. When you paste the project, a pop-up will ask you to rename the copied project: we recommend choosing a name that includes the current date and the word "passthrough" in it for bookkeeping purposes. 
 
 To finish the copying process:
 
 * make sure that the binary file of the original project is removed by deleting the `.elf` file in the `Binaries` folder of the new project.
-* rename the .`ioc` file with the name of the project
+* rename the `.ioc` file with the name of the project
 
-Now we are ready to update the initialization code. From the project explore, click on the `IOC` file of the new project and open the CubeMX configurator.
+Now we are ready to update the initialization code. From the project explorer, click on the `IOC` file of the new project and open the CubeMX configurator.
 
 ## Enable and configure the I2S buses <a id="i2s"></a>
 
@@ -111,9 +111,9 @@ The second paragraph of section 3 of the datasheet says:
   
 _The UDA1334ATS supports the I2S-bus data format with word lengths of up to 24 bits and the LSB-justified serial data format with word lengths of 16, 20 and 24 bits._ 
 
-In the code, we will be using 16-bit samples, so the word size is 16 bit. It is not so clear what it's meant by "frame" in this context, since the term is not part of the [original I2S specification](https://www.sparkfun.com/datasheets/BreakoutBoards/I2SBUS.pdf). Nevertheless, we assume that, since the word size could be up to 24 bit, we should choose a "frame" of 32 bits. This is confirmed experimentally in the sense that, if we choose a frame of 16 bits, the passthrough does not work. You could also test both parameter and control with a logic analyzer what is the frame length. Such type of missing information is often encountered when reading a datasheet.
+In the code, we will be using 16-bit samples, so the word size is 16 bit. It is not so clear what is meant by "frame" in this context, since the term is not part of the [original I2S specification](https://www.sparkfun.com/datasheets/BreakoutBoards/I2SBUS.pdf). Nevertheless, we assume that, since the word size could be up to 24 bit, we should choose a "frame" of 32 bits. This is confirmed experimentally in the sense that, if we choose a frame of 16 bits, the passthrough does not work. You could also test both parameters and control with a logic analyzer what is the frame length. Such type of missing information is often encountered when reading a datasheet.
 
-Lastly, the **Audio frequency** have to be defined. It is important to keep in mind that a faster sampling frequency implies less time for the micro-controller to process each sample. On the other hand, a slow sampling frequency impacts the quality of the signal as it reduces its bandwidth.  
+Lastly, the **Audio frequency** has to be defined. It is important to keep in mind that a faster sampling frequency implies less time for the micro-controller to process each sample. On the other hand, a slow sampling frequency impacts the quality of the signal as it reduces its bandwidth.  
   
 The pin called "PLL0" is set to 0 by default \(according to the [schematic](https://cdn-learn.adafruit.com/downloads/pdf/adafruit-i2s-stereo-decoder-uda1334a.pdf?timestamp=1570708179)\), which means that the chip is in _audio mode._ Section 8.1.1, explains that in this mode the pin "PLL1" selects for audio frequency from 16 to 50 kHz \(PLL1 = LOW\) or from 50 to 100 kHz \(PLL1 = HIGH\). In this breakout, PLL1 is set to LOW according to the [schematic](https://cdn-learn.adafruit.com/downloads/pdf/adafruit-i2s-stereo-decoder-uda1334a.pdf?timestamp=1570708179). In order to make our final choice we will chose 32 kHz, this choice will be confirmed by task 2.
 {% endtab %}
@@ -123,9 +123,9 @@ The **transmission mode** is defined by the fact that the peripheral is a microp
 
 The **communication standard** is "I2S" or "LSB-justified" as shown in first paragraph of page 7 of the [datasheet](https://cdn-shop.adafruit.com/product-files/3421/i2S+Datasheet.PDF), we will then choose "I2S Phillips" like done for I2S1.
 
-This datasheet gives more information about the **Data and Frame format**. We will chose the same parameter as for I2S1 but figure 7 of the datasheet shows us that the frame is 32bits and that the microphone will send 18 bits with the actual value, then 6 of 0 state and then 8 of tri-state. We will chose "16 Bits Data on 32 Bits Frame" in order to use 16Bits variable and have a faster processing.
+This datasheet gives more information about the **Data and Frame format**. We will chose the same parameter as for I2S1 but figure 7 of the datasheet shows us that the frame is 32bits and that the microphone will send 18 bits with the actual value, then 6 of 0 state and then 8 of tri-state. Nevertheless, we will chose "16 Bits Data on 32 Bits Frame" in order to have a faster processing.
 
-The **Audio frequency** have to be defined. This device is a bit more restrictive that the DAC. Indeed in page 7 of the datasheet we can read the following: _Clock frequencies from 2.048Mhz to 4.096MHz are supported so sampling rates from 32KHz to 64KHz can be had by changing the clock frequency._ In this case we clearly see that a frequency slower than 32kHz will theoretically not work properly.
+The **Audio frequency** has to be defined. This device is a bit more restrictive that the DAC. Indeed in page 7 of the datasheet we can read the following: _Clock frequencies from 2.048Mhz to 4.096MHz are supported so sampling rates from 32KHz to 64KHz can be had by changing the clock frequency._ In this case we clearly see that a frequency slower than 32kHz will not work properly.
 {% endtab %}
 {% endtabs %}
 
