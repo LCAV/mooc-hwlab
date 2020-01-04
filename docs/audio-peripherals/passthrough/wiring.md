@@ -43,6 +43,7 @@ Finally, we configured an additional GPIO pin in order to select whether we woul
 {% hint style="info" %}
 TASK 6: Connect the microphone's **SEL** pin to the pin on the STM32 board corresponding to **LR\_SEL**.
 
+<!-- is there a solution for this somewhere? -->
 BONUS: do we have to connect the microphone's **SEL** pin for the passthrough to work? What would happen if we didn't?
 {% endhint %}
 
@@ -76,5 +77,5 @@ With everything correctly wired up, we can proceed to [coding](coding.md) the pa
 
 ## Tasks solutions
 
-Sadly we cannot connect all the wires for you or double check your connections. However we did our best to help you with this wiring by making a step-by-step video accessible at this **address**.
+Sadly we cannot connect all the wires for you or double check your connections. However we did our best to help you with this wiring by making a step-by-step video accessible at this [address](https://www.coursera.org/learn/dsp4/supplement/efBGc/introduction).
 
