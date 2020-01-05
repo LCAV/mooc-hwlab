@@ -14,7 +14,7 @@ As a quick recap, remember that if you need to store past values of a signal, th
 
 with this, the expression $$x[n-k], k <M,$$can be accessed as `x[(ix + M - k) % M]`.
 
-In a microcontroller, where each CPU cycle counts, modulo operations are expensive but they can be avoided and replaced by binary masks if we choose $$M$$to be a power of two. In those cases, `ix % M` is equivalent to `ix & (M-1)` and the bitwise AND is a much faster operation. Since $$M$$is the _minimum_ number of past values that we need access to, we can always increase $$M$$until its reaches a power of two, especially when $$M$$is small.
+In a microcontroller, where each CPU cycle counts, modulo operations are expensive but they can be avoided and replaced by binary masks if we choose $$M$$to be a power of two. In those cases, `ix % M` is equivalent to `ix & (M-1)` and the bitwise AND is a much faster operation. Since $$M$$is the _minimum_ number of past values that we need access to, we can always increase $$M$$until it reaches a power of two, especially when $$M$$is small.
 
 Here is a simple example:
 
@@ -64,7 +64,7 @@ Another difficulty is when $$\omega_c$$is _not_ a rational multiple of $$2\pi$$.
 
 ## State variables <a id="state_var"></a>
 
-All discrete-time signal processing data and algorithm make use of a free "time" variable $$n$$. As we know, in theory $$n \in \mathbb{Z}$$ so its value ranges from minus infinity to plus infinity. In an actual DSP application we are much more likely to:
+All discrete-time signal processing data and algorithms make use of a free "time" variable $$n$$. As we know, in theory $$n \in \mathbb{Z}$$ so its value ranges from minus infinity to plus infinity. In an actual DSP application we are much more likely to:
 
 * start the processing with all buffers empty and with $$n=0$$\(initial conditions\)
 * store $$n$$in an unsigned integer variable and increment it at each iteration.
@@ -78,5 +78,6 @@ In our code, therefore, we will explicitly roll over these indexes independently
 * in functions, indexes will be defined as [static variables](https://stackoverflow.com/questions/572547/what-does-static-mean-in-c) so that their value will be preserved between consecutive function calls.
 * to make sure that state variables used by different functions are stepped synchronously, we will define them as global-scope variables at the application level.
 
-These types of variables are often referred to _state variables_ in C programming and they are usually much frowned upon; the truth is, in a microcontroller real-time application where performance is key, they simply cannot be avoided.
+<!-- below: do you mean state variables or global variables? -->
+These types of variables are often referred to as _state variables_ in C programming and they are usually much frowned upon; the truth is, in a microcontroller real-time application where performance is key, they simply cannot be avoided.
 

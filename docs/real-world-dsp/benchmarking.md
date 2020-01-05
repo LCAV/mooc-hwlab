@@ -34,7 +34,7 @@ Set the Counter Period to `0xFFFFFFFF`; this ensures that the 32-bit timer count
 
 ## Using the timer
 
-In order to use the timer we configured, we will define a couple of macros to start and stop the timer and a global variable to keep track of the time that elapses between calls. Between the `USER CODE BEGIN PV` and `USER CODE END PV` comment tags, add the following lines. Note the `volatile` declaration for the timer, which underscores how this variable is a global variables modified by an interrupt service routine independently of the normal control flow of the rest of the code.
+In order to use the timer we configured, we will define a couple of macros to start and stop the timer and a global variable to keep track of the time that elapses between calls. Between the `USER CODE BEGIN PV` and `USER CODE END PV` comment tags, add the following lines. Note the `volatile` declaration for the timer, which underscores how this variable is a global variable modified by an interrupt service routine independently of the normal control flow of the rest of the code.
 
 ```c
 /* USER CODE BEGIN PV */
@@ -101,11 +101,11 @@ As proposed in the hint, if you go to the tab _Clock Configuration_ of CubeMX, y
 
 ![](../.gitbook/assets/screenshot-2019-10-10-at-16.57.46-1.png)
 
-Note the last block on the right column _APB1 Timer clocks \(MHz\):_ 48. It means that your timer is "driven" by a base tick frequency of 48MHz. in order to reduce this to $$1 \, \mu s$$or in other word 1 MHz, you will have to divide it by 48. This number is thus your prescaler. This lead to the following timer configuration:
+Note the last block on the right column _APB1 Timer clocks \(MHz\):_ 48. It means that your timer is "driven" by a base tick frequency of 48MHz. in order to reduce this to $$1 \, \mu s$$or in other word 1 MHz, you will have to divide it by 48. This number is thus your prescaler. This leads to the following timer configuration:
 
 ![](../.gitbook/assets/screenshot-2019-10-10-at-16.58.09-1.png)
 
-Note the _Counter Period_, it is the value at where the interrupt is triggered, here it is set to the maximum value.
+Note the _Counter Period_, it is the value where the interrupt is triggered, here it is set to the maximum value.
 {% endtab %}
 
 {% tab title="Task 2" %}

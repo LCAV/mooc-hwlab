@@ -1,6 +1,6 @@
 # Implementation
 
-We are building a real-time system and so the output data rate will necessarily be equal to the input data rate. In the previous section we saw that grains are produced via a periodic pattern whose period is equal to the stride length. It would make perfect sense, therefore, to set the length of the DMA buffer equal to the stride and let that be the cadence of the processing function.
+We are building a real-time system, so the output data rate will necessarily be equal to the input data rate. In the previous section we saw that grains are produced via a periodic pattern whose period is equal to the stride length. It would make perfect sense, therefore, to set the length of the DMA buffer equal to the stride and let that be the cadence of the processing function.
 
 Unfortunately this simple approach clashes with the capabilities of the hardware and so we need to trade resources for some extra code complexity: welcome to the world of embedded DSP!
 
@@ -62,7 +62,7 @@ static int32_t TAPER[TAPER_LEN] = {...};
 
 ### Main buffer
 
-We choose the buffer length to be equal to the size of the grain, since anyway the voice transformer doesn't sound too good for $$\alpha > 1.5$$. With a size equal to a power of two, we will be able to use bit masking to enforce circular access to the buffer. Add the following lines after the previous ones:
+We choose the buffer length to be equal to the size of the grain, since anyways the voice transformer doesn't sound too good for $$\alpha > 1.5$$. With a size equal to a power of two, we will be able to use bit masking to enforce circular access to the buffer. Add the following lines after the previous ones:
 
 ```c
 #define BUF_LEN 1024
