@@ -25,7 +25,7 @@ The following steps are the same for Windows, Linux, and MacOS and they simply c
 
 ### Download instructions
 
-Please refer to the distributor website for detailed installation instructions. Please refer to the corresponding subsection after the following instructions for our additional remarks.
+Please refer to the distributor website for detailed installation instructions. Please refer to the next subsection for additional remarks for MaxOS users.
 
 1\) Go on [ST official download page](https://www.st.com/en/development-tools/stm32cubeide.html) with your favorite browser.
 

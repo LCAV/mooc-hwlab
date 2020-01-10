@@ -15,9 +15,9 @@ Macros are usually defined before the `main` function; we will place our macros 
 As an example, we will begin by creating _macros_ to change the logical level of the **MUTE** pin. As in the blinking LED example, we will be using HAL library calls in order to modify the state of the **MUTE** GPIO pin.
 
 {% hint style="info" %}
-TASK 1: Complete the two macros below  -`MUTE` and `UNMUTE`-  in order to mute/unmute the output. Simply replace the `XXX` the definitions with either`GPIO_PIN_SET` or `GPIO_PIN_RESET` according to whether you need a HIGH or LOW level.  
+TASK 1: Complete the two macros below  -`MUTE` and `UNMUTE`-  in order to mute/unmute the output. Simply replace the `XXX` in the definitions with either`GPIO_PIN_SET` or `GPIO_PIN_RESET`, according to whether you need a HIGH or LOW level.  
   
-_Hint: you should check the_ [_datasheet of the DAC_](https://www.nxp.com/docs/en/data-sheet/UDA1334ATS.pdf) _to determine whether you need a HIGH \(value to turn on the mute function of the DAC._
+_Hint: you should check the_ [_datasheet of the DAC_](https://www.nxp.com/docs/en/data-sheet/UDA1334ATS.pdf) _to determine whether you need a HIGH or LOW value to turn on the mute function of the DAC._
 {% endhint %}
 
 ```c
@@ -48,7 +48,7 @@ In most applications we will need to set some numerical constants that define ke
 We will now define a few constants which will be useful in coding our application. Before defining them in our code, let's clarify some of the terminology:
 
 1. _Sample_: a sample is a single discrete-time value; for a stereo signal, a sample can belong either to the left or right channel.
-2. _Frame_: a frame collects all synchronous samples from all channel so, for a stereo signal, a frame will contain two samples, left and right.
+2. _Frame_: a frame collects all synchronous samples from all channels. For a stereo signal, a frame will contain two samples, left and right.
 3. _Buffer length_: a buffer is a collection of _frames_, stored in memory and ready for processing \(or ready for a DMA transfer\). The buffer's length is a key parameter that needs to be fine-tuned to the demands of our application, [as we explained before](../audio-io.md#dma-transfers).
 
 ### Audio Parameters

@@ -6,9 +6,9 @@ The Nucleo board has a user programmable push button. We will now use it as an O
 
 The idea is to use the push button to call an asynchronous routine in our code. To do that, we need to configure the button to trigger an interrupt and then we need to catch the interrupt in our code.
 
-Go into CubeMX by clicking on the `ioc` file in your alien voice project; in the left panel click on "System &gt; NVIC" and enable the line "EXTI line 4 to 15" by checking the corresponding checkmark. The pin PC13 is linked to EXTI13 in the hardware of the microcontroller. Interrupts are used because it's provides a very fast access to the core of the system and thus a very fast reaction.
+Go into CubeMX by clicking on the `ioc` file in your alien voice project; in the left panel click on "System &gt; NVIC" and enable the line "EXTI line 4 to 15" by checking the corresponding checkmark. The pin PC13 is linked to EXTI13 in the hardware of the microcontroller. Interrupts are used because they provide a very fast access to the core of the system and thus a very fast reaction.
 
-Always in CubeMX, verify that the label for pin PA5 is "LD2" and the label for pin PC13 is "B1".
+Still in CubeMX, verify that the label for pin PA5 is "LD2" and the label for pin PC13 is "B1".
 
 Add the following state variable to the `USER CODE BEGIN PV` section
 
@@ -35,7 +35,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
 }
 ```
 
-The interrupt handler toggles the variable effect\_enabled and switches the LED on when its value is true.
+The interrupt handler toggles the variable `user_button` and switches the LED on when its value is true.
 
 {% hint style="info" %}
 TASK 1: Modify the alien voice`Process`function so that it switches between a passthrough and the alien voice.
@@ -57,7 +57,7 @@ Are you sure you are ready to see the solution? ;\)
 {% endtab %}
 
 {% tab title="Task 1" %}
-We don't want to check the `effect_enabled`status variable every time we process a sample, so we will place the logic at the DMA interrupt level, before we process a data buffer. First, rename the function that implements the alien voice form `Process` to `VoiceEffect`. Then modify the function prototypes between the `/* USER CODE BEGIN PFP */`tags like so:
+We don't want to check the `user_button` status variable every time we process a sample, so we will place the logic at the DMA interrupt level, before we process a data buffer. First, rename the function that implements the alien voice form `Process` to `VoiceEffect`. Then modify the function prototypes between the `/* USER CODE BEGIN PFP */`tags like so:
 
 ```c
 void VoiceEffect(int16_t *pIn, int16_t *pOut, uint16_t size);

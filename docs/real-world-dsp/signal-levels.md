@@ -4,7 +4,7 @@
 
 One thing that you might have noticed from the passthrough example is that the output signal is not very loud. To correct this, we can add a gain factor to the `process`function that multiplies each signal sample by a constant. 
 
-In order to take advantage of the architecture of the microcontroller's internal multiplier, it is recommended to use factors that are a power of 2 since in this case a multiplication corresponds to a simple binary shift of the integer values to the left. We measured$$1\mu s$$difference in processing time when tested with the first voice transformer algorithme.
+In order to take advantage of the architecture of the microcontroller's internal multiplier, it is recommended to use factors that are a power of 2 since in this case a multiplication corresponds to a simple binary shift of the integer values to the left. We measured$$1\mu s$$difference in processing time when tested with the first voice transformer algorithm.
 
 ## Removing the DC offset <a id="removing_dc"></a>
 

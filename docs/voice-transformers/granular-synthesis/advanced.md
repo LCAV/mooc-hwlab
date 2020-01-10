@@ -55,7 +55,7 @@ By now you know where to place this code but don't forget to
   HAL_I2S_Receive_DMA(&hi2s2, (uint16_t *) dma_rx, FULL_BUFFER_SIZE);
   ```
 
-## Switching between effect
+## Switching between effects
 
 We can use the blue button on the Nucleo board to switch between Darth Vader and the Chipmunks; to do so, define the following constants at the beginning of the code
 
@@ -107,7 +107,7 @@ We have seen in the previous section that the maximum displacement between curre
 {% endtab %}
 
 {% tab title="Task 2" %}
-Since the DMA transfer size is a exact divisor of both grain stride and taper length, the boundaries that we check `grain_m` against can only be crossed at the end of a function call. We can therefore rewrite the function like so:
+Since the DMA transfer size is an exact divisor of both grain stride and taper length, the boundaries that we check `grain_m` against can only be crossed at the end of a function call. We can therefore rewrite the function like so:
 
 ```c
 inline static void VoiceEffect(int16_t *pIn, int16_t *pOut, uint16_t size) {
@@ -137,7 +137,7 @@ inline static void VoiceEffect(int16_t *pIn, int16_t *pOut, uint16_t size) {
 }
 ```
 
-With this implementation, the computational cost per sample oscillates between $$4.4\mu s$$ and $$7.8\mu s$$ per sample, which represent a saving of almost one microsecond per sample or, equivalently, a performance increase of at least 9%.
+With this implementation, the computational cost per sample oscillates between $$4.4\mu s$$ and $$7.8\mu s$$ per sample, which represents a saving of almost one microsecond per sample or, equivalently, a performance increase of at least 9%.
 {% endtab %}
 {% endtabs %}
 

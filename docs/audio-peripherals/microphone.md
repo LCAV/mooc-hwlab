@@ -1,6 +1,6 @@
 # The digital microphone
 
-For the input we will use is the [I2S MEMS Microphone Breakout](https://learn.adafruit.com/adafruit-i2s-mems-microphone-breakout/overview) by Adafruit; in the following we will refer to this part simply as the _Adafruit mic_. In the following subsections, we will explain the key inputs and outputs of the MEMS microphone component, the I2S input protocol for the data transfer, and what is meant by a "breakout board".
+For the input we will use the [I2S MEMS Microphone Breakout](https://learn.adafruit.com/adafruit-i2s-mems-microphone-breakout/overview) by Adafruit; in the following we will refer to this part simply as the _Adafruit mic_. In the following subsections, we will explain the key inputs and outputs of the MEMS microphone component, the I2S input protocol for the data transfer, and what is meant by a "breakout board".
 
 ## Overview of the MEMS microphone pins
 
@@ -25,7 +25,7 @@ Luckily for us, the MEMS component in the Adafruit mic already provides us with 
 
 ## I2S timing diagram example
 
-Let's look at an example timing diagram from the single Adafruit microphone we will be using. We assume we have configured our microphone to be the the left channel \(that is, we set **SEL**=0\).
+Let's look at an example timing diagram from the single Adafruit microphone we will be using. We assume we have configured our microphone to be the left channel \(that is, we set **SEL**=0\).
 
 ![](../.gitbook/assets/words-mono.png)
 
@@ -41,13 +41,13 @@ From the figure above, we can make several observations:
 
 ## I2S wiring example
 
-In general, two MEMS microphones are usually connected in parallel according to the following diagram; the component called "IS2 Master" would be our microcontroller. The terms "master" and "slave" are quite common in electronics to describe the device which acts as the controller and the devices\(s\) that are being controlled. See [here](https://www.techopedia.com/definition/2235/masterslave) for more information on the terminology.
+In general, two MEMS microphones are usually connected in parallel according to the following diagram; the component called "IS2 Master" would be our microcontroller. The terms "master" and "slave" are quite common in electronics to describe the device which acts as the controller, and the devices\(s\) that are being controlled, respectively. See [here](https://www.techopedia.com/definition/2235/masterslave) for more information on the terminology.
 
 ![](../.gitbook/assets/sph0645lm4h_wiring.png)
 
 _Figure: I2S MEMS microphone wiring for stereo use. Note that in our exercises we will be using a mono, i.e. one channel, setup._ p. 7 of [datasheet](https://cdn-shop.adafruit.com/product-files/3421/i2S+Datasheet.PDF).
 
-Some important observations that can be made:
+Some important observations can be made:
 
 * The **DATA** lines for the two microphones are connected to each other and are supplied as a single input to the I2S Master.
 * The **SEL** input for each microphone is set differently: **SEL**=**VDD** for the right-channel microphone and **SEL**=**GND** for the left-channel microphone. This is absolutely essential if two microphones are to share the same **DATA** line, as we explained before. 
@@ -64,5 +64,5 @@ From the diagram above, we can observe that a MEMS microphone requires several a
 3. **SEL**: wired by the user to either **VDD** or **GND** to configure the microphone appropriately.
 4. **DIN**: input to the microcontroller from the microphone\(s\).
 
-It is possible to design your own breakout boards using CAD tools for PCBs \(Printed Circuit Boards\). But for popular components like microphones, it is easy to find breakout boards that have already been designed. [Adafruit](https://www.adafruit.com/category/42) is a great place to find such boards and other cool electronics for personal projects, along with very well explained user guides and the [I2S MEMS Microphone Breakout](https://learn.adafruit.com/adafruit-i2s-mems-microphone-breakout/overview) is the component that perfectly fits our needs.
+It is possible to design your own breakout boards using CAD tools for PCBs \(Printed Circuit Boards\). But for popular components like microphones, it is easy to find breakout boards that have already been designed. [Adafruit](https://www.adafruit.com/category/42) is a great place to find such boards and other cool electronics for personal projects, along with very well-explained user guides. The [I2S MEMS Microphone Breakout](https://learn.adafruit.com/adafruit-i2s-mems-microphone-breakout/overview) is the component that perfectly fits our needs.
 

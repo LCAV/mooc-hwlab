@@ -35,7 +35,7 @@ Previously, we configured I2S2 for the microphone so we will have to connect the
 {% hint style="info" %}
 TASK 5: From the "Pinout" configuration on CubeMX, determine which pins of the STM32 board are used by I2S2. Using the card provided with the board \(see PDF figure above\), use the jumper cables to wire the pins from the STM32 board to the appropriate pins on the microphone breakout board.
 
-_Hint: for example, from the "Pinout" tab we can see that **I2S2\_SD** is outputted on pin **PC3**. From the card provided with the board, we see **PC3** is located in the bottom left corner of the board's pin header extensions. Therefore, we will use a wire to connect this pin to the **DOUT** pin of the microphone breakout board._
+_Hint: for example, from the "Pinout" tab we can see that **I2S2\_SD** is output on pin **PC3**. From the card provided with the board, we see **PC3** is located in the bottom left corner of the board's pin header extensions. Therefore, we will use a wire to connect this pin to the **DOUT** pin of the microphone breakout board._
 {% endhint %}
 
 Finally, we configured an additional GPIO pin in order to select whether we would like the microphone to be assigned to the left or right channel.
@@ -43,6 +43,7 @@ Finally, we configured an additional GPIO pin in order to select whether we woul
 {% hint style="info" %}
 TASK 6: Connect the microphone's **SEL** pin to the pin on the STM32 board corresponding to **LR\_SEL**.
 
+<!-- is there a solution for this somewhere? -->
 BONUS: do we have to connect the microphone's **SEL** pin for the passthrough to work? What would happen if we didn't?
 {% endhint %}
 
@@ -76,7 +77,7 @@ With everything correctly wired up, we can proceed to [coding](coding.md) the pa
 
 ## Tasks solutions
 
-Sadly we cannot connect all the wires for you or double check your connections. However we did our best to help you with this wiring by making a step-by-step video accessible at this **address**.
+Sadly we cannot connect all the wires for you or double check your connections. However we did our best to help you with this wiring by making a step-by-step video accessible at this [address](https://www.coursera.org/learn/dsp4/supplement/efBGc/introduction).
 
 {% tabs %}
 {% tab title="Anti-spoiler tab" %}

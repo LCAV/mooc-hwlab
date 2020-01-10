@@ -8,7 +8,7 @@ Please note that, if you get stuck, you can always download the working STM32 pr
 
 1\) Open the STM32CubeIDE that you just installed in the previous section.
 
-2\) Select a workspace, this will be the folder where all project are going to be stored. You can create multiple workspaces if you work on different projects.
+2\) Select a workspace, this will be the folder where all projects are going to be stored. You can create multiple workspaces if you work on different projects.
 
 ![Workspace selection](../.gitbook/assets/screenshot-2019-10-01-at-11.34.37.png)
 
@@ -24,7 +24,7 @@ The first time you open the software, you will be prompted by the screen shown b
 
 Press the _Start new STM32 project_ button in order to launch CubeMX and start initializing the project.
 
-If you have a workspace that already contains project, the _new project button_ is in the top left corner.
+If you have a workspace that already contains a project, the _new project button_ is in the top left corner.
 
 ## Configuring the hardware with CubeMX <a id="init_code"></a>
 
@@ -40,7 +40,7 @@ Make sure the "Board Selector" tab is the active one \(top-left corner\) and loo
 
 ![](../.gitbook/assets/screenshot-2019-10-07-at-13.36.57.png)
 
-Chose an appropriated name for the project, including the date, project goal etc, and leave the options as default.
+Chose an appropriate name for the project, including the date, project goal etc, and leave the options as default.
 
 ![](../.gitbook/assets/screenshot-2019-10-07-at-13.58.37-1.png)
 
@@ -60,7 +60,7 @@ Extend the central pane if it was hidden, because it will be needed later!
 
 When a Nucleo template is selected and all peripheral initialized to their default values, the blue button _B1_ and the LED _LD2_ are already configured; this is sufficient for our first project.
 
-We are now ready to generate the initialization code. Save your project by pressing _CTRL+ S_. The project will be automatically generated if a modification was made; in this case, since we did not change the layout, you may have to trigger the code generation by pressing _Alt + K_. _CubeMX_ will generate some C files, using _HAL_ libraries, that encode all the settings that was selected via the GUI.
+We are now ready to generate the initialization code. Save your project by pressing _CTRL+ S_. The project will be automatically generated if a modification was made; in this case, since we did not change the layout, you may have to trigger the code generation by pressing _Alt + K_. _CubeMX_ will generate some C files, using _HAL_ libraries, that encode all the settings that were selected via the GUI.
 
 _HAL_ is short for _Hardware Abstraction Layer_ and it is a set of libraries provided by ST to help developers produce _portable_ code, i.e. code that can be used across the whole family of STM32 boards. For more information on HAL, please refer to [this document](https://www.st.com/content/ccc/resource/technical/document/user_manual/2f/77/25/0f/5c/38/48/80/DM00122015.pdf/files/DM00122015.pdf/jcr:content/translations/en.DM00122015.pdf).
 
@@ -98,7 +98,7 @@ while (1) {
 
 `HAL_GPIO_TogglePin` and `HAL_Delay` are commands provided by the ST HAL library for toggling the voltage level on a pin and to pause execution, respectively. Remember that you can always look for the definition of a function or of a variable by pressing _Ctrl_ and clicking the function/variable.
 
-The first command toggles the value of the pin corresponding to the LED at pin _LD2_; this turns the LED _on_ for one iteration of the while loop and _off_ for the next iteration. In order to actually being able to observe the LED blinking we must set a delay between each toggle operation, otherwise the blinking would be too fast to be perceived. This is what the second command accomplishes by placing a delay of 1 second; the argument of the function `HAL_Delay` is indeed in milliseconds.
+The first command toggles the value of the pin corresponding to the LED at pin _LD2_; this turns the LED _on_ for one iteration of the while loop and _off_ for the next iteration. In order to actually be able to observe the LED blinking we must set a delay between each toggle operation, otherwise the blinking would be too fast to be perceived. This is what the second command accomplishes by placing a delay of 1 second; the argument of the function `HAL_Delay` is indeed in milliseconds.
 
 ### Building the project
 
@@ -125,7 +125,7 @@ If this is your first time debugging in this workspace, you should see a pop-up 
 
 ![](../.gitbook/assets/22_enter_debug_perspective.PNG)
 
-If something similar to the following error appear:
+If something similar to the following error appears:
 
 ```text
 "Unplugged target or STLink already in use or STLink USB driver not installed."
@@ -133,7 +133,7 @@ If something similar to the following error appear:
 
 make sure the board is properly plugged in and/or try another USB port.
 
-If the Nucleo's firmware is outdated, you might be requested to update it by the following po-up:
+If the Nucleo's firmware is outdated, you might be requested to update it, shown by the following pop-up:
 
 ![](../.gitbook/assets/screenshot-2019-09-25-at-17.42.06-1.png)
 
