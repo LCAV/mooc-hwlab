@@ -11,8 +11,7 @@ description: >-
 
 The first and maybe most instinctive way to check if a code is working as expected is to put a breakpoint at a critical line of code. In that way it is possible to check if the micro-controller is going through a certain instruction and to do a step-by-step execution of the code starting from the breakpoint.
 
-<!-- what does "the view focuses" below mean? -->
-A breakpoint is added by a double click on a line number in the code window. It can be added either during execution \(debug session already started\) or during editing. When a breakpoint is reached, the view focuses and you will see the following view:
+A breakpoint is added by a double click on a line number in the code window. It can be added either during execution \(debug session already started\) or during editing. When a breakpoint is reached, the view jumps to the breakpoint's line and you will see the following view:
 
 ![Figure: Program execution stopped at a breakpoint on line 480 of main.c](../.gitbook/assets/screenshot-2019-11-21-at-11.27.25.png)
 

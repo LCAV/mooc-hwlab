@@ -33,7 +33,7 @@ Previously, we configured I2S2 for the microphone so we will have to connect the
 * **I2S2\_WS** $$\rightarrow$$ **LRCL**
 
 {% hint style="info" %}
-TASK 5: From the "Pinout" configuration on CubeMX, determine which pins of the STM32 board are used by I2S2. Using the card provided with the board \(see PDF figure above\), use the connector cables to wire the pins from the STM32 board to the appropriate pins on the microphone breakout board.
+TASK 5: From the "Pinout" configuration on CubeMX, determine which pins of the STM32 board are used by I2S2. Using the card provided with the board \(see PDF figure above\), use the jumper cables to wire the pins from the STM32 board to the appropriate pins on the microphone breakout board.
 
 _Hint: for example, from the "Pinout" tab we can see that **I2S2\_SD** is output on pin **PC3**. From the card provided with the board, we see **PC3** is located in the bottom left corner of the board's pin header extensions. Therefore, we will use a wire to connect this pin to the **DOUT** pin of the microphone breakout board._
 {% endhint %}
@@ -78,4 +78,16 @@ With everything correctly wired up, we can proceed to [coding](coding.md) the pa
 ## Tasks solutions
 
 Sadly we cannot connect all the wires for you or double check your connections. However we did our best to help you with this wiring by making a step-by-step video accessible at this [address](https://www.coursera.org/learn/dsp4/supplement/efBGc/introduction).
+
+{% tabs %}
+{% tab title="Anti-spoiler tab" %}
+Are you sure you are ready to see the solution? ;\)
+{% endtab %}
+
+{% tab title="Task 6" %}
+Indeed we have to connect the SEL pin of the microphone, otherwise the microphone might send it's signal randomly on the left or right channel \(however it is common practice that these type of input pins have pull-down or pull-up resistors in order to have a _by default_ state\).
+{% endtab %}
+{% endtabs %}
+
+
 

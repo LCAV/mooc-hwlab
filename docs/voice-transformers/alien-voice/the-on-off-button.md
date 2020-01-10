@@ -6,8 +6,7 @@ The Nucleo board has a user programmable push button. We will now use it as an O
 
 The idea is to use the push button to call an asynchronous routine in our code. To do that, we need to configure the button to trigger an interrupt and then we need to catch the interrupt in our code.
 
-Go into CubeMX by clicking on the `ioc` file in your alien voice project; in the left panel click on "System &gt; NVIC" and enable the line "EXTI line 4 to 15" by checking the corresponding checkmark. Indeed PC13 is linked to EXTI13 in the hardware of the microcontroler because interrupts provide a very fast access to the core of the system.
-<!-- the logic of above sentence is not clear to me -->
+Go into CubeMX by clicking on the `ioc` file in your alien voice project; in the left panel click on "System &gt; NVIC" and enable the line "EXTI line 4 to 15" by checking the corresponding checkmark. The pin PC13 is linked to EXTI13 in the hardware of the microcontroller. Interrupts are used because they provide a very fast access to the core of the system and thus a very fast reaction.
 
 Still in CubeMX, verify that the label for pin PA5 is "LD2" and the label for pin PC13 is "B1".
 
