@@ -64,7 +64,7 @@ $$
 
 The full output signal can be expressed in closed form by looking at the following picture, which shows the periodic pattern of overlapping grains:
 
-![](../../.gitbook/assets/grains%20%282%29.jpg)
+![](../../.gitbook/assets/pattern.jpg)
 
 Any output index $$n$$can be written as:
 
