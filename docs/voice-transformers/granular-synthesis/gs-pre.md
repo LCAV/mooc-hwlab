@@ -17,7 +17,7 @@ The grain stride indicates the displacement in samples between successive grains
 
 Call $$\rho$$the amount of overlap \(as a percentage\) between neighboring grains. With $$\rho = 0$$there is no overlap whereas with $$\rho = 1$$all the samples in a grain overlap with another grain. The relationship between grain length $$L$$and grain stride $$S$$is $$L = (1+\rho)\,S$$. This is illustrated in the following figure for varying degrees of overlap and a stride of$$S=100$$samples; grains are represented using the shape of the appropriate tapering window:
 
-![](https://github.com/LCAV/mooc-hwlab/tree/3bc499f9ef7ab9205a8e8f64c586f5fcfd45c78d/docs/.gitbook/assets/grains%20%281%29.jpg)
+![](../../.gitbook/assets/grains.jpg)
 
 Note that the stride is constant for any amount of overlap and that each grain starts at the same instants independently of overlap; this is the key observation that will allow us to implement granular synthesis in real time.
 
@@ -45,7 +45,7 @@ By contrast when we raise the pitch we are using _subsampling_, that is, samples
 
 For instance, if we are raising the frequency by $$\alpha=3/2$$ and our grain length is, say, 100 samples, we will need a buffer of 50 "future" samples; this can be accomplished by accepting an additional processing delay of 50 samples. The difference between over- and under-sampling is clear when we look at the illustration in the notebook that shows the input sample index as a function of the output sample index:
 
-![input index vs output index for a\) the passthrough, b\) the Chipmunk, c\) Darth Vader](https://github.com/LCAV/mooc-hwlab/tree/3bc499f9ef7ab9205a8e8f64c586f5fcfd45c78d/docs/.gitbook/assets/granular.jpg)
+![](../../.gitbook/assets/granular.jpg)
 
 We will see in the next sections that buffering is required anyway in order to implement overlapping windows, so that the extra buffering required by subsampling will just be an extension of the general setup.
 
@@ -64,7 +64,7 @@ $$
 
 The full output signal can be expressed in closed form by looking at the following picture, which shows the periodic pattern of overlapping grains:
 
-![](../../.gitbook/assets/grains%20%281%29.jpg)
+![](../../.gitbook/assets/grains%20%282%29.jpg)
 
 Any output index $$n$$can be written as:
 
