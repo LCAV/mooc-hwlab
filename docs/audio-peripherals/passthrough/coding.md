@@ -15,8 +15,8 @@ Macros are usually defined before the `main` function; we will place our macros 
 As an example, we will begin by creating _macros_ to change the logical level of the **MUTE** pin. As in the blinking LED example, we will be using HAL library calls in order to modify the state of the **MUTE** GPIO pin.
 
 {% hint style="info" %}
-TASK 1: Complete the two macros below  -`MUTE` and `UNMUTE`-  in order to mute/unmute the output. Simply replace the `XXX` in the definitions with either`GPIO_PIN_SET` or `GPIO_PIN_RESET`, according to whether you need a HIGH or LOW level.  
-  
+TASK 1: Complete the two macros below -`MUTE` and `UNMUTE`- in order to mute/unmute the output. Simply replace the `XXX` in the definitions with either`GPIO_PIN_SET` or `GPIO_PIN_RESET`, according to whether you need a HIGH or LOW level.
+
 _Hint: you should check the_ [_datasheet of the DAC_](https://www.nxp.com/docs/en/data-sheet/UDA1334ATS.pdf) _to determine whether you need a HIGH or LOW value to turn on the mute function of the DAC._
 {% endhint %}
 
@@ -43,7 +43,7 @@ _Hint: you should check the_ [_I2S protocol_](https://www.sparkfun.com/datasheet
 
 In most applications we will need to set some numerical constants that define key parameters used in the application.
 
- These definitions are also preprocessing macros and they are usually grouped together at the beginning of the code between the `USER CODE BEGIN PV` and `USER CODE END PV` comment tags.
+These definitions are also preprocessing macros and they are usually grouped together at the beginning of the code between the `USER CODE BEGIN PV` and `USER CODE END PV` comment tags.
 
 We will now define a few constants which will be useful in coding our application. Before defining them in our code, let's clarify some of the terminology:
 
@@ -265,7 +265,7 @@ In the same way as we did for the DAC, we will look in the microphone datasheet.
 The arithmetic is quite trivial here, and here is a quick recap:
 
 * a sample is "a value at a certain time for one channel"  
-* a frame is "the package of a left and a right sample"  
+* a frame is "the package of a left and a right sample"
 
   Thus the buffer has in our case the length SAMPLE\_PER\_FRAME x FRAME\_PER\_BUFFER, as every sample has 16 bits \(1 half-word\) a buffer will be 32x2 half-words long.
 
@@ -289,7 +289,6 @@ void inline Process(int16_t *pIn, int16_t *pOut, uint16_t size) {
   for (uint16_t i = 0; i < size; i++)
     *pOut++ = *pIn++;
 }
-
 ```
 {% endtab %}
 
@@ -298,10 +297,10 @@ There are always several ways to achieve the same goal in C. Here is a possible 
 
 ```c
 void inline Process(int16_t *pIn, int16_t *pOut, uint16_t size) {
-	// if using the RIGHT channel, advance the input pointer
-	if (HAL_GPIO_ReadPin(LR_SEL_GPIO_Port, LR_SEL_Pin) == GPIO_PIN_SET)
-		pIn++;
-    
+    // if using the RIGHT channel, advance the input pointer
+    if (HAL_GPIO_ReadPin(LR_SEL_GPIO_Port, LR_SEL_Pin) == GPIO_PIN_SET)
+        pIn++;
+
   // advance by two now, since we're duplicating the input
   for (uint16_t i = 0; i < size; i += 2) {
     *pOut++ = *pIn;

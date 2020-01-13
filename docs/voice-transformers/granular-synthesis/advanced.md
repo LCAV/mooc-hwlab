@@ -41,7 +41,7 @@ By now you know where to place this code but don't forget to
   #include <memory.h>
   ```
 
-* declare the function prototype in the `USER CODE BEGIN PFP` block 
+* declare the function prototype in the `USER CODE BEGIN PFP` block
 * call the function before launching the DMA transfers:
 
   ```c

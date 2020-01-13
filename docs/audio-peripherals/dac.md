@@ -17,7 +17,7 @@ A couple interesting things to take note of:
 
 All input and output pins are briefly explained in the figure below.
 
-![Figure: UDA1334ATS pinning, p. 6 of forementioned datasheet.](../.gitbook/assets/pinning.png)
+![Figure: UDA1334ATS pinning, p. 6 of forementioned datasheet.](../.gitbook/assets/pinning%20%281%29.png)
 
 Compared to the [microphone](microphone.md) which only had six pins, the above list of pins may seem overwhelming! But not to worry; we will explain the important settings for our application, referred to as "audio mode" in the [datasheet](https://www.nxp.com/docs/en/data-sheet/UDA1334ATS.pdf). Moreover, as we will see later on, the breakout board by Adafruit nicely abstracts the interfacing between our microcontroller and the UDA1334ATS component.
 
@@ -27,7 +27,7 @@ PLL stands for "Phase-locked loop"; you can find more information about PLLs on 
 
 ### Input configuration \(p. 9 of [datasheet](https://www.nxp.com/docs/en/data-sheet/UDA1334ATS.pdf)\)
 
-In addition to I2S input, the DAC also accepts other formats. Therefore, we must explicitly configure the chip to expect an I2S input. This is done by setting both **SFOR1** \(Pin 7\) and **SFOR0** \(Pin 11\) to LOW. **BCK** \(Pin 1\), **WS** \(Pin 2\), and **DATAI** \(Pin 3\) will  then serve as our I2S inputs.
+In addition to I2S input, the DAC also accepts other formats. Therefore, we must explicitly configure the chip to expect an I2S input. This is done by setting both **SFOR1** \(Pin 7\) and **SFOR0** \(Pin 11\) to LOW. **BCK** \(Pin 1\), **WS** \(Pin 2\), and **DATAI** \(Pin 3\) will then serve as our I2S inputs.
 
 De-emphasis is a low-pass filter to undo a high frequency boost \(aka pre-emphasis\) that may have been performed at the ADC \(Analog-to-Digital Converter\). We do not expect any pre-emphasis and this only applies for 44.1 kHz so we can set **DEEM/CLKOUT** \(Pin 9\) to LOW for de-emphasis off.
 
@@ -65,7 +65,7 @@ Finally, the first requirement will be met as we have that the **BCK** frequency
 
 As we are interested in using the UDA1334ATS component under "audio mode", this requires a wiring as shown in the figure below.
 
-![Figure: UDA1334ATS audio mode wiring, p. 15 of formentioned datasheet.](../.gitbook/assets/wiring.png)
+![Figure: UDA1334ATS audio mode wiring, p. 15 of formentioned datasheet.](../.gitbook/assets/wiring%20%281%29.png)
 
 In addition to the capacitors and resistors needed for the UDA1334ATS component, we would also like to listen to the resulting audio output with heaphones. For this, an audio jack would be ideal.
 

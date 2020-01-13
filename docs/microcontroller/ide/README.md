@@ -11,7 +11,7 @@ To handle this great flexibility, ST provides us with an integrated development 
 
 The IDE includes a chip configuration graphical interface called CubeMX:
 
-![Figure: Screenshot of STM32CubeMX](../../.gitbook/assets/screenshot-2019-09-25-at-17.51.49-1-1.png)
+![Figure: Screenshot of STM32CubeMX](../../.gitbook/assets/screenshot-2019-09-25-at-17.51.49-1-1%20%281%29.png)
 
 and an Eclipse-based programming environment:
 
@@ -47,7 +47,7 @@ _Note: the instructions were tested using MacOS Mojave, Version 10.14 on October
 
 You may encounter the following dialog on macOS, please follow the instructions below if it is your case.
 
-![](../../.gitbook/assets/screenshot-2019-09-25-at-17.06.48-1.png)
+![](../../.gitbook/assets/screenshot-2019-09-25-at-17.06.48-1%20%281%29.png)
 
 1\) Open your _System Preferences_ and navigate to _Security & Privacy_
 

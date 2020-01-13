@@ -2,7 +2,7 @@
 
 ## Gain <a id="gain"></a>
 
-One thing that you might have noticed from the passthrough example is that the output signal is not very loud. To correct this, we can add a gain factor to the `process`function that multiplies each signal sample by a constant. 
+One thing that you might have noticed from the passthrough example is that the output signal is not very loud. To correct this, we can add a gain factor to the `process`function that multiplies each signal sample by a constant.
 
 In order to take advantage of the architecture of the microcontroller's internal multiplier, it is recommended to use factors that are a power of 2 since in this case a multiplication corresponds to a simple binary shift of the integer values to the left. We measured$$1\mu s$$difference in processing time when tested with the first voice transformer algorithm.
 
@@ -34,9 +34,9 @@ $$
 y[n] = \lambda y[n − 1] + x[n] − x[n − 1]
 $$
 
- When $$\lambda$$is close to \(but less than\) one, we can get a magnitude response like this:
+When $$\lambda$$is close to \(but less than\) one, we can get a magnitude response like this:
 
-![Frequency response of the IIR DC notch](../.gitbook/assets/image.png)
+![Frequency response of the IIR DC notch](../.gitbook/assets/image%20%281%29.png)
 
 {% hint style="info" %}
 TASK 2: Assume that our input samples are between -1 and +1 and are encoded as signed 16-bit integers. Write a C function that implements an IIR DC notch with $$\lambda = 0.9$$using integer arithmetic.
@@ -50,21 +50,19 @@ Are you sure you are ready to see the solution? ;\)
 {% endtab %}
 
 {% tab title="Task 1" %}
-
-
 When the code is running, you can double click on any line number to add a breakpoint.
 
 We suggest you to ad a breakpoint at line _430_:
 
-![Figure: Breakpoint set at line 430](../.gitbook/assets/screenshot-2019-10-10-at-16.29.32-1.png)
+![Figure: Breakpoint set at line 430](../.gitbook/assets/screenshot-2019-10-10-at-16.29.32-1%20%281%29.png)
 
 If the micro-controller is connected and a debug session is ongoing, you will see a change in the software and the following list:
 
-![Figure: Execution call hierarchy when stopped at a brakepoint](../.gitbook/assets/screenshot-2019-10-10-at-16.32.28-1.png)
+![Figure: Execution call hierarchy when stopped at a brakepoint](../.gitbook/assets/screenshot-2019-10-10-at-16.32.28-1%20%281%29.png)
 
 It is the hierarchy of the function executed by the micro-controller, indeed main\(\) is the root. Please note that the button _Skip All Breakpoints_ should not be activated for the micro-controller to stop at the given line.
 
-![Figure: Breakpoint bypass button](../.gitbook/assets/screenshot-2019-10-10-at-16.29.58.png)
+![Figure: Breakpoint bypass button](../.gitbook/assets/screenshot-2019-10-10-at-16.29.58%20%281%29.png)
 
 It is then possible to right-click in the editor and press _Add Watch Expression_ you can now enter the name of the variable you want to explore and it will show up in the _Expression_ viewer panel. Unfold the array and you should see something close to this:
 
@@ -94,6 +92,4 @@ static inline int16_t DCNotch(int16_t x) {
 The above DC notch is better than the simple one-step difference, but it can be made better with respect to its fixed-point implementation. [Here is an interesting article about that.](https://www.researchgate.net/publication/261775781_DC_Blocker_Algorithms)
 {% endtab %}
 {% endtabs %}
-
-
 

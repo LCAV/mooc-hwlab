@@ -4,7 +4,7 @@ description: 'by Eric Bezzam, Adrien Hoffet and Paolo Prandoni. (c) LCAV, EPFL, 
 
 # DSP4.3 - Real-Time DSP
 
-Hi, and welcome to this final module of the DSP course, in which we will learn how to build a real time signal processing system using a general-purpose microcontroller unit. 
+Hi, and welcome to this final module of the DSP course, in which we will learn how to build a real time signal processing system using a general-purpose microcontroller unit.
 
 Developing DSP applications for a low-level device does not affect the _theory_ behind the algorithms that we implement. However, the constraints imposed by a low-power CPU will demand that we pay particular attention to details such as code efficiency, memory use and input/output routines.
 

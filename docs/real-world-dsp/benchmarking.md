@@ -1,6 +1,6 @@
 # Benchmarking
 
-When discussing the code architecture of a generic real-time audio device, we already remarked that if our processing callback is too slow with respect to the frequency of the DMA transfers, we will run into a condition called buffer underflow \(or overflow, if you look at it from the point of view of the input DMA\). 
+When discussing the code architecture of a generic real-time audio device, we already remarked that if our processing callback is too slow with respect to the frequency of the DMA transfers, we will run into a condition called buffer underflow \(or overflow, if you look at it from the point of view of the input DMA\).
 
 It's therefore very important to make sure that our processing is fast enough and find out if and where the code is using up a lot of time. Fortunately, the microcontroller provides us with functionalities that gives the possibility to monitor that.
 
@@ -16,13 +16,13 @@ For our application, we will use a timer with a large counting capacity \(32 bit
 
 To set up the timer we will use CubeMX and then regenerate the initialization code. Open the CubeMX file by double clicking the `.ioc` file of the copied project it in the IDE project explorer.
 
-In order to activate a timer, you need to set a "Clock Source". Open _TIM2_ in the Timers menu \(_TIM2_ happens to be 32bit timer\) and activate its clock by setting the Clock Source to "Internal Clock". 
+In order to activate a timer, you need to set a "Clock Source". Open _TIM2_ in the Timers menu \(_TIM2_ happens to be 32bit timer\) and activate its clock by setting the Clock Source to "Internal Clock".
 
-![Figure: Timer activation](../.gitbook/assets/screenshot-2019-10-07-at-15.42.23.png)
+![Figure: Timer activation](../.gitbook/assets/screenshot-2019-10-07-at-15.42.23%20%281%29.png)
 
 Next, we need to configure the timer in the configuration panel that appears:
 
-![Figure: Timer configuration](../.gitbook/assets/screenshot-2019-10-07-at-15.43.06.png)
+![Figure: Timer configuration](../.gitbook/assets/screenshot-2019-10-07-at-15.43.06%20%281%29.png)
 
 {% hint style="info" %}
 TASK 1: Set the Prescaler value \(in the figure above\) in order to achieve a $$1\,\mu s$$ period for "TIM2", i.e. we want our timer to have a$$1\,\mu s$$resolution.
@@ -47,7 +47,6 @@ volatile int32_t timer_value_us;
 #define STOP_TIMER {\
   timer_value_us = __HAL_TIM_GET_COUNTER(&htim2);\
   HAL_TIM_Base_Stop(&htim2); }
-
 ```
 
 For instance, to benchmark the passthrough example, we can modify the Process function like so
@@ -55,14 +54,13 @@ For instance, to benchmark the passthrough example, we can modify the Process fu
 ```c
 void inline Process(int16_t *pIn, int16_t *pOut, uint16_t size) {
   START_TIMER
-  
+
   ... // passtrhough code here
-  
+
   STOP_TIMER
   // at this point the variable timer_value_us will contain
   //  the number of microseconds used by the portion of code
 }
-
 ```
 
 ## Benchmarking live
@@ -70,20 +68,20 @@ void inline Process(int16_t *pIn, int16_t *pOut, uint16_t size) {
 In a real-time audio application the processing time cannot exceed the time between successive DMA calls; if this is not the case, we have a so-called buffer underflow which results in extremely corrupted audio. We will use our benchmarking timer to make sure we are within the limits.
 
 {% hint style="info" %}
-TASK 2: In the passthrough example, the macro `FRAMES_PER_BUFFER`determines the length of the DMA transfer. In our code, we set this length to 32 \(stereo\) samples. 
+TASK 2: In the passthrough example, the macro `FRAMES_PER_BUFFER`determines the length of the DMA transfer. In our code, we set this length to 32 \(stereo\) samples.
 
 What is the maximum processing time that we can afford in this case?
 
 What if we change the value to 512 samples?
 {% endhint %}
 
-To check the actual time used by our processing function we will use an extremely convenient facility provided by the STM32 IDE, namely the possibility to monitor the live value of the variables in our code while the code runs. 
+To check the actual time used by our processing function we will use an extremely convenient facility provided by the STM32 IDE, namely the possibility to monitor the live value of the variables in our code while the code runs.
 
 Pull up the passthrough example and modify the processing function as shown in the previous section by inserting the START\_TIMER and STOP\_TIMER macros. Then launch the application in the debugger.
 
 In the debugging window in the top right corner of the screen, select the "live variables" tag and add the variable timer\_value\_us.
 
-![](../.gitbook/assets/live.jpg)
+![](../.gitbook/assets/live%20%281%29.jpg)
 
 You can see that the passthrough code takes about 33 microseconds to execute, which is well below the maximum available time. This is good news!
 
@@ -95,11 +93,9 @@ Are you ready to see the answer? :\)
 {% endtab %}
 
 {% tab title="Task 1" %}
-
-
 As proposed in the hint, if you go to the tab _Clock Configuration_ of CubeMX, you will see the following graph:
 
-![](../.gitbook/assets/screenshot-2019-10-10-at-16.57.46-1.png)
+![](../.gitbook/assets/screenshot-2019-10-10-at-16.57.46-1%20%281%29.png)
 
 Note the last block on the right column _APB1 Timer clocks \(MHz\):_ 48. It means that your timer is "driven" by a base tick frequency of 48MHz. in order to reduce this to $$1 \, \mu s$$or in other word 1 MHz, you will have to divide it by 48. This number is thus your prescaler. This leads to the following timer configuration:
 
@@ -117,7 +113,7 @@ $$
 
 Since the audio peripherals are working at 32 KHz, the time between DMA calls for a buffer of 32 samples is 1000 $$\mu s$$ \(i.e. one millisecond\)
 
-For a buffer of 512 samples, the maximum processing time is  16'000 $$\mu s$$.
+For a buffer of 512 samples, the maximum processing time is 16'000 $$\mu s$$.
 {% endtab %}
 {% endtabs %}
 

@@ -4,7 +4,7 @@ In this section we will illustrate some common coding practices that are used in
 
 ## Circular buffers
 
-In [Lecture 2.2.5a](https://www.coursera.org/learn/dsp2/lecture/6oXrx/2-2-5-a-implementation-of-digital-filters) in the [second DSP course](https://www.coursera.org/learn/dsp2/) we discussed some implementation issues related to discrete-time filters and, in particular, we talked about circular buffers. 
+In [Lecture 2.2.5a](https://www.coursera.org/learn/dsp2/lecture/6oXrx/2-2-5-a-implementation-of-digital-filters) in the [second DSP course](https://www.coursera.org/learn/dsp2/) we discussed some implementation issues related to discrete-time filters and, in particular, we talked about circular buffers.
 
 As a quick recap, remember that if you need to store past values of a signal, the best solution is to use a circular buffer; assume that you need to access at most $$M$$past values of the signal $$x[n]$$:
 
@@ -42,9 +42,9 @@ $$
 \cos x = x - \dfrac{x^2}{2!} + \dfrac{x^4}{4!} - \dfrac{x^6}{6!} + \mathcal{O}(x^8)
 $$
 
-clearly requires a significant number of multiplications. A computationally cheaper alternative is based on the use of a [lookup table](https://en.wikipedia.org/wiki/Lookup_table). In a lookup table, we precompute the sinusoidal values that we need and use the time index$$n$$simply to retrieve the correct value. 
+clearly requires a significant number of multiplications. A computationally cheaper alternative is based on the use of a [lookup table](https://en.wikipedia.org/wiki/Lookup_table). In a lookup table, we precompute the sinusoidal values that we need and use the time index$$n$$simply to retrieve the correct value.
 
-In sinusoidal modulation we need to know the values of the sequence $$\cos(\omega_c n)$$ for all values of $$n$$. However, if $$\omega_c$$is a rational multiple of $$2\pi$$, that is, if $$\omega_c = 2\pi(M/N)$$for $$M,N \in \mathbb{N}$$, then the sequence of sinusoidal values repeats exactly every $$N$$samples. 
+In sinusoidal modulation we need to know the values of the sequence $$\cos(\omega_c n)$$ for all values of $$n$$. However, if $$\omega_c$$is a rational multiple of $$2\pi$$, that is, if $$\omega_c = 2\pi(M/N)$$for $$M,N \in \mathbb{N}$$, then the sequence of sinusoidal values repeats exactly every $$N$$samples.
 
 For instance, assume the input sampling frequency is $$F_s = 32$$KHz and that our modulation frequency is $$f_c = 400$$Hz. In this case $$\omega_c = 2\pi /80$$and therefore we simply need to precompute 80 values for the cosine and store them in an array `C[0], ..., C[79]`. The equation
 
@@ -78,6 +78,5 @@ In our code, therefore, we will explicitly roll over these indexes independently
 * in functions, indexes will be defined as [static variables](https://stackoverflow.com/questions/572547/what-does-static-mean-in-c) so that their value will be preserved between consecutive function calls.
 * to make sure that state variables used by different functions are stepped synchronously, we will define them as global-scope variables at the application level.
 
-<!-- below: do you mean state variables or global variables? -->
 These types of variables are often referred to as _state variables_ in C programming and they are usually much frowned upon; the truth is, in a microcontroller real-time application where performance is key, they simply cannot be avoided.
 

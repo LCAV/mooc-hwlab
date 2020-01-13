@@ -8,7 +8,7 @@ For portable devices, digital MEMS microphones are the popular choice for audio 
 
 The connectors on a MEMS microphone are the following:
 
-![](../.gitbook/assets/sph0645lm4h_pins.png)
+![](../.gitbook/assets/sph0645lm4h_pins%20%281%29.png)
 
 The basic input pins are:
 
@@ -27,7 +27,7 @@ Luckily for us, the MEMS component in the Adafruit mic already provides us with 
 
 Let's look at an example timing diagram from the single Adafruit microphone we will be using. We assume we have configured our microphone to be the left channel \(that is, we set **SEL**=0\).
 
-![](../.gitbook/assets/words-mono.png)
+![](../.gitbook/assets/words-mono%20%281%29.png)
 
 _Figure: I2S MEMS microphone output timing diagram. The output data format is I2S, 24 bit, 2's complement, MSB first._ p. 7 of [datasheet](https://cdn-shop.adafruit.com/product-files/3421/i2S+Datasheet.PDF).
 

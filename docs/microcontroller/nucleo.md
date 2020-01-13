@@ -1,6 +1,6 @@
 # The ST Nucleo
 
-In this eBook we will develop real-time signal processing algorithms for a specific piece of hardware, namely the [STM32 NUCLEO-F072RB](https://www.st.com/en/evaluation-tools/nucleo-f072rb.html) **microcontroller** board manufactured by **STMicroelectronics** \(often abbreviated as ST\). ST provides many inexpensive development boards that are used by hobbyists, students, and professionals to prototype countless applications. 
+In this eBook we will develop real-time signal processing algorithms for a specific piece of hardware, namely the [STM32 NUCLEO-F072RB](https://www.st.com/en/evaluation-tools/nucleo-f072rb.html) **microcontroller** board manufactured by **STMicroelectronics** \(often abbreviated as ST\). ST provides many inexpensive development boards that are used by hobbyists, students, and professionals to prototype countless applications.
 
 ![The STM32 Nucleo development board.](../.gitbook/assets/nucleo_board.jpg)
 

@@ -4,7 +4,7 @@ Now that we have initialized the different peripherals that we will use to inter
 
 For this task, we will have to refer to the card provided with the STM32 board \(see below\) and the image of the chip on the "Pinout" tab of our CubeMX project \(further below\).
 
-![](../../.gitbook/assets/stm32f072_extensions.png)
+![](../../.gitbook/assets/stm32f072_extensions%20%281%29.png)
 
 ![](../../.gitbook/assets/pinout_tab.png)
 
@@ -43,7 +43,6 @@ Finally, we configured an additional GPIO pin in order to select whether we woul
 {% hint style="info" %}
 TASK 6: Connect the microphone's **SEL** pin to the pin on the STM32 board corresponding to **LR\_SEL**.
 
-<!-- is there a solution for this somewhere? -->
 BONUS: do we have to connect the microphone's **SEL** pin for the passthrough to work? What would happen if we didn't?
 {% endhint %}
 
@@ -88,6 +87,4 @@ Are you sure you are ready to see the solution? ;\)
 Indeed we have to connect the SEL pin of the microphone, otherwise the microphone might send it's signal randomly on the left or right channel \(however it is common practice that these type of input pins have pull-down or pull-up resistors in order to have a _by default_ state\).
 {% endtab %}
 {% endtabs %}
-
-
 
