@@ -14,5 +14,5 @@ In principle, any board from STM32 can be used for these exercises, as long as i
 
 * basic knowledge of C and Python programming
 * a PC with a USB port \(the microcontroller will be programmed and powered by your PC via a USB cable\)
-* and, of course, having completed the the previous DSP modules!
+* and, of course, having completed the the previous DSP modules!  
 
